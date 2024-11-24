@@ -1,11 +1,34 @@
 {
   "compilerOptions": {
+    // Core Compiler Settings
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+
+    // JSX Settings for React
+    "jsx": "react-jsx",
+
+    // Allow Specific TypeScript Features
+    "allowJs": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true, // Allows imports ending in '.ts' or '.tsx'
+
+    // Aliases for Cleaner Imports
     "baseUrl": "./",
     "paths": {
       "@/components/*": ["src/components/*"],
-      "@/utils/*": ["src/utils/*"]
-    }
-  }
+      "@/utils/*": ["src/utils/*"],
+      "@/lib/*": ["src/lib/*"]
+    },
+
+    // Skip Checks and Outputs
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src"], // Include the source directory
+  "exclude": ["node_modules"] // Exclude node_modules
 }
