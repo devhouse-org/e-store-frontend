@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     // Core Compiler Settings
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
@@ -16,14 +20,6 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "allowImportingTsExtensions": true, // Allows imports ending in '.ts' or '.tsx'
-
-    // Aliases for Cleaner Imports
-    "baseUrl": "./",
-    "paths": {
-      "@/components/*": ["src/components/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/lib/*": ["src/lib/*"]
-    },
 
     // Skip Checks and Outputs
     "skipLibCheck": true,

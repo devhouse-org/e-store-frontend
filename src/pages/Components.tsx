@@ -1,7 +1,7 @@
 import Button from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
-
+import { Button as Button1 } from "@/components/ui/button";
 const Components = () => {
   return (
     <div className="px-14 flex flex-col gap-x-20">
@@ -27,6 +27,7 @@ const Components = () => {
           isLoading
           color="orange"
         />
+        <Button1>shadcn</Button1>
       </div>
 
       <div className="input flex  gap-4 mt-4">
