@@ -10,11 +10,23 @@ import { Home } from "lucide-react";
 import AuctionCard from "@/components/AuctionCard";
 import ProductCard from "@/components/ProductCard";
 import Banner from "@/components/Banner";
+import Slider from "react-slick";
+import { AuctionDialog } from "@/components/AuctionDialog";
 
-const handleSubscribe = () => {
-  alert("Subscribed!");
-};
 const Components = () => {
+  // const settings = {
+  //   dots: true,
+  //   infinite: true,
+  //   slidesToShow: 5,
+  //   slidesToScroll: 1,
+  //   autoplay: true,
+  //   autoplaySpeed: 2000,
+  //   rtl: true
+  // };
+  const handleSubscribe = () => {
+    alert("Subscribed!");
+  };
+
   return (
     <div className="bg-light-200 px-14 flex flex-col gap-x-20">
       <div className="navbar_and_footer">
@@ -37,6 +49,9 @@ const Components = () => {
             className="my-8"
           />
         </div>
+
+        <AuctionDialog />
+
         <div className="my-4">
           <AuctionCard
             productName="اكس بوكس سيريس اكس"
@@ -86,56 +101,84 @@ const Components = () => {
               </>
             ))}
           </div>
-        </div>
 
-        <div className="btns">
-          <SectionTitle title="Buttons" />
-          <Button
-            label="Submit"
-            action={() => alert("Button clicked!")}
-            variation="fill"
-            color="orange"
-          />
-          <Button label="Delete" variation="outline" color="orange" disabled />
-          <Button label="Ghost" variation="ghost" color="orange" />
-          <Button
-            label="Submit"
-            action={() => alert("Button clicked!")}
-            variation="fill"
-            isLoading
-            color="orange"
-          />
-          <Button1 label="shadcn" variation="outline" />
-        </div>
+          {/* <Slider {...settings}>
+          {
+            carouselCardData.map((item) => (
+              <div draggable="false">
+                <CarouselCard label={item.label} key={item.label} link={item.link} Icon={item.Icon} />
+              </div>
+            ))
+          }
+        </Slider> */}
 
-        <div className="input flex  gap-4 mt-4">
-          <CustomInput
-            label="الاسم"
-            type="text"
-            placeholder="ادخل الاسم"
-            value=""
-            onChange={(e) => console.log(e.target.value)}
-            name="name"
-            required
-          />
-          <CustomInput
-            label="البريد الالكتروني"
-            type="email"
-            placeholder="ادخل بريدك الالكتروني"
-            value=""
-            onChange={(e) => console.log(e.target.value)}
-            name="email"
-            required
-          />
-          <CustomInput
-            label="كلمة السر"
-            type="password"
-            placeholder="ادخل كلمة السر"
-            value=""
-            onChange={(e) => console.log(e.target.value)}
-            name="password"
-            required
-          />
+          <div className="flex gap-x-4 py-2 overflow-x-auto">
+            {carouselCardData.map((item) => (
+              <div>
+                <CarouselCard
+                  label={item.label}
+                  key={item.label}
+                  link={item.link}
+                  Icon={item.Icon}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="btns">
+            <SectionTitle title="Buttons" />
+            <Button
+              label="Submit"
+              action={() => alert("Button clicked!")}
+              variation="fill"
+              color="orange"
+            />
+            <Button
+              label="Delete"
+              variation="outline"
+              color="orange"
+              disabled
+            />
+            <Button label="Ghost" variation="ghost" color="orange" />
+            <Button
+              label="Submit"
+              action={() => alert("Button clicked!")}
+              variation="fill"
+              isLoading
+              color="orange"
+            />
+            <Button1 label="shadcn" variation="outline" />
+          </div>
+
+          <div className="input flex  gap-4 mt-4">
+            <CustomInput
+              label="الاسم"
+              type="text"
+              placeholder="ادخل الاسم"
+              value=""
+              onChange={(e) => console.log(e.target.value)}
+              name="name"
+              required
+            />
+            <CustomInput
+              label="البريد الالكتروني"
+              type="email"
+              placeholder="ادخل بريدك الالكتروني"
+              value=""
+              onChange={(e) => console.log(e.target.value)}
+              name="email"
+              required
+            />
+            <CustomInput
+              label="كلمة السر"
+              type="password"
+              placeholder="ادخل كلمة السر"
+              value=""
+              onChange={(e) => console.log(e.target.value)}
+              name="password"
+              required
+            />
+          </div>
         </div>
       </div>
     </div>
