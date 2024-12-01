@@ -41,7 +41,7 @@ export interface ButtonProps
   label?: string;
   action?: () => void;
   Icon?: IconType;
-  variation: "outline" | "fill" | "ghost";
+  variation?: "outline" | "fill" | "ghost";
   isLoading?: boolean;
   color?: "green" | "red" | "orange";
   disabled?: boolean;
@@ -63,7 +63,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ) : (
           <>
             {Icon && <Icon className="icon-class" />} {/* Render the Icon */}
-            {label && <span>{label}</span>} {/* Render the label */}
+            {label && <span className="font-tajawal-medium">{label}</span>} {/* Render the label */}
           </>
         )}
       </Comp>

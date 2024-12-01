@@ -8,11 +8,24 @@ import Navbar from "@/components/Navbar";
 import { Button as Button1 } from "@/components/ui/button";
 import { Home } from "lucide-react";
 import AuctionCard from "@/components/AuctionCard";
+import Slider from "react-slick"
+import { AuctionDialog } from "@/components/AuctionDialog";
+
 
 const handleSubscribe = () => {
   alert("Subscribed!");
 };
 const Components = () => {
+  // const settings = {
+  //   dots: true,
+  //   infinite: true,
+  //   slidesToShow: 5,
+  //   slidesToScroll: 1,
+  //   autoplay: true,
+  //   autoplaySpeed: 2000,
+  //   rtl: true
+  // };
+
   return (
     <div className="bg-light-200 px-14 flex flex-col gap-x-20">
       <div className="navbar_and_footer">
@@ -27,6 +40,9 @@ const Components = () => {
       <div className="btns">
         <SectionTitle title="Cards" />
 
+        <AuctionDialog />
+
+
         <div className="my-4">
           <AuctionCard
             productName="اكس بوكس سيريس اكس"
@@ -38,6 +54,17 @@ const Components = () => {
           />
         </div>
 
+
+        {/* <Slider {...settings}>
+          {
+            carouselCardData.map((item) => (
+              <div draggable="false">
+                <CarouselCard label={item.label} key={item.label} link={item.link} Icon={item.Icon} />
+              </div>
+            ))
+          }
+        </Slider> */}
+
         <div className="flex gap-x-4 py-2 overflow-x-auto">
 
           {
@@ -47,18 +74,6 @@ const Components = () => {
               </>
             ))
           }
-          <div className="flex gap-x-4 py-2 flex-row-reverse overflow-x-auto">
-            {carouselCardData.map((item) => (
-              <>
-                <CarouselCard
-                  label={item.label}
-                  key={item.label}
-                  link={item.link}
-                  Icon={item.Icon}
-                />
-              </>
-            ))}
-          </div>
         </div>
 
         <div className="btns">
