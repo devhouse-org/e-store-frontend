@@ -1,4 +1,6 @@
-import React from "react";
+import * as React from "react";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface CustomInputProps {
   label?: string; // Optional label for the input
@@ -26,26 +28,40 @@ const CustomInput: React.FC<CustomInputProps> = ({
   required = false,
 }) => {
   return (
-    <div className={`flex flex-col  ${className}`}>
+    <div className={`flex flex-col space-y-2 ${className}`}>
       {label && (
-        <label htmlFor={name} className="text-gray-700 font-tajawal-regular">
+        <label
+          htmlFor={name}
+          className="text-sm font-medium text-gray-700 dark:text-gray-100"
+        >
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      <input
-        id={name}
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className={`px-4 placeholder:text-right text-right py-2 border rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none font-tajawal-light  ${error ? "border-red-500" : "border-gray-300"
-          } ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
-        required={required}
-      />
-      {error && <span className="text-red-500 text-sm ">{error}</span>}
+      <div className="relative">
+        <Input
+          id={name}
+          name={name}
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          className={cn(
+            "text-base",
+            error ? "border-red-500 placeholder:text-right text-right focus:ring-red-500" : "border-input",
+            disabled ? "cursor-not-allowed opacity-50" : "",
+            "px-3 py-2 rounded-md focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+          )}
+          required={required}
+        />
+        {error && (
+          <span className="absolute text-sm text-red-500 bottom-0 left-0">
+            {error}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
+
 export default CustomInput;
