@@ -3,3 +3,23 @@
 @tailwind utilities;
 
 /* ... */
+
+@font-face {
+    font-family: "tajawal-light";
+    src: url("./assets/fonts/TajawalLight.ttf");
+}
+
+@font-face {
+    font-family: "tajawal-regular";
+    src: url("./assets/fonts/TajawalRegular.ttf");
+}
+
+@font-face {
+    font-family: "tajawal-medium";
+    src: url("./assets/fonts/TajawalMedium.ttf");
+}
+
+@font-face {
+    font-family: "tajawal-bold";
+    src: url("./assets/fonts/TajawalBold.ttf");
+}
