@@ -9,6 +9,7 @@ import { Button as Button1 } from "@/components/ui/button";
 import { Home } from "lucide-react";
 import AuctionCard from "@/components/AuctionCard";
 import ProductCard from "@/components/ProductCard";
+import Banner from "@/components/Banner";
 
 const handleSubscribe = () => {
   alert("Subscribed!");
@@ -27,7 +28,15 @@ const Components = () => {
 
       <div className="btns">
         <SectionTitle title="Cards" />
-
+        <div>
+          <Banner
+            title="بيكسل 9 برو"
+            subtitle="عرض ملحمي للذكاء الاصطناعي من كوكل."
+            price={520}
+            primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
+            className="my-8"
+          />
+        </div>
         <div className="my-4">
           <AuctionCard
             productName="اكس بوكس سيريس اكس"
@@ -39,9 +48,15 @@ const Components = () => {
           />
         </div>
 
-        <div>
+        <div className="flex gap-4 items-center">
           <ProductCard
             size="lg"
+            productName="ريلمي 9 آي - اسود"
+            productPrice={165000}
+            productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw" // Replace with the actual image URL
+          />
+          <ProductCard
+            size="sm"
             productName="ريلمي 9 آي - اسود"
             productPrice={165000}
             productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw" // Replace with the actual image URL
