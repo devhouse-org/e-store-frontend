@@ -54,11 +54,11 @@ export default {
         },
       },
       fontFamily: {
-        "tajawal-light": ["TajawalLight"],
-        "tajawal-regular": ["TajawalRegular"],
-        "tajawal-medium": ["TajawalMedium"],
-        "tajawal-bold": ["TajawalBold"]
-      }
+        "tajawal-light": ["tajawal-light", "sans-serif"],
+        "tajawal-regular": ["tajawal-regular", "sans-serif"],
+        "tajawal-medium": ["tajawal-medium", "sans-serif"],
+        "tajawal-bold": ["tajawal-bold", "sans-serif"],
+      },
     },
   },
   plugins: [],

@@ -3,23 +3,22 @@
 @tailwind utilities;
 
 /* ... */
-
 @font-face {
-    font-family: "tajawal-light";
-    src: url("./assets/fonts/TajawalLight.ttf");
+  font-family: "tajawal-light";
+  src: url("/src/assets/fonts/TajawalLight.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: "tajawal-regular";
-    src: url("./assets/fonts/TajawalRegular.ttf");
+  font-family: "tajawal-regular";
+  src: url("/src/assets/fonts/TajawalRegular.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: "tajawal-medium";
-    src: url("./assets/fonts/TajawalMedium.ttf");
+  font-family: "tajawal-medium";
+  src: url("/src/assets/fonts/TajawalMedium.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: "tajawal-bold";
-    src: url("./assets/fonts/TajawalBold.ttf");
+  font-family: "tajawal-bold";
+  src: url("/src/assets/fonts/TajawalBold.ttf") format("truetype");
 }
