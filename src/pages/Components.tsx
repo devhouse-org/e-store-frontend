@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import { Button as Button1 } from "@/components/ui/button";
 import { Home } from "lucide-react";
 import AuctionCard from "@/components/AuctionCard";
+import ProductCard from "@/components/ProductCard";
 
 const handleSubscribe = () => {
   alert("Subscribed!");
@@ -38,15 +39,26 @@ const Components = () => {
           />
         </div>
 
-        <div className="flex gap-x-4 py-2 overflow-x-auto">
+        <div>
+          <ProductCard
+            size="lg"
+            productName="ريلمي 9 آي - اسود"
+            productPrice={165000}
+            productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw" // Replace with the actual image URL
+          />
+        </div>
 
-          {
-            carouselCardData.map((item) => (
-              <>
-                <CarouselCard label={item.label} key={item.label} link={item.link} Icon={item.Icon} />
-              </>
-            ))
-          }
+        <div className="flex gap-x-4 py-2 overflow-x-auto">
+          {carouselCardData.map((item) => (
+            <>
+              <CarouselCard
+                label={item.label}
+                key={item.label}
+                link={item.link}
+                Icon={item.Icon}
+              />
+            </>
+          ))}
           <div className="flex gap-x-4 py-2 flex-row-reverse overflow-x-auto">
             {carouselCardData.map((item) => (
               <>
@@ -110,9 +122,7 @@ const Components = () => {
             required
           />
         </div>
-
       </div>
-
     </div>
   );
 };
