@@ -1,11 +1,42 @@
+import logo from "../assets/images/Logo.png"
+
 type Props = {
   hasAd?: boolean;
   adTitle?: string;
 };
 
+const links = [
+  {
+    id: 1,
+    label: "الرئيسية",
+    link: "#",
+  },
+
+  {
+    id: 2,
+    label: "المزاد",
+    link: "#",
+  },
+  {
+    id: 3,
+    label: "التدوينات",
+    link: "#",
+  },
+  {
+    id: 4,
+    label: "الماركات التجارية",
+    link: "#",
+  },
+  {
+    id: 5,
+    label: "تسوق",
+    link: "#",
+  },
+]
+
 const Navbar = (props: Props) => {
   return (
-    <div className="bg-green-100 rounded-lg overflow-hidden">
+    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
       {props.hasAd && (
         <div className="ad bg-orange-500 text-white font-bold flex justify-center items-center py-1">
           <h1>{props.adTitle}</h1>
@@ -14,18 +45,20 @@ const Navbar = (props: Props) => {
 
       <div
         dir="rtl"
-        className="navigation flex items-center py-2 px-2 justify-between"
+        className="navigation flex items-center p-4 justify-between"
       >
-        <ul className="flex gap-x-4 list-none flex-1">
-          <li className="px-1 hover:bg-gray-500/50 font-tajawal-bold">
-            الرئيسية
-          </li>
-          <li className="px-1 hover:bg-gray-500/50">Contact</li>
-          <li className="px-1 hover:bg-gray-500/50">alskdj</li>
-          <li className="px-1 hover:bg-gray-500/50">asdlifkj</li>
-          <li className="px-1 hover:bg-gray-500/50">asldkfj</li>
+        <ul className="flex flex-wrap gap-x-4 list-none flex-1">
+          {
+            links.map((link) => (
+              <li key={link.id} className="text-nowrap px-1 hover:bg-gray-500/50 font-tajawal-regular">
+                {link.label}
+              </li>
+            ))
+          }
         </ul>
-        <div className="logo flex-1 flex justify-center items-center">Logo</div>
+        <div className="logo flex-1 flex justify-center items-center">
+          <img src={logo} alt="e-store logo" />
+        </div>
         <div dir="ltr" className="icons flex-1">
           Icons
         </div>
