@@ -50,8 +50,8 @@ export default {
   				'500': '#0A2F4B',
   				'600': '#08273E',
   				'700': '#061F31',
-  				'800': '#041725',
-  				'900': '#020F18'
+  				'800': '#051C2D',
+  				'900': '#111723'
   			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

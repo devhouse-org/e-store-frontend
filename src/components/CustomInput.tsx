@@ -40,9 +40,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className={`px-4 py-2 border rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none font-tajawal-light  ${
-          error ? "border-red-500" : "border-gray-300"
-        } ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
+        className={`px-4 placeholder:text-right text-right py-2 border rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none font-tajawal-light  ${error ? "border-red-500" : "border-gray-300"
+          } ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
         required={required}
       />
       {error && <span className="text-red-500 text-sm ">{error}</span>}

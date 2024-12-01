@@ -1,5 +1,6 @@
-import { UserRound } from "lucide-react";
+import { CircleDashed, Heart, ShoppingBasket, ShoppingCart, UserRound } from "lucide-react";
 import logo from "../assets/images/Logo.png"
+import CustomInput from "./CustomInput";
 
 type Props = {
   hasAd?: boolean;
@@ -40,7 +41,7 @@ const Navbar = (props: Props) => {
     <div className="bg-white shadow-sm rounded-lg overflow-hidden">
       {props.hasAd && (
         <div className="ad bg-orange-500 text-white font-bold flex justify-center items-center py-1">
-          <h1>{props.adTitle}</h1>
+          <h1 className="font-tajawal-regular">{props.adTitle}</h1>
         </div>
       )}
 
@@ -61,7 +62,17 @@ const Navbar = (props: Props) => {
           <img src={logo} alt="e-store logo" />
         </div>
         <div dir="ltr" className="icons flex-1">
-          <UserRound />
+          <div className="flex items-center gap-x-4">
+            <UserRound className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            <div className="text-white gap-x-2 flex items-center justify-center px-4 py-1
+             bg-orange-500 hover:bg-orange-500/90 transition ease-in-out cursor-pointer rounded-full">
+              <ShoppingCart className="" />
+              <p>1</p>
+            </div>
+            <Heart className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            <CustomInput placeholder="ما الذي تبحث عنه" />
+          </div>
         </div>
       </div>
     </div>

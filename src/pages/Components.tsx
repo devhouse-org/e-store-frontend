@@ -6,12 +6,13 @@ import { carouselCardData } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
 import { Button as Button1 } from "@/components/ui/button";
+import { Home } from "lucide-react";
 const Components = () => {
   return (
     <div className="bg-light-200 px-14 flex flex-col gap-x-20">
       <div className="navbar_and_footer">
         <SectionTitle title="Navbar & Footer" />
-        <Navbar hasAd adTitle="50% off on the Mobile covers section" />
+        <Navbar hasAd adTitle="خصم 15% على قسم الاكسسوارات" />
 
         <div className="footer mt-10">
           <Footer />
@@ -21,7 +22,7 @@ const Components = () => {
       <div className="btns">
         <SectionTitle title="Buttons" />
 
-        <div className="flex gap-x-4 py-2 flex-row-reverse overflow-x-auto">
+        <div className="flex gap-x-4 py-2 overflow-x-auto">
 
           {
             carouselCardData.map((item) => (
@@ -50,7 +51,7 @@ const Components = () => {
           isLoading
           color="orange"
         />
-        <Button1>shadcn</Button1>
+        <Button1 label="shadcn" variation="outline" />
       </div>
 
       <div className="input flex  gap-4 mt-4">
