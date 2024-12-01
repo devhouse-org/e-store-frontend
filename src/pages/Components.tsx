@@ -1,9 +1,11 @@
 import CarouselCard from "@/components/CarouselCard";
 import Button from "@/components/CustomButton";
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 import { carouselCardData } from "@/utils/dummy_data/data";
 
+import CustomInput from "@/components/CustomInput";
+import Navbar from "@/components/Navbar";
+import { Button as Button1 } from "@/components/ui/button";
 const Components = () => {
   return (
     <div className="bg-light-200 px-14 flex flex-col gap-x-20">
@@ -47,6 +49,37 @@ const Components = () => {
           variation="fill"
           isLoading
           color="orange"
+        />
+        <Button1>shadcn</Button1>
+      </div>
+
+      <div className="input flex  gap-4 mt-4">
+        <CustomInput
+          label="الاسم"
+          type="text"
+          placeholder="ادخل الاسم"
+          value=""
+          onChange={(e) => console.log(e.target.value)}
+          name="name"
+          required
+        />
+        <CustomInput
+          label="البريد الالكتروني"
+          type="email"
+          placeholder="ادخل بريدك الالكتروني"
+          value=""
+          onChange={(e) => console.log(e.target.value)}
+          name="email"
+          required
+        />
+        <CustomInput
+          label="كلمة السر"
+          type="password"
+          placeholder="ادخل كلمة السر"
+          value=""
+          onChange={(e) => console.log(e.target.value)}
+          name="password"
+          required
         />
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { UserRound } from "lucide-react";
 import logo from "../assets/images/Logo.png"
 
 type Props = {
@@ -60,7 +61,7 @@ const Navbar = (props: Props) => {
           <img src={logo} alt="e-store logo" />
         </div>
         <div dir="ltr" className="icons flex-1">
-          Icons
+          <UserRound />
         </div>
       </div>
     </div>
