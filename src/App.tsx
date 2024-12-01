@@ -3,9 +3,9 @@ import Components from "./pages/Components";
 
 function App() {
   return (
-    <>
+    <div dir="rtl">
       <Components />
-    </>
+    </div>
   );
 }
 

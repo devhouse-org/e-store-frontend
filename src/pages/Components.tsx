@@ -1,4 +1,5 @@
 import Button from "@/components/CustomButton";
+import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
 
 const Components = () => {
@@ -25,6 +26,36 @@ const Components = () => {
           variation="fill"
           isLoading
           color="orange"
+        />
+      </div>
+
+      <div className="input flex  gap-4 mt-4">
+        <CustomInput
+          label="الاسم"
+          type="text"
+          placeholder="ادخل الاسم"
+          value=""
+          onChange={(e) => console.log(e.target.value)}
+          name="name"
+          required
+        />
+        <CustomInput
+          label="البريد الالكتروني"
+          type="email"
+          placeholder="ادخل بريدك الالكتروني"
+          value=""
+          onChange={(e) => console.log(e.target.value)}
+          name="email"
+          required
+        />
+        <CustomInput
+          label="كلمة السر"
+          type="password"
+          placeholder="ادخل كلمة السر"
+          value=""
+          onChange={(e) => console.log(e.target.value)}
+          name="password"
+          required
         />
       </div>
     </div>
