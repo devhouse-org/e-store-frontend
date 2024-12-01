@@ -6,6 +6,11 @@ import { carouselCardData } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
 import { Button as Button1 } from "@/components/ui/button";
+import AuctionCard from "@/components/AuctionCard";
+
+const handleSubscribe = () => {
+  alert("Subscribed!");
+};
 const Components = () => {
   return (
     <div className="bg-light-200 px-14 flex flex-col gap-x-20">
@@ -22,14 +27,16 @@ const Components = () => {
         <SectionTitle title="Buttons" />
 
         <div className="flex gap-x-4 py-2 flex-row-reverse overflow-x-auto">
-
-          {
-            carouselCardData.map((item) => (
-              <>
-                <CarouselCard label={item.label} key={item.label} link={item.link} Icon={item.Icon} />
-              </>
-            ))
-          }
+          {carouselCardData.map((item) => (
+            <>
+              <CarouselCard
+                label={item.label}
+                key={item.label}
+                link={item.link}
+                Icon={item.Icon}
+              />
+            </>
+          ))}
         </div>
       </div>
 
@@ -80,6 +87,17 @@ const Components = () => {
           onChange={(e) => console.log(e.target.value)}
           name="password"
           required
+        />
+      </div>
+
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <AuctionCard
+          productName="اكس بوكس سيريس اكس"
+          currentPrice={310000}
+          startingPrice={25000}
+          endTime="2024-12-15T12:00:00" // Set the actual auction end time here
+          imageSrc="https://ardes.bg/uploads/original/konzola-xbox-series-x-1tb-466538.jpg"
+          onSubscribe={handleSubscribe}
         />
       </div>
     </div>
