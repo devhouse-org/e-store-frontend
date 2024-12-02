@@ -15,6 +15,7 @@ import { AuctionDialog } from "@/components/AuctionDialog";
 import ProductsTable from "@/components/CustomTable";
 import { useState } from "react";
 import { IconType } from "react-icons";
+import ReviewCard from "@/components/ReviewCard";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -122,6 +123,14 @@ const Components = () => {
           endTime="2024-12-15T12:00:00"
         />
 
+        <div className="py-4 flex flex-col justify-start items-start gap-y-3">
+
+          <ReviewCard rating={3.5} name="علاء" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
+          <ReviewCard rating={2} name="ياسر" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
+          <ReviewCard rating={5} name="حسن" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
+          <ReviewCard rating={0} name="محمد" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
+        </div>
+
         <div className="my-4">
           <AuctionCard
             productName="اكس بوكس سيريس اكس"
@@ -132,6 +141,7 @@ const Components = () => {
             onSubscribe={handleSubscribe}
           />
         </div>
+
 
         <div className="flex gap-4 items-center">
           <ProductCard
