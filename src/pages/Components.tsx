@@ -14,15 +14,6 @@ import Slider from "react-slick";
 import { AuctionDialog } from "@/components/AuctionDialog";
 
 const Components = () => {
-  // const settings = {
-  //   dots: true,
-  //   infinite: true,
-  //   slidesToShow: 5,
-  //   slidesToScroll: 1,
-  //   autoplay: true,
-  //   autoplaySpeed: 2000,
-  //   rtl: true
-  // };
   const handleSubscribe = () => {
     alert("Subscribed!");
   };
@@ -78,29 +69,7 @@ const Components = () => {
           />
         </div>
 
-        <div className="flex gap-x-4 py-2 overflow-x-auto">
-          {carouselCardData.map((item) => (
-            <>
-              <CarouselCard
-                label={item.label}
-                key={item.label}
-                link={item.link}
-                Icon={item.Icon}
-              />
-            </>
-          ))}
-          <div className="flex gap-x-4 py-2 flex-row-reverse overflow-x-auto">
-            {carouselCardData.map((item) => (
-              <>
-                <CarouselCard
-                  label={item.label}
-                  key={item.label}
-                  link={item.link}
-                  Icon={item.Icon}
-                />
-              </>
-            ))}
-          </div>
+        <div className="">
 
           {/* <Slider {...settings}>
           {
