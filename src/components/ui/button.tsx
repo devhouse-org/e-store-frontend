@@ -11,6 +11,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        blue: "bg-blue-500 text-white hover:bg-blue-500/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -42,8 +43,8 @@ export interface ButtonProps
   action?: () => void;
   Icon?: IconType;
   variation?: "outline" | "fill" | "ghost";
+  variant?: string;
   isLoading?: boolean;
-  color?: "green" | "red" | "orange";
   disabled?: boolean;
 }
 
@@ -51,7 +52,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, label, size, asChild = false, Icon, action, isLoading, ...props }, ref) => {
 
     const Comp = asChild ? Slot : "button"
-    console.log(label)
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
