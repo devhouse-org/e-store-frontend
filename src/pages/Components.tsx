@@ -12,14 +12,90 @@ import ProductCard from "@/components/ProductCard";
 import Banner from "@/components/Banner";
 import Slider from "react-slick";
 import { AuctionDialog } from "@/components/AuctionDialog";
+import ProductsTable from "@/components/CustomTable";
+import { useState } from "react";
+import { IconType } from "react-icons";
 
 const Components = () => {
   const handleSubscribe = () => {
     alert("Subscribed!");
   };
 
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      name: "بلي ستيشن 5 اوربن 2",
+      description: "ابيض - 825 غ ب",
+      price: "500,000 د.ع",
+      quantity: 1,
+      image:
+        "https://www.albadeel.com.ly/wp-content/uploads/2023/12/sony-playstation-5-slim-console-disc-edition-2.png",
+    },
+    {
+      id: 2,
+      name: "امازون ايكو دوت جيل الرابع",
+      description: "ازرق",
+      price: "75,000 د.ع",
+      quantity: 2,
+      image:
+        "https://cdn.salla.sa/lvble/CWfzTsJm0akaqFuTOac8R7xgaRApnKD9HHr0GCmM.jpg",
+    },
+    {
+      id: 3,
+      name: "سماعات سوني ام 5",
+      description: "أسود",
+      price: "90,000 د.ع",
+      quantity: 1,
+      image:
+        "https://www.albadeel.com.ly/wp-content/uploads/2023/12/sony-playstation-5-slim-console-disc-edition-2.png",
+    },
+  ]);
+
+  // Helper functions as defined above
+  const priceToNumber = (price: string): number => {
+    return Number(price.replace(/[^\d.]/g, "").replace(/,/g, ""));
+  };
+
+  const formatPrice = (number: number): string => {
+    return `${number.toLocaleString()} د.ع`;
+  };
+
+  const calculateTotal = (products: Product[]): string => {
+    const totalAmount = products.reduce((sum, product) => {
+      const price = priceToNumber(product.price);
+      return sum + price * product.quantity;
+    }, 0);
+
+    return formatPrice(totalAmount);
+  };
+
+  const handleQuantityChange = (
+    productId: number | string,
+    newQuantity: number
+  ) => {
+    if (newQuantity <= 0) {
+      // Remove the product if quantity reaches zero
+      handleRemove(productId);
+    } else {
+      // Update quantity if it's greater than zero
+      setProducts(
+        products.map((product) =>
+          product.id === productId
+            ? { ...product, quantity: newQuantity }
+            : product
+        )
+      );
+    }
+  };
+
+  const handleRemove = (productId: number | string) => {
+    setProducts(products.filter((product) => product.id !== productId));
+  };
+
+  // Calculate total dynamically
+  const total = calculateTotal(products);
   return (
-    <div className="bg-light-200 px-14 flex flex-col gap-x-20">
+    <div className="bg-light-200 px-10 flex flex-col gap-x-20">
       <div className="navbar_and_footer">
         <SectionTitle title="Navbar & Footer" />
         <Navbar hasAd adTitle="خصم 15% على قسم الاكسسوارات" />
@@ -70,7 +146,6 @@ const Components = () => {
         </div>
 
         <div className="">
-
           {/* <Slider {...settings}>
           {
             carouselCardData.map((item) => (
@@ -88,7 +163,7 @@ const Components = () => {
                   label={item.label}
                   key={item.label}
                   link={item.link}
-                  Icon={item.Icon}
+                  Icon={item.Icon as IconType}
                 />
               </div>
             ))}
@@ -146,6 +221,15 @@ const Components = () => {
               onChange={(e) => console.log(e.target.value)}
               name="password"
               required
+            />
+          </div>
+          {/* Table */}
+          <div className="my-20">
+            <ProductsTable
+              products={products}
+              total={total}
+              onQuantityChange={handleQuantityChange}
+              onRemove={handleRemove}
             />
           </div>
         </div>
