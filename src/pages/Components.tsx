@@ -1,7 +1,7 @@
 import CarouselCard from "@/components/CarouselCard";
 import Button from "@/components/CustomButton";
 import Footer from "@/components/Footer";
-import { carouselCardData } from "@/utils/dummy_data/data";
+import { carouselCardData, prices } from "@/utils/dummy_data/data";
 
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
@@ -117,7 +117,10 @@ const Components = () => {
           />
         </div>
 
-        <AuctionDialog />
+        <AuctionDialog
+          prices={prices}
+          endTime="2024-12-15T12:00:00"
+        />
 
         <div className="my-4">
           <AuctionCard
