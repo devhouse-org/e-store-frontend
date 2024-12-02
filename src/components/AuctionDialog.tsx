@@ -27,6 +27,9 @@ export function AuctionDialog({ prices, endTime }: any) {
     const [remainingTime, setRemainingTime] =
         useState<timeType | null>(null);
 
+    const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
+    const [isAnimating, setIsAnimating] = useState(false);
+
     useEffect(() => {
         const updateTime = () => {
             const now = new Date().getTime();
@@ -63,6 +66,21 @@ export function AuctionDialog({ prices, endTime }: any) {
         return () => clearInterval(intervalId);
     }, [endTime]);
 
+    const handlePriceSelection = (priceValue: number) => {
+        setSelectedPrices((prev) => {
+            const newSelectedPrices = prev.includes(priceValue)
+                ? prev.filter((value) => value !== priceValue)
+                : [...prev, priceValue];
+
+            setIsAnimating(true);
+            setTimeout(() => setIsAnimating(false), 300);
+
+            return newSelectedPrices;
+        });
+    };
+
+    const totalPrice = selectedPrices.reduce((acc, value) => acc + value, 0);
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -92,7 +110,12 @@ export function AuctionDialog({ prices, endTime }: any) {
                     <div className="flex gap-2 flex-wrap">
                         {
                             prices.map((price: { id: number, label: string, value: number }) => (
-                                <div key={price.id} className="cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200">
+                                <div
+                                    onClick={() => handlePriceSelection(price.value)}
+                                    key={price.id}
+                                    className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${selectedPrices.includes(price.value) ? 'bg-orange-200 border-orange-400' : ''
+                                        }`}
+                                >
                                     <p className="text-[16px]">{price.label}</p>
                                 </div>
                             ))
@@ -104,8 +127,12 @@ export function AuctionDialog({ prices, endTime }: any) {
                         <Button label="إلغاء" />
                     </DialogClose>
 
-                    <div className="px-2 flex justify-between pt-1 items-center w-full bg-orange-500 hover:bg-orange-500/90 transition ease-in-out cursor-pointer rounded-md text-white">
-                        <p className="font-tajawal-regular">150,000 دع</p>
+                    <div
+                        className={`px-2 flex justify-between pt-1 items-center w-full bg-orange-500
+                            hover:bg-orange-500/90 transition ease-in-out cursor-pointer 
+                            rounded-md text-white ${isAnimating && 'bg-orange-300'}`}
+                    >
+                        <p className="font-tajawal-regular">{totalPrice.toLocaleString()} دع</p>
                         <p className="font-tajawal-regular">تأكيد</p>
                     </div>
                 </DialogFooter>
