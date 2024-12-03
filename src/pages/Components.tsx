@@ -2,15 +2,12 @@ import CarouselCard from "@/components/CarouselCard";
 import Button from "@/components/CustomButton";
 import Footer from "@/components/Footer";
 import { carouselCardData, prices } from "@/utils/dummy_data/data";
-
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
 import { Button as Button1 } from "@/components/ui/button";
-import { Home } from "lucide-react";
 import AuctionCard from "@/components/AuctionCard";
 import ProductCard from "@/components/ProductCard";
 import Banner from "@/components/Banner";
-import Slider from "react-slick";
 import { AuctionDialog } from "@/components/AuctionDialog";
 import ProductsTable from "@/components/CustomTable";
 import { useState } from "react";
@@ -44,8 +41,6 @@ const Components = () => {
 
   const total = calculateTotal();
 
-  // Calculate total dynamically
-  // const total = calculateTotal(products);
   return (
     <div className="bg-light-200 px-10 flex flex-col gap-x-20">
       <div className="navbar_and_footer">
@@ -125,16 +120,6 @@ const Components = () => {
         </div>
 
         <div className="">
-          {/* <Slider {...settings}>
-          {
-            carouselCardData.map((item) => (
-              <div draggable="false">
-                <CarouselCard label={item.label} key={item.label} link={item.link} Icon={item.Icon} />
-              </div>
-            ))
-          }
-        </Slider> */}
-
           <div className="flex gap-x-4 py-2 overflow-x-auto">
             {carouselCardData.map((item) => (
               <div>
