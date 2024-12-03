@@ -16,6 +16,7 @@ import ReviewCard from "@/components/ReviewCard";
 import useProductStore from "@/stores/productStore";
 import CartReviewCard from "@/components/CartReviewCard";
 import SpecialProducts from "@/components/SpecialProducts";
+import AuctionSection from "@/components/AuctionSection";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -203,10 +204,12 @@ const Components = () => {
             <ProductsTable
               // products={useProductStore}
               total={total}
-            // onQuantityChange={handleQuantityChange}
-            // onRemove={handleRemove}
+              // onQuantityChange={handleQuantityChange}
+              // onRemove={handleRemove}
             />
           </div>
+          {/* Auction Section */}
+          <AuctionSection />
         </div>
       </div>
     </div>
