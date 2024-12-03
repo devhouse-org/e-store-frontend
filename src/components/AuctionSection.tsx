@@ -15,9 +15,9 @@ const AuctionSection = (props: Props) => {
         </h1>
       </div>
       {/* main div */}
-      <div className="my-4 flex justify-between">
+      <div className="my-4 flex flex-col-reverse lg:flex-row justify-between ">
         {/* Right Section */}
-        <div className="flex-[.5] flex flex-col ">
+        <div className="flex-[.5] flex flex-col mt-6 lg:mt-0">
           <h1 className="font-tajawal-bold text-3xl mb-6 mt-4">ساعة بكسل 3</h1>
           <h3 className="font-tajawal-medium mb-2">
             ساعة عالية الجودة تم تطويره بواسطة Google
