@@ -50,3 +50,27 @@ export const prices = [
         value: 100000
     },
 ]
+
+export const cart = [
+    {
+        id: 1,
+        title: "بلي ستيشن 5 اوربي ريجن 2",
+        price: "500,000 د.ع",
+        quantity: 1,
+        image: "https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-edition-left-mobile-image-block-01-en-24jun24?$1600px--t$"
+    },
+    {
+        id: 2,
+        title: "امازون ايكو دوت جيل الرابع",
+        price: "75,000 د.ع",
+        quantity: 2,
+        image: "https://imgs.search.brave.com/DrWVLiwpG3-si2kMlVEFKQkYJU3xo2ao1b4iy2gzV5Y/rs:fit:360:283:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NjFtdTNVeWtHUUwu/anBn"
+    },
+    {
+        id: 2,
+        title: "سماعات سوني ام 5",
+        price: "300,000 د.ع",
+        quantity: 1,
+        image: "https://imgs.search.brave.com/Lf6H3PQeV7pgKNyV1e-JJwaXmH8LNzp4qooD5CwV3Fs/rs:fit:360:283:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NTFhWHZqemN1a0wu/anBn"
+    },
+]

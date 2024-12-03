@@ -1,7 +1,7 @@
 import CarouselCard from "@/components/CarouselCard";
 import Button from "@/components/CustomButton";
 import Footer from "@/components/Footer";
-import { carouselCardData, prices } from "@/utils/dummy_data/data";
+import { carouselCardData, cart, prices } from "@/utils/dummy_data/data";
 
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
@@ -16,6 +16,7 @@ import ProductsTable from "@/components/CustomTable";
 import { useState } from "react";
 import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
+import CartReviewCard from "@/components/CartReviewCard";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -122,6 +123,10 @@ const Components = () => {
           prices={prices}
           endTime="2024-12-15T12:00:00"
         />
+
+        <div className="flex py-8">
+          <CartReviewCard cart={cart} />
+        </div>
 
         <div className="py-4 flex flex-col justify-start items-start gap-y-3">
 
