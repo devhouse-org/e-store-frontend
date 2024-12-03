@@ -15,6 +15,7 @@ import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
 import useProductStore from "@/stores/productStore";
 import CartReviewCard from "@/components/CartReviewCard";
+import SpecialProducts from "@/components/SpecialProducts";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -51,6 +52,11 @@ const Components = () => {
         <div className="footer mt-10">
           <Footer />
         </div>
+      </div>
+
+      <div className="special-products">
+        <SectionTitle title="Special Products" />
+        <SpecialProducts />
       </div>
 
       <div className="btns">
