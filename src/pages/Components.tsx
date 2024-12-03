@@ -16,43 +16,15 @@ import ProductsTable from "@/components/CustomTable";
 import { useState } from "react";
 import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
+import useProductStore from "@/stores/productStore";
 
 const Components = () => {
   const handleSubscribe = () => {
     alert("Subscribed!");
   };
 
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "بلي ستيشن 5 اوربن 2",
-      description: "ابيض - 825 غ ب",
-      price: "500,000 د.ع",
-      quantity: 1,
-      image:
-        "https://www.albadeel.com.ly/wp-content/uploads/2023/12/sony-playstation-5-slim-console-disc-edition-2.png",
-    },
-    {
-      id: 2,
-      name: "امازون ايكو دوت جيل الرابع",
-      description: "ازرق",
-      price: "75,000 د.ع",
-      quantity: 2,
-      image:
-        "https://cdn.salla.sa/lvble/CWfzTsJm0akaqFuTOac8R7xgaRApnKD9HHr0GCmM.jpg",
-    },
-    {
-      id: 3,
-      name: "سماعات سوني ام 5",
-      description: "أسود",
-      price: "90,000 د.ع",
-      quantity: 1,
-      image:
-        "https://www.albadeel.com.ly/wp-content/uploads/2023/12/sony-playstation-5-slim-console-disc-edition-2.png",
-    },
-  ]);
+  const { products } = useProductStore();
 
-  // Helper functions as defined above
   const priceToNumber = (price: string): number => {
     return Number(price.replace(/[^\d.]/g, "").replace(/,/g, ""));
   };
@@ -61,7 +33,7 @@ const Components = () => {
     return `${number.toLocaleString()} د.ع`;
   };
 
-  const calculateTotal = (products: Product[]): string => {
+  const calculateTotal = (): string => {
     const totalAmount = products.reduce((sum, product) => {
       const price = priceToNumber(product.price);
       return sum + price * product.quantity;
@@ -70,31 +42,10 @@ const Components = () => {
     return formatPrice(totalAmount);
   };
 
-  const handleQuantityChange = (
-    productId: number | string,
-    newQuantity: number
-  ) => {
-    if (newQuantity <= 0) {
-      // Remove the product if quantity reaches zero
-      handleRemove(productId);
-    } else {
-      // Update quantity if it's greater than zero
-      setProducts(
-        products.map((product) =>
-          product.id === productId
-            ? { ...product, quantity: newQuantity }
-            : product
-        )
-      );
-    }
-  };
-
-  const handleRemove = (productId: number | string) => {
-    setProducts(products.filter((product) => product.id !== productId));
-  };
+  const total = calculateTotal();
 
   // Calculate total dynamically
-  const total = calculateTotal(products);
+  // const total = calculateTotal(products);
   return (
     <div className="bg-light-200 px-10 flex flex-col gap-x-20">
       <div className="navbar_and_footer">
@@ -118,17 +69,33 @@ const Components = () => {
           />
         </div>
 
-        <AuctionDialog
-          prices={prices}
-          endTime="2024-12-15T12:00:00"
-        />
+        <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" />
 
         <div className="py-4 flex flex-col justify-start items-start gap-y-3">
-
-          <ReviewCard rating={3.5} name="علاء" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
-          <ReviewCard rating={2} name="ياسر" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
-          <ReviewCard rating={5} name="حسن" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
-          <ReviewCard rating={0} name="محمد" date="2024-10-12" comment="يدعم الهاتف معظم المستشعرات" />
+          <ReviewCard
+            rating={3.5}
+            name="علاء"
+            date="2024-10-12"
+            comment="يدعم الهاتف معظم المستشعرات"
+          />
+          <ReviewCard
+            rating={2}
+            name="ياسر"
+            date="2024-10-12"
+            comment="يدعم الهاتف معظم المستشعرات"
+          />
+          <ReviewCard
+            rating={5}
+            name="حسن"
+            date="2024-10-12"
+            comment="يدعم الهاتف معظم المستشعرات"
+          />
+          <ReviewCard
+            rating={0}
+            name="محمد"
+            date="2024-10-12"
+            comment="يدعم الهاتف معظم المستشعرات"
+          />
         </div>
 
         <div className="my-4">
@@ -141,7 +108,6 @@ const Components = () => {
             onSubscribe={handleSubscribe}
           />
         </div>
-
 
         <div className="flex gap-4 items-center">
           <ProductCard
@@ -239,10 +205,10 @@ const Components = () => {
           {/* Table */}
           <div className="my-20">
             <ProductsTable
-              products={products}
+              // products={useProductStore}
               total={total}
-              onQuantityChange={handleQuantityChange}
-              onRemove={handleRemove}
+              // onQuantityChange={handleQuantityChange}
+              // onRemove={handleRemove}
             />
           </div>
         </div>

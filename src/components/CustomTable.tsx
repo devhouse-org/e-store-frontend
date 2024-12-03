@@ -1,6 +1,4 @@
-// ProductsTable.tsx
-
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -14,40 +12,28 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { IconType } from "react-icons";
 import { RxTriangleLeft, RxTriangleRight } from "react-icons/rx";
-interface Product {
-  id: number | string;
-  name: string;
-  description: string;
-  price: string;
-  quantity: number;
-  image: string;
-}
+import useProductStore from "@/stores/productStore"; // Import Zustand store
 
-interface ProductsTableProps {
-  products: Product[];
-  total: string;
-  onQuantityChange: (productId: number | string, newQuantity: number) => void;
-  onRemove: (productId: number | string) => void;
-  className?: string;
-}
+// interface Product {
+//   id: number | string;
+//   name: string;
+//   description: string;
+//   price: string;
+//   quantity: number;
+//   image: string;
+// }
 
-const ProductsTable: React.FC<ProductsTableProps> = ({
-  products,
-  total,
-  onQuantityChange,
-  onRemove,
-  className = "",
-}) => {
-  const handleQuantityChange = (productId: number | string, change: number) => {
-    const product = products.find((p) => p.id === productId);
-    if (product) {
-      const newQuantity = Math.max(0, product.quantity + change);
-      onQuantityChange(productId, newQuantity);
-    }
-  };
+// interface ProductsTableProps {
+//   products: Product[];
+//   total: string;
+//   className?: string;
+// }
+
+const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
+  const { products, updateQuantity, removeProduct } = useProductStore();
 
   return (
-    <div className={className}>
+    <div className="">
       {/* Desktop Table */}
       <div className="hidden md:block">
         <Table dir="rtl">
@@ -83,18 +69,17 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                     <Button
                       variant="arrows"
                       size="sm"
-                      className="text-green-600 "
+                      className="text-green-600"
                       Icon={RxTriangleRight as IconType}
-                      onClick={() => handleQuantityChange(product.id, 1)}
+                      onClick={() => updateQuantity(product.id, 1)}
                     />
-
                     <span className="">{product.quantity}</span>
                     <Button
                       variant="arrows"
                       size="sm"
-                      className="text-red-600 "
+                      className="text-red-600"
                       Icon={RxTriangleLeft as IconType}
-                      onClick={() => handleQuantityChange(product.id, -1)}
+                      onClick={() => updateQuantity(product.id, -1)}
                     />
                   </div>
                 </TableCell>
@@ -104,7 +89,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                     size="sm"
                     className="bg-orange-50 hover:bg-orange-200 rounded-full p-2.5 border-orange-600 border text-orange-600"
                     Icon={Trash2 as IconType}
-                    onClick={() => onRemove(product.id)}
+                    onClick={() => removeProduct(product.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -133,18 +118,17 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                       <Button
                         variant="arrows"
                         size="sm"
-                        className="text-green-600 "
+                        className="text-green-600"
                         Icon={RxTriangleRight as IconType}
-                        onClick={() => handleQuantityChange(product.id, 1)}
+                        onClick={() => updateQuantity(product.id, 1)}
                       />
-
                       <span className="">{product.quantity}</span>
                       <Button
                         variant="arrows"
                         size="sm"
-                        className="text-red-600 "
+                        className="text-red-600"
                         Icon={RxTriangleLeft as IconType}
-                        onClick={() => handleQuantityChange(product.id, -1)}
+                        onClick={() => updateQuantity(product.id, -1)}
                       />
                     </div>
                     <Button
@@ -152,7 +136,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                       size="sm"
                       className="bg-orange-50 hover:bg-orange-200 rounded-full p-2.5 border-orange-600 border text-orange-600"
                       Icon={Trash2 as IconType}
-                      onClick={() => onRemove(product.id)}
+                      onClick={() => removeProduct(product.id)}
                     />
                   </div>
                 </div>
