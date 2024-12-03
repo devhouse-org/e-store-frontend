@@ -1,7 +1,7 @@
 import CarouselCard from "@/components/CarouselCard";
 import Button from "@/components/CustomButton";
 import Footer from "@/components/Footer";
-import { carouselCardData, prices } from "@/utils/dummy_data/data";
+import { carouselCardData, prices, cart } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
 import { Button as Button1 } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { useState } from "react";
 import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
 import useProductStore from "@/stores/productStore";
+import CartReviewCard from "@/components/CartReviewCard";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -65,6 +66,10 @@ const Components = () => {
         </div>
 
         <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" />
+
+        <div className="flex py-8">
+          <CartReviewCard cart={cart} />
+        </div>
 
         <div className="py-4 flex flex-col justify-start items-start gap-y-3">
           <ReviewCard
@@ -192,8 +197,8 @@ const Components = () => {
             <ProductsTable
               // products={useProductStore}
               total={total}
-              // onQuantityChange={handleQuantityChange}
-              // onRemove={handleRemove}
+            // onQuantityChange={handleQuantityChange}
+            // onRemove={handleRemove}
             />
           </div>
         </div>
