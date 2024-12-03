@@ -14,6 +14,7 @@ import { useState } from "react";
 import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
 import useProductStore from "@/stores/productStore";
+import LogoScroll from "@/components/LogoScroll";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -132,7 +133,10 @@ const Components = () => {
               </div>
             ))}
           </div>
-
+          <div className="btns">
+            <SectionTitle title="LogoScroll " />
+            <LogoScroll />
+          </div>
           <div className="btns">
             <SectionTitle title="Buttons" />
             <Button
