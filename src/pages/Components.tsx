@@ -14,7 +14,8 @@ import { useState } from "react";
 import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
 import useProductStore from "@/stores/productStore";
-import LogoScroll from "@/components/LogoScroll";
+import LogoScroll from "@/components/MyMarquee";
+import MyMarquee from "@/components/MyMarquee";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -135,7 +136,7 @@ const Components = () => {
           </div>
           <div className="btns">
             <SectionTitle title="LogoScroll " />
-            <LogoScroll />
+            <MyMarquee />
           </div>
           <div className="btns">
             <SectionTitle title="Buttons" />
