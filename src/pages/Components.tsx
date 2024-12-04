@@ -24,8 +24,13 @@ import SpecialProducts from "@/components/SpecialProducts";
 import AuctionSection from "@/components/AuctionSection";
 import Filter from "@/components/Filter";
 import LocationCard from "@/components/LocationCard";
+import Stepper from "@/components/Stepper";
+
+const tabs = ["سلة التسوق", "الشحن والتسليم", "الدفع"]
 
 const Components = () => {
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+
   const handleSubscribe = () => {
     alert("Subscribed!");
   };
@@ -65,6 +70,13 @@ const Components = () => {
       <div className="special-products">
         <SectionTitle title="Special Products" />
         <SpecialProducts />
+      </div>
+
+      <div className="cards">
+        <SectionTitle title="Stepper" />
+        <div>
+          <Stepper tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
       </div>
 
       <div className="cards">
@@ -226,8 +238,8 @@ const Components = () => {
             <ProductsTable
               // products={useProductStore}
               total={total}
-              // onQuantityChange={handleQuantityChange}
-              // onRemove={handleRemove}
+            // onQuantityChange={handleQuantityChange}
+            // onRemove={handleRemove}
             />
           </div>
           {/* Auction Section */}
