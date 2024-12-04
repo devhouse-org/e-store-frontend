@@ -32,7 +32,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
       {label && (
         <label
           htmlFor={name}
-          className="text-sm font-medium text-gray-700 dark:text-gray-100"
+          className="text-sm font-tajawal-medium text-gray-700 dark:text-gray-100"
         >
           {label} {required && <span className="text-red-500">*</span>}
         </label>

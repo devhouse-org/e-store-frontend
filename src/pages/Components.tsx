@@ -1,7 +1,12 @@
 import CarouselCard from "@/components/CarouselCard";
 import Button from "@/components/CustomButton";
 import Footer from "@/components/Footer";
-import { carouselCardData, prices, cart } from "@/utils/dummy_data/data";
+import {
+  carouselCardData,
+  prices,
+  cart,
+  locations,
+} from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
 import { Button as Button1 } from "@/components/ui/button";
@@ -18,6 +23,7 @@ import CartReviewCard from "@/components/CartReviewCard";
 import SpecialProducts from "@/components/SpecialProducts";
 import AuctionSection from "@/components/AuctionSection";
 import Filter from "@/components/Filter";
+import LocationCard from "@/components/LocationCard";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -61,8 +67,23 @@ const Components = () => {
         <SpecialProducts />
       </div>
 
-      <div className="btns">
+      <div className="cards">
         <SectionTitle title="Cards" />
+
+        <div className="flex gap-x-4">
+          {locations.map((location) => (
+            <LocationCard
+              key={location.id}
+              location={location.location}
+              phoneNumber={location.phoneNumber}
+              phoneNumber2={location.phoneNumber2}
+              province={location.province}
+              city={location.city}
+              country={location.country}
+            />
+          ))}
+        </div>
+
         <div>
           <Banner
             title="بيكسل 9 برو"
