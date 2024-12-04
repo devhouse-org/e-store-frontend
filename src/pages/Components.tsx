@@ -8,7 +8,7 @@ import {
 } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
-import { Button, Button as Button1 } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import AuctionCard from "@/components/AuctionCard";
 import ProductCard from "@/components/ProductCard";
 import Banner from "@/components/Banner";
@@ -171,17 +171,16 @@ const Components = () => {
             <Button
               label="Submit"
               action={() => alert("Button clicked!")}
-              variation="fill"
-              color="orange"
+              variant={"default"}
             />
             <Button
               label="Delete"
-              variation="outline"
+              variant={"default"}
               color="orange"
               disabled
             />
-            <Button label="Ghost" variation="ghost" color="orange" />
-            <Button1 label="shadcn" variation="outline" />
+            <Button label="Ghost" variant={"ghost"} color="orange" />
+            <Button label="Outline" variant={"outline"} />
           </div>
 
           <div className="input flex gap-4 mt-4">
