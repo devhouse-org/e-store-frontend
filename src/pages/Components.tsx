@@ -17,6 +17,7 @@ import useProductStore from "@/stores/productStore";
 import CartReviewCard from "@/components/CartReviewCard";
 import SpecialProducts from "@/components/SpecialProducts";
 import AuctionSection from "@/components/AuctionSection";
+import Filter from "@/components/Filter";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -209,7 +210,13 @@ const Components = () => {
             />
           </div>
           {/* Auction Section */}
-          <AuctionSection />
+          <div>
+            <AuctionSection />
+          </div>
+          {/* Filter */}
+          <div>
+            <Filter />
+          </div>
         </div>
       </div>
     </div>
