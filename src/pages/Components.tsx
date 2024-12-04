@@ -5,6 +5,7 @@ import {
   prices,
   cart,
   locations,
+  auctionSectionData,
 } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
