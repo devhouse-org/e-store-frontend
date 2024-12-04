@@ -23,6 +23,7 @@ import SpecialProducts from "@/components/SpecialProducts";
 import AuctionSection from "@/components/AuctionSection";
 import Filter from "@/components/Filter";
 import LocationCard from "@/components/LocationCard";
+import { CollapsibleDemo } from "@/components/CollapsibleDemo";
 
 const Components = () => {
   const handleSubscribe = () => {
@@ -228,6 +229,9 @@ const Components = () => {
           {/* Filter */}
           <div className="my-5">
             <Filter />
+          </div>
+          <div>
+            <CollapsibleDemo />
           </div>
         </div>
       </div>
