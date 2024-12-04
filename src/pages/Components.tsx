@@ -5,7 +5,6 @@ import {
   prices,
   cart,
   locations,
-  auctionSectionData,
 } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
@@ -24,7 +23,6 @@ import SpecialProducts from "@/components/SpecialProducts";
 import AuctionSection from "@/components/AuctionSection";
 import Filter from "@/components/Filter";
 import LocationCard from "@/components/LocationCard";
-import { CollapsibleDemo } from "@/components/CollapsibleDemo";
 import Stepper from "@/components/Stepper";
 
 const tabs = ["سلة التسوق", "الشحن والتسليم", "الدفع"];
@@ -232,12 +230,7 @@ const Components = () => {
           </div>
           {/* Table */}
           <div className="my-20">
-            <ProductsTable
-              // products={useProductStore}
-              total={total}
-              // onQuantityChange={handleQuantityChange}
-              // onRemove={handleRemove}
-            />
+            <ProductsTable total={total} />
           </div>
           {/* Auction Section */}
           <div>
@@ -246,9 +239,6 @@ const Components = () => {
           {/* Filter */}
           <div className="my-5">
             <Filter />
-          </div>
-          <div>
-            <CollapsibleDemo />
           </div>
         </div>
       </div>

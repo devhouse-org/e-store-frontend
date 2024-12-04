@@ -1,4 +1,3 @@
-import React from "react";
 import LocationDialog from "./LocationDialog";
 
 type Props = {
@@ -55,7 +54,6 @@ const LocationCard = ({
             city={city}
             country={country}
           />
-          {/* <Button label='تعديل' variation='fill' /> */}
         </div>
       </div>
     </div>

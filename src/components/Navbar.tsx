@@ -1,5 +1,5 @@
-import { CircleDashed, Heart, ShoppingBasket, ShoppingCart, UserRound } from "lucide-react";
-import logo from "../assets/images/Logo.png"
+import { CircleDashed, Heart, ShoppingCart, UserRound } from "lucide-react";
+import logo from "../assets/images/Logo.png";
 import CustomInput from "./CustomInput";
 
 type Props = {
@@ -34,7 +34,7 @@ const links = [
     label: "تسوق",
     link: "#",
   },
-]
+];
 
 const Navbar = (props: Props) => {
   return (
@@ -50,13 +50,14 @@ const Navbar = (props: Props) => {
         className="navigation flex items-center p-4 justify-between"
       >
         <ul className="flex flex-wrap gap-x-4 list-none flex-1">
-          {
-            links.map((link) => (
-              <li key={link.id} className="text-nowrap px-1 hover:bg-gray-500/50 font-tajawal-regular">
-                {link.label}
-              </li>
-            ))
-          }
+          {links.map((link) => (
+            <li
+              key={link.id}
+              className="text-nowrap px-1 hover:bg-gray-500/50 font-tajawal-regular"
+            >
+              {link.label}
+            </li>
+          ))}
         </ul>
         <div className="logo flex-1 flex justify-center items-center">
           <img src={logo} alt="e-store logo" />
@@ -64,8 +65,10 @@ const Navbar = (props: Props) => {
         <div dir="ltr" className="icons flex-1">
           <div className="flex items-center gap-x-4">
             <UserRound className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
-            <div className="text-white gap-x-2 flex items-center justify-center px-4 py-1
-             bg-orange-500 hover:bg-orange-500/90 transition ease-in-out cursor-pointer rounded-full">
+            <div
+              className="text-white gap-x-2 flex items-center justify-center px-4 py-1
+             bg-orange-500 hover:bg-orange-500/90 transition ease-in-out cursor-pointer rounded-full"
+            >
               <ShoppingCart className="" />
               <p>1</p>
             </div>

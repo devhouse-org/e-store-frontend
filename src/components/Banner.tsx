@@ -14,7 +14,6 @@ const Banner: React.FC<BannerProps> = ({
   subtitle,
   price,
   primaryImage = "/api/placeholder/300/600",
-  // secondaryImage = "/api/placeholder/300/600",
   className = "",
 }) => {
   return (
@@ -53,17 +52,3 @@ const Banner: React.FC<BannerProps> = ({
 };
 
 export default Banner;
-
-// // Example usage:
-// const ExampleUsage = () => {
-//   return (
-//     <Banner
-//       title="Pixel 9 Pro"
-//       subtitle="An epic display of Google AI."
-//       price={520}
-//       // primaryImage="/path/to/primary-image.png"
-//       // secondaryImage="/path/to/secondary-image.png"
-//       className="my-8"
-//     />
-//   );
-// };

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { AuctionDialog } from "./AuctionDialog";
 import { prices } from "@/utils/dummy_data/data";
 
 interface AuctionCardProps {
-  productName: string; // Product name
-  currentPrice: number; // Current price
-  startingPrice: number; // Starting price
-  endTime: string; // End time in ISO format (e.g., "2024-12-31T23:59:59")
-  imageSrc: string; // Product image URL
-  onSubscribe: () => void; // Function to handle the "Subscribe Now" button
+  productName: string;
+  currentPrice: number;
+  startingPrice: number;
+  endTime: string;
+  imageSrc: string;
+  onSubscribe: () => void;
 }
 
 const AuctionCard: React.FC<AuctionCardProps> = ({
@@ -107,15 +106,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
 
         <div className="flex flex-col sm:flex-row justify-between items-center sm:mt-4 sm:gap-12">
           {/* Subscribe Button */}
-          {/* <Button label="اشترك الان" variation="outline" /> */}
           <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" />
-          {/* <Button
-            onClick={onSubscribe}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none w-full sm:w-auto font-tajawal-regular"
-          >
-            اشترك الان
-          </Button> */}
-
           {/* Timer */}
           <div className="flex items-center justify-center w-full sm:w-auto border border-orange-500 rounded-md p-2 text-orange-500 font-medium mt-4 sm:mt-0">
             <span className="ml-2 text-gray-700 font-tajawal-regular">

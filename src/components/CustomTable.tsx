@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -9,25 +9,10 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Minus, Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { IconType } from "react-icons";
 import { RxTriangleLeft, RxTriangleRight } from "react-icons/rx";
-import useProductStore from "@/stores/productStore"; // Import Zustand store
-
-// interface Product {
-//   id: number | string;
-//   name: string;
-//   description: string;
-//   price: string;
-//   quantity: number;
-//   image: string;
-// }
-
-// interface ProductsTableProps {
-//   products: Product[];
-//   total: string;
-//   className?: string;
-// }
+import useProductStore from "@/stores/productStore";
 
 const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
   const { products, updateQuantity, removeProduct } = useProductStore();
