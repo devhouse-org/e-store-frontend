@@ -39,9 +39,9 @@ const AuctionSection = (props: Props) => {
           </div>
           {/* section two */}
           <div className="mt-12">
-            <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" />
+            <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" title={activeAuctionSectionItem.title} currentPrice={activeAuctionSectionItem.currentPrice} image={activeAuctionSectionItem.image} />
             <div className="mt-6">
-              <Label>مزادات أخرى</Label>
+              <h3 className="font-tajawal-regular">مزادات أخرى</h3>
               <div className="flex flex-wrap gap-4">
                 {auctionSectionData.map((product) => (
                   <div onClick={() => setActiveAuctionSectionItem(product)}>
