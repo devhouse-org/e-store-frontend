@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown } from "lucide-react";
+import { IconType } from "react-icons";
 
 const Filter = () => {
   const [priceRange, setPriceRange] = useState([110]);
@@ -78,11 +79,10 @@ const Filter = () => {
           <Button
             variant="ghost"
             size="sm"
+            label="حذف الفلتر"
             className="text-orange-500 hover:text-orange-600 border-2 border-orange-500"
             onClick={clearAllFilters}
-          >
-            حذف الفلتر
-          </Button>
+          />
         </div>
       </CardHeader>
 
@@ -121,10 +121,10 @@ const Filter = () => {
           <Button
             variant="ghost"
             size="sm"
+            label="عرض المزيد"
+            Icon={ChevronDown as IconType}
             className="text-orange-500 mt-2 hover:text-orange-600 font-tajawal-regular"
-          >
-            عرض المزيد <ChevronDown className="mr-1 h-4 w-4" />
-          </Button>
+          />
         </div>
 
         <Separator className="bg-gray-200" />
@@ -163,10 +163,10 @@ const Filter = () => {
           <Button
             variant="ghost"
             size="sm"
+            label="عرض المزيد"
+            Icon={ChevronDown as IconType}
             className="text-orange-500 mt-2 hover:text-orange-600 font-tajawal-regular"
-          >
-            عرض المزيد <ChevronDown className="mr-1 h-4 w-4" />
-          </Button>
+          />
         </div>
 
         <Separator className="bg-gray-200" />

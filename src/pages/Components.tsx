@@ -1,5 +1,4 @@
 import CarouselCard from "@/components/CarouselCard";
-import Button from "@/components/CustomButton";
 import Footer from "@/components/Footer";
 import {
   carouselCardData,
@@ -9,7 +8,7 @@ import {
 } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
-import { Button as Button1 } from "@/components/ui/button";
+import { Button, Button as Button1 } from "@/components/ui/button";
 import AuctionCard from "@/components/AuctionCard";
 import ProductCard from "@/components/ProductCard";
 import Banner from "@/components/Banner";
@@ -167,7 +166,7 @@ const Components = () => {
             ))}
           </div>
 
-          <div className="btns">
+          <div className="btns flex flex-col w-fit gap-2">
             <SectionTitle title="Buttons" />
             <Button
               label="Submit"
@@ -182,17 +181,10 @@ const Components = () => {
               disabled
             />
             <Button label="Ghost" variation="ghost" color="orange" />
-            <Button
-              label="Submit"
-              action={() => alert("Button clicked!")}
-              variation="fill"
-              isLoading
-              color="orange"
-            />
             <Button1 label="shadcn" variation="outline" />
           </div>
 
-          <div className="input flex  gap-4 mt-4">
+          <div className="input flex gap-4 mt-4">
             <CustomInput
               label="الاسم"
               type="text"
