@@ -214,7 +214,7 @@ const Components = () => {
             <AuctionSection />
           </div>
           {/* Filter */}
-          <div>
+          <div className="my-5">
             <Filter />
           </div>
         </div>

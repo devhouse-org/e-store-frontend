@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { ChevronDown } from "lucide-react";
 
 const Filter = () => {
-  const [priceRange, setPriceRange] = useState([0]);
+  const [priceRange, setPriceRange] = useState([110]);
   const [selectedProducts, setSelectedProducts] = useState({
     phones: true,
     smartwatches: true,
@@ -49,7 +49,7 @@ const Filter = () => {
   };
 
   const clearAllFilters = () => {
-    setPriceRange([110]);
+    setPriceRange([0]);
     setSelectedProducts({
       phones: false,
       smartwatches: false,
@@ -73,12 +73,12 @@ const Filter = () => {
   return (
     <Card className="w-64" dir="rtl">
       <CardHeader className="pb-3">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center font-tajawal-medium">
           <CardTitle className="text-lg font-medium">فلتر</CardTitle>
           <Button
             variant="ghost"
             size="sm"
-            className="text-orange-500 hover:text-orange-600"
+            className="text-orange-500 hover:text-orange-600 border-2 border-orange-500"
             onClick={clearAllFilters}
           >
             حذف الفلتر
@@ -89,7 +89,7 @@ const Filter = () => {
       <CardContent className="space-y-6">
         {/* Products Section */}
         <div>
-          <div className="bg-orange-500 text-white p-2 rounded-md mb-3">
+          <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold">
             المنتجات
           </div>
           <div className="space-y-3">
@@ -111,7 +111,7 @@ const Filter = () => {
                 />
                 <label
                   htmlFor={`product-${item.id}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-tajawal-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   {item.label}
                 </label>
@@ -121,7 +121,7 @@ const Filter = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-orange-500 mt-2 hover:text-orange-600"
+            className="text-orange-500 mt-2 hover:text-orange-600 font-tajawal-regular"
           >
             عرض المزيد <ChevronDown className="mr-1 h-4 w-4" />
           </Button>
@@ -131,7 +131,7 @@ const Filter = () => {
 
         {/* Brands Section */}
         <div>
-          <div className="bg-orange-500 text-white p-2 rounded-md mb-3">
+          <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold">
             الفئات
           </div>
           <div className="space-y-3">
@@ -153,7 +153,7 @@ const Filter = () => {
                 />
                 <label
                   htmlFor={`brand-${item.id}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-tajawal-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   {item.label}
                 </label>
@@ -163,7 +163,7 @@ const Filter = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-orange-500 mt-2 hover:text-orange-600"
+            className="text-orange-500 mt-2 hover:text-orange-600 font-tajawal-regular"
           >
             عرض المزيد <ChevronDown className="mr-1 h-4 w-4" />
           </Button>
@@ -173,19 +173,19 @@ const Filter = () => {
 
         {/* Price Range Section */}
         <div>
-          <div className="bg-orange-500 text-white p-2 rounded-md mb-3">
+          <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold">
             نطاق السعر
           </div>
           <div className="px-2">
             <Slider
               value={priceRange}
               max={1440}
-              min={0}
+              min={110}
               step={1}
               className="w-full"
               onValueChange={setPriceRange}
             />
-            <div className="flex justify-between mt-2">
+            <div className="flex justify-between mt-2 font-tajawal-medium">
               <span className="text-sm text-gray-600">1440$</span>
               <span className="text-sm text-gray-600">{priceRange[0]}$</span>
             </div>
@@ -196,7 +196,7 @@ const Filter = () => {
 
         {/* Storage Section */}
         <div>
-          <div className="bg-orange-500 text-white p-2 rounded-md mb-3">
+          <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold">
             سعة الذاكرة
           </div>
           <div className="space-y-3">
@@ -218,7 +218,7 @@ const Filter = () => {
                 />
                 <label
                   htmlFor={`storage-${item.id}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-tajawal-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   {item.label}
                 </label>
