@@ -34,7 +34,6 @@ const ReviewCard = ({ img, name, date, comment, rating }: Props) => {
             ))}
           </div>
         </div>
-        <>{7 % 2}</>
         <p className="font-tajawal-regular">{date}</p>
         <p className="font-tajawal-regular">{comment}</p>
       </div>
