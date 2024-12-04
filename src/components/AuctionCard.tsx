@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { AuctionDialog } from "./AuctionDialog";
+import { prices } from "@/utils/dummy_data/data";
 
 interface AuctionCardProps {
   productName: string; // Product name
@@ -48,8 +50,8 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
         `${days.toString().padStart(2, "0")} : ${hours
           .toString()
           .padStart(2, "0")} : ${minutes
-            .toString()
-            .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
+          .toString()
+          .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
       );
     };
 
@@ -105,7 +107,8 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
 
         <div className="flex flex-col sm:flex-row justify-between items-center sm:mt-4 sm:gap-12">
           {/* Subscribe Button */}
-          <Button label="اشترك الان" variation="outline" />
+          {/* <Button label="اشترك الان" variation="outline" /> */}
+          <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" />
           {/* <Button
             onClick={onSubscribe}
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none w-full sm:w-auto font-tajawal-regular"
