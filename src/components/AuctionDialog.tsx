@@ -22,7 +22,9 @@ type timeType = {
     days: number
 }
 
-export function AuctionDialog({ prices, endTime }: any) {
+type AuctionItemType = { prices: any, endTime: any, currentPrice?: number, image?: string, title?: string }
+
+export function AuctionDialog({ prices, endTime, currentPrice, image, title }: AuctionItemType) {
     const imgSrc = "https://ardes.bg/uploads/original/konzola-xbox-series-x-1tb-466538.jpg"
     const [remainingTime, setRemainingTime] =
         useState<timeType | null>(null);
@@ -89,10 +91,10 @@ export function AuctionDialog({ prices, endTime }: any) {
             <DialogContent className="sm:max-w-md">
                 <div className="py-8" dir="rtl">
                     <div className="flex gap-x-4">
-                        <div className="w-[80px]">
-                            <img src={imgSrc} alt="" />
+                        <div className="w-[80px] h-[80px]">
+                            <img src={image ? image : imgSrc} alt="" />
                         </div>
-                        <p className="font-tajawal-bold text-xl mt-4 max-w-[250px] truncate">ساعة بكسل 3</p>
+                        <p className="font-tajawal-bold text-xl mt-4 max-w-[250px] truncate">{title}</p>
                     </div>
 
                     <div className="px-4 flex justify-between items-center w-full  border-2 pt-2 pb-1 my-4 bg-light-500 text--500 rounded-md">
@@ -104,7 +106,7 @@ export function AuctionDialog({ prices, endTime }: any) {
 
                     <div className="px-2 flex justify-between items-center w-full border-2 pt-2 pb-1 my-4 border-orange-500 text-orange-500 rounded-md">
                         <p className="font-tajawal-regular">السعر الحالي</p>
-                        <p className="font-tajawal-regular">150,000 دع</p>
+                        <p className="font-tajawal-regular">{currentPrice?.toLocaleString()} دع</p>
                     </div>
 
                     <div className="flex gap-2 flex-wrap">

@@ -104,3 +104,34 @@ export const locations = [
         country: "العراق",
     },
 ]
+
+export const auctionSectionData = [
+    {
+        id: 1,
+        title: "بلي ستيشن 5 اوربي ريجن 2",
+        description: "وصف عن المنتج",
+        image: "https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-edition-left-mobile-image-block-01-en-24jun24?$1600px--t$",
+        startingPrice: 25000,
+        currentPrice: 325000,
+        endTime: "2024-12-15T12:00:00"
+    },
+    {
+        id: 2,
+        title: "سماعات سوني ام 5",
+        description: "وصف عن المنتج",
+        image: "https://imgs.search.brave.com/Lf6H3PQeV7pgKNyV1e-JJwaXmH8LNzp4qooD5CwV3Fs/rs:fit:360:283:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NTFhWHZqemN1a0wu/anBn",
+        startingPrice: 25000,
+        currentPrice: 80000,
+        endTime: "2024-12-15T12:00:00"
+    },
+    {
+        id: 3,
+        title: "امازون ايكو دوت الجيل الرابع",
+        description: "وصف عن المنتج",
+        image: "https://imgs.search.brave.com/DrWVLiwpG3-si2kMlVEFKQkYJU3xo2ao1b4iy2gzV5Y/rs:fit:360:283:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NjFtdTNVeWtHUUwu/anBn",
+        startingPrice: 25000,
+        currentPrice: 100000,
+        endTime: "2024-12-15T12:00:00"
+    },
+
+]
