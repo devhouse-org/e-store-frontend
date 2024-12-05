@@ -5,6 +5,7 @@ import {
   prices,
   cart,
   locations,
+  techLogos,
 } from "@/utils/dummy_data/data";
 import CustomInput from "@/components/CustomInput";
 import Navbar from "@/components/Navbar";
@@ -187,13 +188,13 @@ const Components = () => {
           </div>
 
           <div className="flex  gap-x-4 py-2 overflow-x-auto">
-            {carouselCardData.map((item) => (
+            {techLogos.map((item) => (
               <div>
                 <CarouselCard
                   // label={item.label}
+                  img={item.image}
                   key={item.label}
                   link={item.link}
-                  Icon={item.Icon as IconType}
                   hasBg={false}
                 />
               </div>

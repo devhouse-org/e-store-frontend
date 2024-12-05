@@ -12,6 +12,17 @@ export const carouselCardData = [
     { id: 9, label: "ماوسات", Icon: Mouse, link: "#" },
 ];
 
+export const techLogos = [
+    { id: 1, label: "Samsung", image: "./realme.png", link: "#" },
+    { id: 2, label: "Apple", image: "./apple.png", link: "#" },
+    { id: 3, label: "Anker", image: "./Anker.png", link: "#" },
+    { id: 4, label: "Belkin", image: "./belkin.png", link: "#" },
+    { id: 5, label: "Meta", image: "./meta.png", link: "#" },
+    { id: 7, label: "Nintendo", image: "./nintendo.png", link: "#" },
+    { id: 8, label: "Oppo", image: "./oppo.png", link: "#" },
+    { id: 9, label: "Realme", image: "./realme.png", link: "#" },
+    { id: 10, label: "Xiaomi", image: "./xiaomi.png", link: "#" },
+];
 
 export const prices = [
     {
