@@ -56,7 +56,7 @@ const Components = () => {
   const total = calculateTotal();
 
   return (
-    <div className="bg-light-200 px10 flex flex-col gap-x-20">
+    <div className="bg-light-200 px2 flex flex-col gap-x-20 overflow-x-hidden">
       <div className="navbar_and_footer">
         <div className="hidden md:block">
           <SectionTitle title="Navbar & Footer" />
@@ -87,7 +87,7 @@ const Components = () => {
       <div className="cards">
         <SectionTitle title="Cards" />
 
-        <div className="flex gap-x-4">
+        <div className="flex flex-col gap-4">
           {locations.map((location) => (
             <LocationCard
               key={location.id}

@@ -94,7 +94,7 @@ export function AuctionDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button label="مزايدة" />
+        <Button label="زايد الان" variant={"blue"} />
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <div className="py-8" dir="rtl">
@@ -123,7 +123,7 @@ export function AuctionDialog({
           <div className="px-2 flex justify-between items-center w-full border-2 pt-2 pb-1 my-4 border-orange-500 text-orange-500 rounded-md">
             <p className="font-tajawal-regular">السعر الحالي</p>
             <p className="font-tajawal-regular">
-              {currentPrice?.toLocaleString()} دع
+              {currentPrice?.toLocaleString()} د.ع
             </p>
           </div>
 
@@ -145,20 +145,24 @@ export function AuctionDialog({
             )}
           </div>
         </div>
-        <DialogFooter className="sm:justify-start">
+        <DialogFooter className="sm:justify-start items-center gap-2">
           <DialogClose asChild>
-            <Button label="إلغاء" />
+            <Button
+              label="إلغاء"
+              className="w-full flex-[.7]"
+              variant={"secondary"}
+            />
           </DialogClose>
 
           <div
-            className={`px-2 flex justify-between pt-1 items-center w-full bg-orange-500
+            className={`p-2 flex justify-between items-center w-full bg-orange-500
                             hover:bg-orange-500/90 transition ease-in-out cursor-pointer 
                             rounded-md text-white ${
                               isAnimating && "bg-orange-300"
                             }`}
           >
             <p className="font-tajawal-regular">
-              {totalPrice.toLocaleString()} دع
+              {totalPrice.toLocaleString()}د.ع
             </p>
             <p className="font-tajawal-regular">تأكيد</p>
           </div>
