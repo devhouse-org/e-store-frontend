@@ -38,7 +38,7 @@ const links = [
 
 const Navbar = (props: Props) => {
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+    <div className="bg-white shadow-sm overflow-hidden">
       {props.hasAd && (
         <div className="ad bg-orange-500 text-white font-bold flex justify-center items-center py-1">
           <h1 className="font-tajawal-regular">{props.adTitle}</h1>
@@ -49,7 +49,7 @@ const Navbar = (props: Props) => {
         dir="rtl"
         className="navigation flex items-center p-4 justify-between"
       >
-        <ul className="flex flex-wrap gap-x-4 list-none flex-1">
+        <ul className="flex-wrap hidden md:flex gap-x-4 list-none flex-1">
           {links.map((link) => (
             <li
               key={link.id}
@@ -59,7 +59,7 @@ const Navbar = (props: Props) => {
             </li>
           ))}
         </ul>
-        <div className="logo flex-1 flex justify-center items-center">
+        <div className="logo md:flex-1 flex justify-center items-center">
           <img src={logo} alt="e-store logo" />
         </div>
         <div dir="ltr" className="icons flex-1">
@@ -70,11 +70,13 @@ const Navbar = (props: Props) => {
              bg-orange-500 hover:bg-orange-500/90 transition ease-in-out cursor-pointer rounded-full"
             >
               <ShoppingCart className="" />
-              <p>1</p>
+              <p className="hidden md:block">1</p>
             </div>
             <Heart className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
             <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
-            <CustomInput placeholder="ما الذي تبحث عنه" />
+            <div className="hidden md:block">
+              <CustomInput placeholder="ما الذي تبحث عنه" />
+            </div>
           </div>
         </div>
       </div>

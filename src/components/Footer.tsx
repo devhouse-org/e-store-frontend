@@ -14,12 +14,12 @@ type Props = {};
 
 const Footer = (props: Props) => {
   return (
-    <div className="bg-blue-800 rounded-lg overflow-hidden">
+    <div className="bg-blue-800 overflow-hidden">
       <div className="px-4 py-4">
         <h1 className="font-tajawal-medium my-4 text-orange-400 text-2xl">
           متواجدون دائماً لمساعدتكم
         </h1>
-        <div className="top flex justify-between ">
+        <div className="top flex flex-col gap-y-4 md:flex-row md:gap-y-0 justify-between ">
           <div className="flex gap-x-12">
             <div className="flex-1">
               <div className="">
@@ -92,7 +92,7 @@ const Footer = (props: Props) => {
                   نوصلك لكل مكان
                 </h1>
                 <div className="flex gap-x-4 items-center">
-                  <div className="w-[300px] h-[200px] mt-2">
+                  <div className="w-full md:w-[300px] md:h-[200px] mt-2">
                     <img
                       src={location}
                       alt="e-store location"
@@ -105,26 +105,26 @@ const Footer = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className="bg-orange-500 text-white font-bold flex justify-between py-2 px-4 items-center">
-        <ul className="flex items-center gap-x-8 font-tajawal-regular list-none">
+      <div className="bg-orange-500 text-white font-bold flex flex-col md:flex-row justify-between py-2 px-4 items-center">
+        <ul className="flex items-center flex-wrap justify-between gap-x-8 font-tajawal-regular list-none">
           <li className="flex gap-x-2 items-center justify-center">
             <Paperclip />
-            <p>الشروط والاحكام</p>
+            <p className="text-[12px] text-nowrap md:text-[16px]">الشروط والاحكام</p>
           </li>
           <li className="flex gap-x-2 items-center">
             <Shield />
-            <p>سياسة الخصوصية</p>
+            <p className="text-[12px] text-nowrap md:text-[16px]">سياسة الخصوصية</p>
           </li>
           <li className="flex gap-x-2 items-center">
             <Recycle />
-            <p>سياسة الاسترجاع</p>
+            <p className="text-[12px] text-nowrap md:text-[16px]">سياسة الاسترجاع</p>
           </li>
           <li className="flex gap-x-2 items-center">
             <UsersRound />
-            <p>من نحن</p>
+            <p className="text-[12px] text-nowrap md:text-[16px]">من نحن</p>
           </li>
         </ul>
-        <h1 className="font-tajawal-regular">
+        <h1 className="font-tajawal-regular text-[12px] md:text-[16px]">
           حقوق النشر 2024 متجر إي ستور. جميع الحقوق محفوظة.
         </h1>
       </div>

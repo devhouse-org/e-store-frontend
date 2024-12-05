@@ -56,9 +56,11 @@ const Components = () => {
   const total = calculateTotal();
 
   return (
-    <div className="bg-light-200 px-10 flex flex-col gap-x-20">
+    <div className="bg-light-200 px10 flex flex-col gap-x-20">
       <div className="navbar_and_footer">
-        <SectionTitle title="Navbar & Footer" />
+        <div className="hidden md:block">
+          <SectionTitle title="Navbar & Footer" />
+        </div>
         <Navbar hasAd adTitle="خصم 15% على قسم الاكسسوارات" />
 
         <div className="footer mt-10">
