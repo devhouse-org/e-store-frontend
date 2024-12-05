@@ -10,6 +10,10 @@ import {
 import location from "../assets/images/location.png";
 import cash from "../assets/images/cash.png";
 
+import apple from "../assets/images/app_store_logo/apple.png"
+import google from "../assets/images/app_store_logo/google.png"
+import huawei from "../assets/images/app_store_logo/huawei.png"
+
 type Props = {};
 
 const Footer = (props: Props) => {
@@ -20,33 +24,28 @@ const Footer = (props: Props) => {
           متواجدون دائماً لمساعدتكم
         </h1>
         <div className="top flex flex-col gap-y-4 md:flex-row md:gap-y-0 justify-between ">
-          <div className="flex gap-x-12">
+          <div className="flex flex-col md:flex-row gap-y-8 md:gap-y-0 gap-x-12">
             <div className="flex-1">
               <div className="">
                 <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
                   تواصل معنا
                 </h1>
-                <div className="flex gap-x-4 py-4">
+                <div className="flex gap-x-4 py-2 md:py-4">
                   <Home className="text-white" />
                   <div className="gap-x-4 items-center">
-                    <p className="font-tajawal-bold text-orange-400">واتساب</p>
                     <p className="text-white">9647712345643+</p>
                     <p className="text-white">9647812345643+</p>
                   </div>
                 </div>
-                <div className="flex gap-x-4 py-4">
+                <div className="flex gap-x-4 py-2 md:py-4">
                   <Mail className="text-white" />
                   <div className="gap-x-4 items-center">
-                    <p className="font-tajawal-bold text-orange-400">
-                      بريد الكتروني
-                    </p>
                     <p className="text-white">info@estoreiraq.com</p>
                   </div>
                 </div>
-                <div className="flex gap-x-4 py-4">
+                <div className="flex gap-x-4 py-2 md:py-4">
                   <Pin className="text-white" />
                   <div className="gap-x-4 items-center">
-                    <p className="font-tajawal-bold text-orange-400">العنوان</p>
                     <p className="text-white font-tajawal-regular">
                       العراق - البصرة - شارع الجزائر
                     </p>
@@ -60,9 +59,9 @@ const Footer = (props: Props) => {
                 <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
                   طرق الدفع
                 </h1>
-                <div className="flex gap-x-4 py-4">
-                  <div className="gap-y-4 flex flex-col items-center">
-                    <div className="bg-black flex justify-center p-4 rounded-md">
+                <div className="flex gap-x-4 py-4 justify-center md:justify-normal">
+                  <div className="gap-y-4 flex max-w-[450px] md:max-w-auto flex-row w-full md:w-auto justify-between md:flex-col items-center">
+                    <div className="bg-black flex justify-center md:justify-normal p-4 rounded-md">
                       <img
                         className="w-[80px]"
                         src="https://zaincash.iq/assets/images/logo.png?v=0.0.2.5"
@@ -91,13 +90,36 @@ const Footer = (props: Props) => {
                 <h1 className="font-tajawal-medium text-white border-b border-b-light-800 text-[1.2rem]">
                   نوصلك لكل مكان
                 </h1>
+
                 <div className="flex gap-x-4 items-center">
-                  <div className="w-full md:w-[300px] md:h-[200px] mt-2">
+                  <div className="w-full h-[250px] mt-2">
                     <img
                       src={location}
                       alt="e-store location"
-                      className="object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg"
                     />
+                  </div>
+                </div>
+
+                <div className="flex gap-x-4 py-4 justify-center md:justify-normal">
+                  <div className="gap-y-4 gap-x-4 max-w-[450px] md:max-w-auto md:gap-x-2 flex flex-row w-full md:w-auto justify-between items-center">
+                    <div className="flex justify-center md:justify-normal p4 rounded-md">
+                      <img
+                        className=""
+                        src={huawei}
+                        alt=""
+                      />
+                    </div>
+                    <div className="flex justify-center p4 rounded-md">
+                      <img
+                        className=""
+                        src={google}
+                        alt=""
+                      />
+                    </div>
+                    <div className="flex justify-center p4 rounded-md">
+                      <img className="" src={apple} alt="" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -106,25 +128,25 @@ const Footer = (props: Props) => {
         </div>
       </div>
       <div className="bg-orange-500 text-white font-bold flex flex-col md:flex-row justify-between py-2 px-4 items-center">
-        <ul className="flex items-center flex-wrap justify-between gap-x-8 font-tajawal-regular list-none">
-          <li className="flex gap-x-2 items-center justify-center">
+        <ul className="flex items-center flex-wrap justify-between gap-x-8 gap-y-2 md:gap-y-0 font-tajawal-regular list-none">
+          <li className="flex gap-x-2 items-center flex-1">
             <Paperclip />
             <p className="text-[12px] text-nowrap md:text-[16px]">الشروط والاحكام</p>
           </li>
-          <li className="flex gap-x-2 items-center">
+          <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
             <Shield />
             <p className="text-[12px] text-nowrap md:text-[16px]">سياسة الخصوصية</p>
           </li>
-          <li className="flex gap-x-2 items-center">
+          <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
             <Recycle />
             <p className="text-[12px] text-nowrap md:text-[16px]">سياسة الاسترجاع</p>
           </li>
-          <li className="flex gap-x-2 items-center">
+          <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
             <UsersRound />
             <p className="text-[12px] text-nowrap md:text-[16px]">من نحن</p>
           </li>
         </ul>
-        <h1 className="font-tajawal-regular text-[12px] md:text-[16px]">
+        <h1 className="font-tajawal-regular text-[12px] mt-4 md:mt-0 md:text-[16px]">
           حقوق النشر 2024 متجر إي ستور. جميع الحقوق محفوظة.
         </h1>
       </div>
