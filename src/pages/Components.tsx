@@ -87,7 +87,8 @@ const Components = () => {
       <div className="cards">
         <SectionTitle title="Cards" />
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
+
           {locations.map((location) => (
             <LocationCard
               key={location.id}
@@ -171,7 +172,7 @@ const Components = () => {
         </div>
 
         <div className="">
-          <div className="flex gap-x-4 py-2 overflow-x-auto">
+          <div className="flex  gap-x-4 py-2 overflow-x-auto">
             {carouselCardData.map((item) => (
               <div>
                 <CarouselCard
@@ -179,6 +180,21 @@ const Components = () => {
                   key={item.label}
                   link={item.link}
                   Icon={item.Icon as IconType}
+                />
+              </div>
+            ))}
+
+          </div>
+
+          <div className="flex  gap-x-4 py-2 overflow-x-auto">
+            {carouselCardData.map((item) => (
+              <div>
+                <CarouselCard
+                  // label={item.label}
+                  key={item.label}
+                  link={item.link}
+                  Icon={item.Icon as IconType}
+                  hasBg={false}
                 />
               </div>
             ))}
