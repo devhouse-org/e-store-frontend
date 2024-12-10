@@ -25,11 +25,33 @@ import AuctionSection from "@/components/AuctionSection";
 import Filter from "@/components/Filter";
 import LocationCard from "@/components/LocationCard";
 import Stepper from "@/components/Stepper";
+import Slider from "react-slick";
 
 const tabs = ["سلة التسوق", "الشحن والتسليم", "الدفع"];
 
 const Components = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
+
+  const [oldSlide, setOldSlide] = useState(0);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeSlide2, setActiveSlide2] = useState(0);
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    autoplay: true,
+    speed: 400,
+    autoplaySpeed: 6000,
+    cssEase: "ease-out",
+    rtl: true,
+    dotsClass: "slick-dots slick-thumb",
+    pauseOnHover: true,
+    beforeChange: (current: any, next: any) => {
+      setOldSlide(current);
+      setActiveSlide(next);
+    },
+    afterChange: (current: any) => setActiveSlide2(current),
+  };
 
   const handleSubscribe = () => {
     alert("Subscribed!");
@@ -56,8 +78,23 @@ const Components = () => {
 
   const total = calculateTotal();
 
+  const imgsrc = "https://plchldr.co/i/1070x200?bg=CE86ED";
+
   return (
     <div className="bg-light-200 px2 flex flex-col gap-x-20 overflow-x-hidden">
+      <div className="mx-4 mt-4 mb-8">
+        <Slider {...settings}>
+          {[1, 2, 3, 4, 5].map((item, i) => (
+            <div
+              className={`h-[200px] md:h-[300px] lg:h-[400px] rounded-md overflow-hidden border-2 border-orange-500 bg-green-${
+                i + 3
+              }00`}
+            >
+              <h3>{i + 1}</h3>
+            </div>
+          ))}
+        </Slider>
+      </div>
       <div className="navbar_and_footer">
         <div className="hidden md:block">
           <SectionTitle title="Navbar & Footer" />
@@ -89,7 +126,6 @@ const Components = () => {
         <SectionTitle title="Cards" />
 
         <div className="flex flex-col md:flex-row gap-4">
-
           {locations.map((location) => (
             <LocationCard
               key={location.id}
@@ -184,7 +220,6 @@ const Components = () => {
                 />
               </div>
             ))}
-
           </div>
 
           <div className="flex  gap-x-4 py-2 overflow-x-auto">
