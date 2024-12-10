@@ -12,7 +12,7 @@ import Footer from "./components/Footer";
 function App() {
   return (
     <div dir="rtl">
-      <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" />
+      {/* <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" /> */}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -20,7 +20,7 @@ function App() {
           <Route path="/auctions" element={<Auctions />} />
         </Route>
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

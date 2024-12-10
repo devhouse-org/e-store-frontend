@@ -5,7 +5,7 @@ import Footer from "./Footer";
 function Layout() {
   return (
     <div>
-      <Navbar />
+      <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" />
 
       <main>
         <Outlet />
