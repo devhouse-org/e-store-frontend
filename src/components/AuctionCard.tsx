@@ -73,12 +73,12 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
             <img
               src={imageSrc}
               alt={productName}
-              className="w-32 h-32  object-contain mt-4 mb-6 sm:mb-0"
+              className="min-w-16 w-32 h-32 object-contain mt-4 mb-6 sm:mb-0"
             />
           </div>
           <div className="flex flex-col justify-between sm:h-full">
             {/* Product Name */}
-            <h2 className="text-xl text-center md:text-start font-semibold text-gray-800 mb-2 md:mb-4 font-tajawal-bold">
+            <h2 className="text-xl truncate text-center md:text-start font-semibold text-gray-800 mb-2 md:mb-4 font-tajawal-bold">
               {productName}
             </h2>
 

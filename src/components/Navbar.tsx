@@ -1,6 +1,7 @@
 import { CircleDashed, Heart, ShoppingCart, UserRound } from "lucide-react";
 import logo from "../assets/images/Logo.png";
 import CustomInput from "./CustomInput";
+import { NavLink } from "react-router-dom";
 
 type Props = {
   hasAd?: boolean;
@@ -11,13 +12,13 @@ const links = [
   {
     id: 1,
     label: "الرئيسية",
-    link: "#",
+    link: "/",
   },
 
   {
     id: 2,
     label: "المزاد",
-    link: "#",
+    link: "/auctions",
   },
   {
     id: 3,
@@ -51,12 +52,13 @@ const Navbar = (props: Props) => {
       >
         <ul className="flex-wrap hidden md:flex gap-x-4 list-none flex-1">
           {links.map((link) => (
-            <li
+            <NavLink
               key={link.id}
+              to={link.link}
               className="text-nowrap hover:bg-orange-100/70 cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular"
             >
               {link.label}
-            </li>
+            </NavLink>
           ))}
         </ul>
         <div className="logo md:flex-1 flex justify-center items-center">
