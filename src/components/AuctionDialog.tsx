@@ -119,7 +119,6 @@ export function AuctionDialog({
             </p>
             <p className="font-tajawal-regular">{remainingTime?.days} يوم</p>
           </div>
-
           <div className="px-2 flex justify-between items-center w-full border-2 pt-2 pb-1 my-4 border-orange-500 text-orange-500 rounded-md">
             <p className="font-tajawal-regular">السعر الحالي</p>
             <p className="font-tajawal-regular">
