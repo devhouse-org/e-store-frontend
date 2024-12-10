@@ -1,11 +1,13 @@
 import {
   Bluetooth,
+  Book,
   Cable,
   Gamepad,
   Headphones,
   Monitor,
   Mouse,
   Plug,
+  ShoppingBag,
   Smartphone,
   Watch,
 } from "lucide-react";
@@ -20,6 +22,11 @@ export const carouselCardData = [
   { id: 7, label: "سماعات بلوتوث", Icon: Bluetooth, link: "#" },
   { id: 8, label: "كيبلات", Icon: Cable, link: "#" },
   { id: 9, label: "ماوسات", Icon: Mouse, link: "#" },
+  { id: 10, label: "تسوق", Icon: ShoppingBag, link: "#" },
+  { id: 11, label: "كتب", Icon: Book, link: "#" },
+  { id: 12, label: "ماركات التجارية", Icon: ShoppingBag, link: "#" },
+  { id: 13, label: "المزاد", Icon: Book, link: "#" },
+  { id: 14, label: "التدوينات", Icon: Book, link: "#" },
 ];
 
 export const techLogos = [
@@ -32,6 +39,9 @@ export const techLogos = [
   { id: 8, label: "Oppo", image: "./oppo.png", link: "#" },
   { id: 9, label: "Realme", image: "./realme.png", link: "#" },
   { id: 10, label: "Xiaomi", image: "./xiaomi.png", link: "#" },
+  { id: 11, label: "Huawei", image: "./huawei.png", link: "#" },
+  { id: 12, label: "OnePlus", image: "./oneplus.png", link: "#" },
+  { id: 13, label: "Vivo", image: "./vivo.png", link: "#" },
 ];
 
 export const prices = [
