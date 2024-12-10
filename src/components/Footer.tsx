@@ -10,9 +10,11 @@ import {
 import location from "../assets/images/location.png";
 import cash from "../assets/images/cash.png";
 
-import apple from "../assets/images/app_store_logo/apple.png"
-import google from "../assets/images/app_store_logo/google.png"
-import huawei from "../assets/images/app_store_logo/huawei.png"
+import apple from "../assets/images/app_store_logo/apple.png";
+import google from "../assets/images/app_store_logo/google.png";
+import huawei from "../assets/images/app_store_logo/huawei.png";
+
+import mcLogo from "../assets/mc-logo.svg";
 
 type Props = {};
 
@@ -63,20 +65,24 @@ const Footer = (props: Props) => {
                   <div className="gap-y-4 flex max-w-[450px] md:max-w-auto flex-row w-full md:w-auto justify-between md:flex-col items-center">
                     <div className="bg-black flex justify-center md:justify-normal p-4 rounded-md">
                       <img
-                        className="w-[80px]"
+                        className="w-[80px] h-[30px] object-contain"
                         src="https://zaincash.iq/assets/images/logo.png?v=0.0.2.5"
                         alt=""
                       />
                     </div>
                     <div className="bg-white flex justify-center p-4 rounded-md">
                       <img
-                        className="w-[80px]"
-                        src="https://taifpay.iq/images/logo2.png"
+                        className="w-[80px] h-[30px] object-contain"
+                        src={mcLogo}
                         alt=""
                       />
                     </div>
                     <div className="bg-black flex justify-center p-4 rounded-md">
-                      <img className="w-[80px]" src={cash} alt="" />
+                      <img
+                        className="w-[80px] h-[30px] object-contain"
+                        src={cash}
+                        alt=""
+                      />
                     </div>
                   </div>
                 </div>
@@ -104,18 +110,10 @@ const Footer = (props: Props) => {
                 <div className="flex gap-x-4 py-4 justify-center md:justify-normal">
                   <div className="gap-y-4 gap-x-4 max-w-[450px] md:max-w-auto md:gap-x-2 flex flex-row w-full md:w-auto justify-between items-center">
                     <div className="flex justify-center md:justify-normal p4 rounded-md">
-                      <img
-                        className=""
-                        src={huawei}
-                        alt=""
-                      />
+                      <img className="" src={huawei} alt="" />
                     </div>
                     <div className="flex justify-center p4 rounded-md">
-                      <img
-                        className=""
-                        src={google}
-                        alt=""
-                      />
+                      <img className="" src={google} alt="" />
                     </div>
                     <div className="flex justify-center p4 rounded-md">
                       <img className="" src={apple} alt="" />
@@ -131,22 +129,28 @@ const Footer = (props: Props) => {
         <ul className="flex items-center flex-wrap justify-between gap-x-8 gap-y-2 md:gap-y-0 font-tajawal-regular list-none">
           <li className="flex gap-x-2 items-center flex-1">
             <Paperclip />
-            <p className="text-[12px] text-nowrap md:text-[16px]">الشروط والاحكام</p>
+            <p className="text-[12px] text-nowrap md:text-[14px]">
+              الشروط والاحكام
+            </p>
           </li>
           <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
             <Shield />
-            <p className="text-[12px] text-nowrap md:text-[16px]">سياسة الخصوصية</p>
+            <p className="text-[12px] text-nowrap md:text-[14px]">
+              سياسة الخصوصية
+            </p>
           </li>
           <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
             <Recycle />
-            <p className="text-[12px] text-nowrap md:text-[16px]">سياسة الاسترجاع</p>
+            <p className="text-[12px] text-nowrap md:text-[14px]">
+              سياسة الاسترجاع
+            </p>
           </li>
           <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
             <UsersRound />
-            <p className="text-[12px] text-nowrap md:text-[16px]">من نحن</p>
+            <p className="text-[12px] text-nowrap md:text-[14px]">من نحن</p>
           </li>
         </ul>
-        <h1 className="font-tajawal-regular text-[12px] mt-4 md:mt-0 md:text-[16px]">
+        <h1 className="font-tajawal-regular text-[12px] mt-4 md:mt-0 md:text-[14px]">
           حقوق النشر 2024 متجر إي ستور. جميع الحقوق محفوظة.
         </h1>
       </div>

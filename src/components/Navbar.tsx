@@ -53,7 +53,7 @@ const Navbar = (props: Props) => {
           {links.map((link) => (
             <li
               key={link.id}
-              className="text-nowrap px-1 hover:bg-gray-500/50 font-tajawal-regular"
+              className="text-nowrap hover:bg-orange-100/70 cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular"
             >
               {link.label}
             </li>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import { IconType } from "react-icons";
 import { RxTriangleLeft, RxTriangleRight } from "react-icons/rx";
 import useProductStore from "@/stores/productStore";
@@ -55,7 +55,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                       variant="arrows"
                       size="sm"
                       className="text-green-600"
-                      Icon={RxTriangleRight as IconType}
+                      Icon={Plus as IconType}
                       onClick={() => updateQuantity(product.id, 1)}
                     />
                     <span className="">{product.quantity}</span>
@@ -63,7 +63,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                       variant="arrows"
                       size="sm"
                       className="text-red-600"
-                      Icon={RxTriangleLeft as IconType}
+                      Icon={Minus as IconType}
                       onClick={() => updateQuantity(product.id, -1)}
                     />
                   </div>
