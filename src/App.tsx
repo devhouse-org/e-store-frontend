@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Auctions from "./pages/auctions/Auctions";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Auction from "./pages/auctions/Auction";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="components" element={<Components />} />
           <Route path="/auctions" element={<Auctions />} />
+          <Route path="/auction/:id" element={<Auction />} />
         </Route>
       </Routes>
       {/* <Footer /> */}

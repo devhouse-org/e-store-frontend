@@ -214,7 +214,7 @@ const Auctions = (props: Props) => {
         {/* Auction Cards Section */}
         <div className="auction_cards gap-4 flex justify-center flex-row flex-wrap">
           {auctionPageData.slice(0, 12).map((item) => (
-            <Link to={`auction/${item.id}`}>
+            <Link to={`/auction/${item.id}`}>
               <AuctionCard
                 productName={item.title}
                 currentPrice={item.currentPrice}
