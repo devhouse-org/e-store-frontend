@@ -9,6 +9,7 @@ import Auctions from "./pages/auctions/Auctions";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Auction from "./pages/auctions/Auction";
+import Products from "./pages/products/Products";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="components" element={<Components />} />
           <Route path="/auctions" element={<Auctions />} />
           <Route path="/auction/:id" element={<Auction />} />
+          <Route path="/products" element={<Products />} />
         </Route>
       </Routes>
       {/* <Footer /> */}
