@@ -13,7 +13,7 @@ const CarouselCard = ({ img, label, Icon, link, hasBg = true }: Props) => {
   return (
     <Link to={link} className="">
       <div
-        className={`w-[120px]  flex justify-center items-center py-4 rounded-xl overflow-hidden my-2 flex-col ${
+        className={`w-[120px]  flex justify-center items-center py-2 lg:py-4 rounded-xl overflow-hidden my-2 flex-col ${
           hasBg && "bg-white shadow-sm"
         }  border border-transparent hover:border-orange-100`}
       >

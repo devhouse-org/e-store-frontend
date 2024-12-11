@@ -55,7 +55,7 @@ function Home() {
           </h1>
           <Button label="عرض جميع الفئات" />
         </div>
-        <div className="flex gap-x-4 overflow-x-auto">
+        <div className="flex gap-x-4 overflow-x-auto scrollbar-thin">
           {carouselCardData.map((item) => (
             <div>
               <CarouselCard
@@ -106,7 +106,7 @@ function Home() {
           </h1>
           <Button label="عرض جميع الماركات" />
         </div>
-        <div className="flex  gap-x-4 py-2 overflow-x-auto">
+        <div className="flex gap-x-2 py-2 overflow-x-auto scrollbar-thin">
           {techLogos.map((item) => (
             <div>
               <CarouselCard
