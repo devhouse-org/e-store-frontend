@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Auction from "./pages/auctions/Auction";
 import Products from "./pages/products/Products";
+import Product from "./pages/products/Product";
 
 function App() {
   return (
@@ -19,9 +20,12 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="components" element={<Components />} />
+          {/* Auction */}
           <Route path="/auctions" element={<Auctions />} />
           <Route path="/auction/:id" element={<Auction />} />
+          {/* Product */}
           <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<Product />} />
         </Route>
       </Routes>
       {/* <Footer /> */}
