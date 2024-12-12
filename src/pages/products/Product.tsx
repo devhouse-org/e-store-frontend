@@ -211,8 +211,13 @@ const Product = () => {
       </div>
       {/* Description section */}
       <div>
-        <div className=" ">
-          <h1>Desc</h1>
+        <div className="border-b flex justify-between pt-4">
+          <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit ">
+            أفضل الفئات
+          </h1>
+          <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit ">
+            المراجعات
+          </h1>
         </div>
       </div>
     </div>
