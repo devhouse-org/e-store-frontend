@@ -46,7 +46,6 @@ const Address = ({ setActive }: any) => {
                             country={location.country}
                         />
                     ))}
-                    <Button label='إضافة عنوان جديد' />
                 </div>
 
                 <div className='hidden md:block'>
