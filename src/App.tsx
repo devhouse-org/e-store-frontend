@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import Auction from "./pages/auctions/Auction";
 import Products from "./pages/products/Products";
 import Product from "./pages/products/Product";
+import Cart from "./pages/cart/Cart";
 
 function App() {
   return (
@@ -26,6 +27,9 @@ function App() {
           {/* Product */}
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<Product />} />
+
+          <Route path="/cart" element={<Cart />} />
+          {/* <Route path="/product/:id" element={<Product />} /> */}
         </Route>
       </Routes>
       {/* <Footer /> */}

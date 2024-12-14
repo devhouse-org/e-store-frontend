@@ -53,6 +53,11 @@
     --chart-5: 120 60% 45%; /* Green tones */
   }
 
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+
   .dark {
     --background: 20 14.3% 4.1%; /* Dark gray background */
     --foreground: 60 9.1% 97.8%; /* Light text */
