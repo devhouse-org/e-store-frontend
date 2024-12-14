@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import Items from './steps/Items';
+import Address from './steps/Address';
+import Payment from './steps/Payment';
 
 type Props = {}
 
@@ -32,30 +35,13 @@ const Cart = (props: Props) => {
     const activeStep = () => {
         switch (active.value) {
             case StepsEnum.ITEMS:
-                return (
-                    <div>
-                        <h1>items</h1>
-                        <button onClick={() => setActive(steps[1])}>Delivery</button>
-                    </div>
-                );
+                return <Items setActive={setActive} />;
 
             case StepsEnum.ADDRESS:
-                return (
-                    <div>
-                        <h1>delivery</h1>
-                        <button onClick={() => setActive(steps[2])}>payment</button>
-                        <button onClick={() => setActive(steps[0])}>Products</button>
-                    </div>
-                );
+                return <Address setActive={setActive} />;
 
             case StepsEnum.PAYMENT:
-                return (
-                    <div>
-                        <h1>Payment</h1>
-                        <button onClick={() => setActive(steps[2])}>Delivery</button>
-                        <button onClick={() => setActive(steps[0])}>Products</button>
-                    </div>
-                );
+                return <Payment setActive={setActive} />;
 
             default:
                 break;
@@ -82,7 +68,9 @@ const Cart = (props: Props) => {
                     </ol>
                 </div>
             </div>
-            {activeStep()}
+            <div className='border border-light-200 mb-8 mt4 p-4 rounded-md shadow-md'>
+                {activeStep()}
+            </div>
         </div>
     )
 }

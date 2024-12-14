@@ -18,7 +18,7 @@ const LocationCard = ({
   country,
 }: Props) => {
   return (
-    <div className="bg-white p-6 rounded-md">
+    <div className="bg-white border border-light-200 shadow-sm p-6 rounded-md">
       <div className="flex flex-col gap-y-2">
         <p className="flex justify-between gap-x-8 font-tajawal-regular">
           <strong>العنوان: </strong>
