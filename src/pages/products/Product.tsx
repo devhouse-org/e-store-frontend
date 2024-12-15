@@ -37,27 +37,27 @@ const Product = () => {
     infinite: true,
     speed: 500,
     slidesToShow: 6,
-    slidesToScroll: 3,
+    slidesToScroll: 2,
     responsive: [
       {
         breakpoint: 1300,
         settings: {
           slidesToShow: 5,
-          slidesToScroll: 1,
+          slidesToScroll: 2,
         },
       },
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 4,
-          slidesToScroll: 1,
+          slidesToScroll: 2,
         },
       },
       {
         breakpoint: 768,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 1,
+          slidesToScroll: 2,
         },
       },
       {
@@ -89,11 +89,10 @@ const Product = () => {
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className={`relative cursor-pointer group ${
-                    currentImage === idx
-                      ? "ring-2 ring-orange-500 rounded-lg"
-                      : ""
-                  }`}
+                  className={`relative cursor-pointer group ${currentImage === idx
+                    ? "ring-2 ring-orange-500 rounded-lg"
+                    : ""
+                    }`}
                   onClick={() => setCurrentImage(idx)}
                 >
                   <img
@@ -105,11 +104,10 @@ const Product = () => {
                   />
                   <div
                     className={`absolute inset-0 border-2 rounded-lg transition
-                    ${
-                      currentImage === idx
+                    ${currentImage === idx
                         ? "border-orange-500"
                         : "border-transparent"
-                    }
+                      }
                     group-hover:border-orange-500`}
                   />
                 </div>
@@ -164,11 +162,10 @@ const Product = () => {
                   <button
                     key={storage}
                     onClick={() => setSelectedStorage(storage)}
-                    className={`px-3 lg:px-4 py-2 rounded border ${
-                      selectedStorage === storage
-                        ? "border-orange-500 text-orange-500"
-                        : "border-gray-300"
-                    }`}
+                    className={`px-3 lg:px-4 py-2 rounded border ${selectedStorage === storage
+                      ? "border-orange-500 text-orange-500"
+                      : "border-gray-300"
+                      }`}
                   >
                     {storage}
                   </button>
