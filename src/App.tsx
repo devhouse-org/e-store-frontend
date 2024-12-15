@@ -12,6 +12,7 @@ import Auction from "./pages/auctions/Auction";
 import Products from "./pages/products/Products";
 import Product from "./pages/products/Product";
 import Cart from "./pages/cart/Cart";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
 
           <Route path="/cart" element={<Cart />} />
           {/* <Route path="/product/:id" element={<Product />} /> */}
+
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
       {/* <Footer /> */}

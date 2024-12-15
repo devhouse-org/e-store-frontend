@@ -47,7 +47,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           onChange={onChange}
           disabled={disabled}
           className={cn(
-            "text-base",
+            "text-base font-tajawal-medium",
             error
               ? "border-red-500 placeholder:text-right text-right focus:ring-red-500"
               : "border-input",

@@ -66,7 +66,11 @@ const Navbar = (props: Props) => {
         </div>
         <div dir="ltr" className="icons flex-1">
           <div className="flex items-center gap-x-4">
-            <UserRound className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            <Link
+              to="/dashboard"
+            >
+              <UserRound className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            </Link>
             <Link
               to="/cart"
               className="text-white gap-x-2 flex items-center justify-center px-4 py-1
