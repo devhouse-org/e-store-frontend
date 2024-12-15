@@ -19,7 +19,7 @@ const ReviewCard = ({ img, name, date, comment, rating }: Props) => {
         <img src={imageUrl} alt="" />
       </div>
 
-      <div className="content">
+      <div className="content w-full">
         <div className="flex justify-between">
           <p className="font-tajawal-bold">{name}</p>
           <div className="flex">

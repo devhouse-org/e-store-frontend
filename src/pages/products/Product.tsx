@@ -18,6 +18,7 @@ import { Separator } from "@radix-ui/react-separator";
 import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
 import ProductCard from "@/components/ProductCard";
+import Slider from "react-slick";
 
 const Product = () => {
   const [selectedStorage, setSelectedStorage] = useState("256 GB");
@@ -30,6 +31,44 @@ const Product = () => {
     "https://imgs.search.brave.com/eE2kKeLp3k12tKnSqo4v-fR4u5xaz_4HFn7LenjQfFE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cHJvZC53ZWJzaXRl/LWZpbGVzLmNvbS81/YjQ0ZWRlZmNhMzIx/YTFlMmQwYzJhYTYv/NjM0YWUzODc5OTAy/MzY2YjQyN2U0MGZi/X0RpbWVuc2lvbnMt/RGlnaXRhbC1BcHBs/ZS1pUGhvbmVzLUFw/cGxlLWlQaG9uZS0x/NC1JY29uLnN2Zw",
     "https://imgs.search.brave.com/qOD6uChP39kxoPmOSSZlF6aDCCMh4Xp5SAVE_CK82wA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cHJvZC53ZWJzaXRl/LWZpbGVzLmNvbS81/YjQ0ZWRlZmNhMzIx/YTFlMmQwYzJhYTYv/NjE0Yjk4ZTNhOTUw/OGE1ZjE0OTI4NWY3/X0RpbWVuc2lvbnMt/RGlnaXRhbC1BcHBs/ZS1pUGhvbmUtMTMt/UHJvLU1heC0zRC5q/cGc",
   ];
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 6,
+    slidesToScroll: 3,
+    responsive: [
+      {
+        breakpoint: 1300,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
 
   const storageOptions = ["512 GB", "256 GB", "128 GB"];
 
@@ -50,10 +89,11 @@ const Product = () => {
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className={`relative cursor-pointer group ${currentImage === idx
-                    ? "ring-2 ring-orange-500 rounded-lg"
-                    : ""
-                    }`}
+                  className={`relative cursor-pointer group ${
+                    currentImage === idx
+                      ? "ring-2 ring-orange-500 rounded-lg"
+                      : ""
+                  }`}
                   onClick={() => setCurrentImage(idx)}
                 >
                   <img
@@ -65,10 +105,11 @@ const Product = () => {
                   />
                   <div
                     className={`absolute inset-0 border-2 rounded-lg transition
-                    ${currentImage === idx
+                    ${
+                      currentImage === idx
                         ? "border-orange-500"
                         : "border-transparent"
-                      }
+                    }
                     group-hover:border-orange-500`}
                   />
                 </div>
@@ -123,10 +164,11 @@ const Product = () => {
                   <button
                     key={storage}
                     onClick={() => setSelectedStorage(storage)}
-                    className={`px-3 lg:px-4 py-2 rounded border ${selectedStorage === storage
-                      ? "border-orange-500 text-orange-500"
-                      : "border-gray-300"
-                      }`}
+                    className={`px-3 lg:px-4 py-2 rounded border ${
+                      selectedStorage === storage
+                        ? "border-orange-500 text-orange-500"
+                        : "border-gray-300"
+                    }`}
                   >
                     {storage}
                   </button>
@@ -210,85 +252,97 @@ const Product = () => {
       </div>
       {/* Description section */}
       <div>
-        <div className="border border-light-100 p-4 shadow-md flex justify-between gap-x-4">
-          <div className="flex-[.8]">
-            <div className="flex flex-col px4 justify-between">
+        <div className="border border-light-100 p-4 shadow-md flex flex-col lg:flex-row gap-4">
+          {/* Product Description Section */}
+          <div className="w-full md:flex-[0.8]">
+            <div className="flex flex-col justify-between">
               <div className="border-b">
-                <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit ">
+                <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit">
                   وصف المنتج
                 </h1>
               </div>
-              <div className="pt-4 px-">
-                <p>
-                  iPhone 14 Pro Max
-
-                  المعالج: سداسي النواة Apple A16 Bionic تكنولوجيا 4 نانو
-                  التخزين / الرام: 128/256/512/1000 جيجا مع 6 جيجا رام
-                  الكاميرا: خلفية 48+12+12 م.ب.+TOF 3D / امامية 12+SL 3D
-                  الشاشة: 6.7 بوصة بدقة 1290x2796 بها نوتش جديد
-                  نظام التشغيل: IOS 16
-                  البطارية: 4323 مللي أمبير و تدعم الشحن السريع بقوة 20 واط والشحن اللاسلكي الـ MagSafe بقوة 15 واط والشحن اللاسلكي مع شواحن الـ Qi العادية بقوة 7.5 واط .
-                  مواصفات هاتف iPhone 14 Pro Max :-
+              <div className="pt-4">
+                <p className="text-right text-sm md:text-base leading-relaxed">
+                  iPhone 14 Pro Max المعالج: سداسي النواة Apple A16 Bionic
+                  تكنولوجيا 4 نانو التخزين / الرام: 128/256/512/1000 جيجا مع 6
+                  جيجا رام الكاميرا: خلفية 48+12+12 م.ب.+TOF 3D / امامية 12+SL
+                  3D الشاشة: 6.7 بوصة بدقة 1290x2796 بها نوتش جديد نظام التشغيل:
+                  IOS 16 البطارية: 4323 مللي أمبير و تدعم الشحن السريع بقوة 20
+                  واط والشحن اللاسلكي الـ MagSafe بقوة 15 واط والشحن اللاسلكي مع
+                  شواحن الـ Qi العادية بقوة 7.5 واط . مواصفات هاتف iPhone 14 Pro
+                  Max :-
                   <br />
                   <br />
-                  يدعم الهاتف خاصية الـ NFC .
-                  يأتي الهاتف بأبعاد 160.7×77.6×7.85 ملم مع وزن 240 جرام .
-                  يدعم الهاتف شريحة إتصال من نوع Nano Sim وشريحة إتصال من نوع eSim .
-                  يدعم شبكات الاتصال الجيل الثاني الـ 2G والجيل الثالث الـ 3G والجيل الرابع الـ 4G والجيل الخامس الـ 5G .
-                  بالنسبة للخامات تأتي مع واجهة درع السيراميك مع‏ ‏سطح خلفي من الزجاج المركب غير اللامع مع فريم من معدن الستانلس ستيل .
-                  يأتي الهاتف مقاوم للماء والغبار بشهادة الـ IP68 المقاوم للماء حتى 6 متر لمدة نصف ساعة .
+                  يدعم الهاتف خاصية الـ NFC . يأتي الهاتف بأبعاد 160.7×77.6×7.85
+                  ملم مع وزن 240 جرام . يدعم الهاتف شريحة إتصال من نوع Nano Sim
+                  وشريحة إتصال من نوع eSim . يدعم شبكات الاتصال الجيل الثاني الـ
+                  2G والجيل الثالث الـ 3G والجيل الرابع الـ 4G والجيل الخامس الـ
+                  5G . بالنسبة للخامات تأتي مع واجهة درع السيراميك مع‏ ‏سطح خلفي
+                  من الزجاج المركب غير اللامع مع فريم من معدن الستانلس ستيل .
+                  يأتي الهاتف مقاوم للماء والغبار بشهادة الـ IP68 المقاوم للماء
+                  حتى 6 متر لمدة نصف ساعة .
                   <br />
                   <br />
-                  الشاشة تأتي بطبقة مقاومة للخدش مع توافق الشاشة بالكامل لخاصية الـ Always On Display بالإضافة إلى معدل التحديث الـ 120Hz مع خاصية الـ HDR10 مع سطوع عالي جدا يصل الي 2000 شمعة .
-                  يدعم الهاتف تصوير الفيديوهات بجودة الـ 4K بمعدل التقاط 24 و25 و30 و60 إطار في الثانية الواحدة كما يدعم التصوير بجودة الـ FHD بدقة 1080 بكسل بمعدل التقاط 25 و30 و60 و120 إطار في الثانية الواحدة .
-                  يدعم ميكروفون إضافي لعزل الضوضاء .
+                  الشاشة تأتي بطبقة مقاومة للخدش مع توافق الشاشة بالكامل لخاصية
+                  الـ Always On Display بالإضافة إلى معدل التحديث الـ 120Hz مع
+                  خاصية الـ HDR10 مع سطوع عالي جدا يصل الي 2000 شمعة . يدعم
+                  الهاتف تصوير الفيديوهات بجودة الـ 4K بمعدل التقاط 24 و25 و30
+                  و60 إطار في الثانية الواحدة كما يدعم التصوير بجودة الـ FHD
+                  بدقة 1080 بكسل بمعدل التقاط 25 و30 و60 و120 إطار في الثانية
+                  الواحدة . يدعم ميكروفون إضافي لعزل الضوضاء .
                   <br />
                   <br />
-                  وسائل الأمان والحماية : يدعم الهاتف بصمة الوجه Face ID .
-                  كما يدعم الهاتف معظم المستشعرات الأخرى مثل التسارع والقرب والبوصلة والجيروسكوب والضغط الجوي .
-                  السماعات الخارجية تأتي بصوت ستيريو لتحصل على صوت أفضل نسبياً .
-                  منفذ الـ USB يأتي من النوع القديم من نوع الـ Lightning .
-                  يأتي الهاتف بنظام تشغيل iOS 16 .
+                  وسائل الأمان والحماية : يدعم الهاتف بصمة الوجه Face ID . كما
+                  يدعم الهاتف معظم المستشعرات الأخرى مثل التسارع والقرب والبوصلة
+                  والجيروسكوب والضغط الجوي . السماعات الخارجية تأتي بصوت ستيريو
+                  لتحصل على صوت أفضل نسبياً . منفذ الـ USB يأتي من النوع القديم
+                  من نوع الـ Lightning . يأتي الهاتف بنظام تشغيل iOS 16 .
                 </p>
               </div>
             </div>
           </div>
-          <div className="flex-[.2]">
+
+          {/* Reviews Section */}
+          <div className="w-full md:flex-[0.3]">
             <div className="flex flex-col justify-between">
               <div className="border-b">
-                <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit ">
+                <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit">
                   المراجعات
                 </h1>
               </div>
               <div className="flex flex-col pt-4 gap-y-2">
-                {[1, 2, 3, 4].map((item) => <ReviewCard
-                  rating={3.5}
-                  name="علاء"
-                  date="2024-10-12"
-                  comment="يدعم الهاتف معظم المستشعرات"
-                />)}
+                {[1, 2, 3, 4].map((item) => (
+                  <ReviewCard
+                    key={item}
+                    rating={3.5}
+                    name="علاء"
+                    date="2024-10-12"
+                    comment="يدعم الهاتف معظم المستشعرات"
+                  />
+                ))}
               </div>
             </div>
           </div>
-
         </div>
 
         <div className="shadow-md border shadow-light-600 mt-2 rounded-md overflow-hidden mb-8 p-4">
-          <div className="border-b">
-            <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit ">
+          <div className="border-b mb-4">
+            <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit">
               منتجات ذات صلة
             </h1>
           </div>
-          <div className="flex hide-scrollbar overflow-x-scroll gap-x-4 py-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => (
-              <ProductCard
-                size="sm"
-                productName="ريلمي 9 آي - اسود"
-                productPrice={165000}
-                productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw" // Replace with the actual image URL
-              />
+          <Slider className="my-4" {...settings}>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
+              <div key={item} className="px-2">
+                <ProductCard
+                  size="sm"
+                  productName="ريلمي 9 آي - اسود"
+                  productPrice={165000}
+                  productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw"
+                />
+              </div>
             ))}
-          </div>
+          </Slider>
         </div>
       </div>
     </div>
