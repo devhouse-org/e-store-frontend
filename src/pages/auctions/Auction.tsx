@@ -23,7 +23,7 @@ const Auction = (props: Props) => {
 
   const [remainingTime, setRemainingTime] = useState<timeType | null>(null);
 
-  const endTime = "2024-12-15T12:00:00";
+  const endTime = "2025-12-28T12:00:00";
 
   useEffect(() => {
     const updateTime = () => {

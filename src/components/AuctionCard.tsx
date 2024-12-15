@@ -49,8 +49,8 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
         `${days.toString().padStart(2, "0")} : ${hours
           .toString()
           .padStart(2, "0")} : ${minutes
-          .toString()
-          .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
+            .toString()
+            .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
       );
     };
 
@@ -113,7 +113,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
             <p>{remainingTime}</p>
           </div>
           {/* Button */}
-          <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" />
+          <AuctionDialog prices={prices} endTime="2025-12-28T12:00:00" />
         </div>
       </div>
     </div>

@@ -47,7 +47,7 @@ const AuctionSection = (props: Props) => {
           <div className="mt-12">
             <AuctionDialog
               prices={prices}
-              endTime="2024-12-15T12:00:00"
+              endTime="2025-12-28T12:00:00"
               title={activeAuctionSectionItem.title}
               currentPrice={activeAuctionSectionItem.currentPrice}
               image={activeAuctionSectionItem.image}

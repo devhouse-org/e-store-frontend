@@ -86,9 +86,8 @@ const Components = () => {
         <Slider {...settings}>
           {[1, 2, 3, 4, 5].map((item, i) => (
             <div
-              className={`h-[200px] md:h-[300px] lg:h-[400px] rounded-md overflow-hidden border-2 border-orange-500 bg-green-${
-                i + 3
-              }00`}
+              className={`h-[200px] md:h-[300px] lg:h-[400px] rounded-md overflow-hidden border-2 border-orange-500 bg-green-${i + 3
+                }00`}
             >
               <h3>{i + 1}</h3>
             </div>
@@ -149,7 +148,7 @@ const Components = () => {
           />
         </div>
 
-        <AuctionDialog prices={prices} endTime="2024-12-15T12:00:00" />
+        <AuctionDialog prices={prices} endTime="2024-12-28T12:00:00" />
 
         <div className="flex py-8">
           <CartReviewCard cart={cart} />
@@ -187,7 +186,7 @@ const Components = () => {
             productName="اكس بوكس سيريس اكس"
             currentPrice={310000}
             startingPrice={25000}
-            endTime="2024-12-15T12:00:00" // Set the actual auction end time here
+            endTime="2025-12-28T12:00:00" // Set the actual auction end time here
             imageSrc="https://ardes.bg/uploads/original/konzola-xbox-series-x-1tb-466538.jpg"
             onSubscribe={handleSubscribe}
           />
