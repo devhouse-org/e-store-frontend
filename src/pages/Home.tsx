@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import SpecialProducts from "@/components/SpecialProducts";
 import { Button } from "@/components/ui/button";
 import { carouselCardData, techLogos } from "@/utils/dummy_data/data";
+import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
 import { useState } from "react";
 import { IconType } from "react-icons";
 import Slider from "react-slick";
@@ -30,17 +31,64 @@ function Home() {
     },
     afterChange: (current: any) => setActiveSlide2(current),
   };
+  const categoryCarouselSettings = {
+    autoPlay: true,
+    autoPlaySpeed: 900,
+    speed: 900,
+    slidesToShow: 11,
+    slidesToScroll: 4,
+    nextArrow: <LucideArrowLeft className="bg-black text-white" />,
+    prevArrow: <LucideArrowRight className="bg-black text-white" />,
+    responsive: [
+      {
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 6,
+          slidesToScroll: 4,
+          infinite: false,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 4,
+          infinite: false,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 3,
+          initialSlide: 1,
+          infinite: false,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 3,
+          infinite: false,
+          dots: false
+        }
+      }
+    ]
+  };
 
   return (
-    <div className="container mx-auto">
+    <div className="containe pt-4 px-4 md:px-12 mx-auto">
       {/* Slider */}
-      <div className="py-16">
+      <div className="pb-14 pt-8">
         <Slider {...settings}>
           {[1, 2, 3, 4, 5].map((item, i) => (
             <div
-              className={`h-[200px] md:h-[300px] lg:h-[400px] rounded-md overflow-hidden border-2 border-orange-500 bg-green-${
-                i + 3
-              }00`}
+              className={`h-[200px] md:h-[300px] lg:h-[400px] rounded-md overflow-hidden border-2 border-orange-500 bg-green-${i + 3
+                }00`}
             >
               <h3>{i + 1}</h3>
             </div>
@@ -55,7 +103,7 @@ function Home() {
           </h1>
           <Button label="عرض جميع الفئات" />
         </div>
-        <div className="flex gap-x-4 overflow-x-auto scrollbar-thin">
+        <Slider {...categoryCarouselSettings}>
           {carouselCardData.map((item) => (
             <div>
               <CarouselCard
@@ -66,7 +114,20 @@ function Home() {
               />
             </div>
           ))}
-        </div>
+        </Slider>
+        {/* <div className="flex gap-x-4 overflow-x-auto scrollbar-thin">
+
+          {carouselCardData.map((item) => (
+            <div>
+              <CarouselCard
+                label={item.label}
+                key={item.label}
+                link={item.link}
+                Icon={item.Icon as IconType}
+              />
+            </div>
+          ))}
+        </div> */}
       </>
       {/* Auctions Section */}
       <div className="pt-16">
@@ -79,7 +140,7 @@ function Home() {
           subtitle="عرض ملحمي للذكاء الاصطناعي من كوكل."
           price={520}
           primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
-          //   className="my-8"
+        //   className="my-8"
         />
       </div>
       {/* Products Cards */}

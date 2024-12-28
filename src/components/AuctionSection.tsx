@@ -1,14 +1,61 @@
 import { auctionSectionData, prices } from "@/utils/dummy_data/data";
 import { AuctionDialog } from "./AuctionDialog";
 import ProductCard from "./ProductCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+type TimeType = {
+  seconds: number;
+  hours: number;
+  minutes: number;
+  days: number;
+};
 type Props = {};
 
 const AuctionSection = (props: Props) => {
   const [activeAuctionSectionItem, setActiveAuctionSectionItem] = useState(
     auctionSectionData[0]
   );
+
+  const [remainingTime, setRemainingTime] = useState<TimeType | null>(null);
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date().getTime();
+      const end = new Date(activeAuctionSectionItem.endTime).getTime();
+      const distance = end - now;
+
+      if (distance < 0) {
+        setRemainingTime({
+          seconds: 0,
+          hours: 0,
+          minutes: 0,
+          days: 0,
+        });
+        clearInterval(intervalId);
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      setRemainingTime({
+        seconds,
+        hours,
+        minutes,
+        days,
+      });
+    };
+
+    updateTime();
+
+    const intervalId = setInterval(updateTime, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [activeAuctionSectionItem.endTime]);
 
   return (
     <div className="bg-white border border-slate-200 shadow-md rounded-md py-6 px-14">
@@ -42,9 +89,24 @@ const AuctionSection = (props: Props) => {
                 {activeAuctionSectionItem.startingPrice} د,ع
               </p>
             </div>
+            <div className="">
+              <h3 className="font-tajawal-medium mt-4">الوقت المتبقي</h3>
+              <div className="px-4 flex justify-between items-center w-full bg-light-500 border-2 pt-2 pb-1 my-4  text--500 rounded-md">
+                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">
+                  {remainingTime?.seconds} ثانية
+                </p>
+                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">
+                  {remainingTime?.minutes} دقيقة
+                </p>
+                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">
+                  {remainingTime?.hours} ساعة
+                </p>
+                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">{remainingTime?.days} يوم</p>
+              </div>
+            </div>
           </div>
           {/* section two */}
-          <div className="mt-12">
+          <div className="mt-8">
             <AuctionDialog
               prices={prices}
               endTime="2025-12-28T12:00:00"

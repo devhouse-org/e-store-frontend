@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 
-type timeType = {
+type TimeType = {
   seconds: number;
   hours: number;
   minutes: number;
@@ -32,7 +32,7 @@ export function AuctionDialog({
 }: AuctionItemType) {
   const imgSrc =
     "https://ardes.bg/uploads/original/konzola-xbox-series-x-1tb-466538.jpg";
-  const [remainingTime, setRemainingTime] = useState<timeType | null>(null);
+  const [remainingTime, setRemainingTime] = useState<TimeType | null>(null);
 
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);

@@ -48,7 +48,7 @@ const Navbar = (props: Props) => {
 
       <div
         dir="rtl"
-        className="navigation flex items-center p-4 justify-between"
+        className="navigation flex items-center py-4 px-12 justify-between"
       >
         <ul className="flex-wrap hidden md:flex gap-x-4 list-none flex-1">
           {links.map((link) => (
