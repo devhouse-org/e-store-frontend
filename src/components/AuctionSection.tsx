@@ -91,17 +91,17 @@ const AuctionSection = (props: Props) => {
             </div>
             <div className="">
               <h3 className="font-tajawal-medium mt-4">الوقت المتبقي</h3>
-              <div className="px-4 flex justify-between items-center w-full bg-light-500 border-2 pt-2 pb-1 my-4  text--500 rounded-md">
-                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">
+              <div className="px-4 flex justify-between items-center w-full bg-light-100 border pt-2 pb-1 my-4  text--500 rounded-md">
+                <p className="font-tajawal-regular border-l text-center border-dark-100 px-2">
                   {remainingTime?.seconds} ثانية
                 </p>
-                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">
+                <p className="font-tajawal-regular border-l text-center border-dark-100 px-2">
                   {remainingTime?.minutes} دقيقة
                 </p>
-                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">
+                <p className="font-tajawal-regular border-l text-center border-dark-100 px-2">
                   {remainingTime?.hours} ساعة
                 </p>
-                <p className="font-tajawal-regular border-l text-nowrap border-dark-100 pl-6">{remainingTime?.days} يوم</p>
+                <p className="font-tajawal-regular text-center border-dark-100 px-2">{remainingTime?.days} يوم</p>
               </div>
             </div>
           </div>
@@ -109,7 +109,7 @@ const AuctionSection = (props: Props) => {
           <div className="mt-8">
             <AuctionDialog
               prices={prices}
-              endTime="2025-12-28T12:00:00"
+              endTime={activeAuctionSectionItem.endTime}
               title={activeAuctionSectionItem.title}
               currentPrice={activeAuctionSectionItem.currentPrice}
               image={activeAuctionSectionItem.image}

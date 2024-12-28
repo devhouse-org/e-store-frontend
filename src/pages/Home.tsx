@@ -138,7 +138,7 @@ function Home() {
         <Banner
           title="بيكسل 9 برو"
           subtitle="عرض ملحمي للذكاء الاصطناعي من كوكل."
-          price={520}
+          price={320000}
           primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
         //   className="my-8"
         />
@@ -146,13 +146,15 @@ function Home() {
       {/* Products Cards */}
       <div className="flex gap-8 pt-16 ">
         {[1, 2, 3, 4, 5].map((item) => (
-          <ProductCard
-            key={item}
-            size="lg"
-            productName="ريلمي 9 آي - اسود"
-            productPrice={165000}
-            productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw"
-          />
+          <div className="w-full">
+            <ProductCard
+              key={item}
+              size="lg"
+              productName="ريلمي 9 آي - اسود"
+              productPrice={165000}
+              productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw"
+            />
+          </div>
         ))}
       </div>
       {/* Special Products */}

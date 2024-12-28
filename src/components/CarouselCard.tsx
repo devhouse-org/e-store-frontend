@@ -1,5 +1,5 @@
 import { IconType } from "react-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type Props = {
   label?: string;
@@ -9,9 +9,13 @@ type Props = {
   img?: string;
 };
 
+
 const CarouselCard = ({ img, label, Icon, link, hasBg = true }: Props) => {
+
+  const navigate = useNavigate();
+
   return (
-    <div className="">
+    <div onClick={() => navigate(link)} className="">
       <div
         className={`w-[80px] md:w-[120px] flex justify-center items-center py-2 lg:py-4 px-1 rounded-xl overflow-hidden my-2 flex-col ${hasBg && "bg-white shadow-sm"
           }  border border-transparent hover:border-orange-100`}

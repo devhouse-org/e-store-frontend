@@ -31,7 +31,7 @@ const Banner: React.FC<BannerProps> = ({
           </p>
           <div className="flex justify-center md:justify-start items-center">
             <span className="px-4 md:px-8 py-1.5 bg-gray-200 rounded-full text-orange-500 font-tajawal-medium text-lg md:text-xl">
-              {price} $
+              {price.toLocaleString()} د.ع
             </span>
           </div>
         </div>
