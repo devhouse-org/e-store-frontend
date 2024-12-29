@@ -73,8 +73,8 @@ const Product = () => {
   const storageOptions = ["512 GB", "256 GB", "128 GB"];
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className=" bg-white p-4 rounded-md shadow my-10">
+    <div className="px-12 py-6">
+      <div className=" bg-white w-full p-4 rounded-md shadow my-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column - Images */}
           <div className="lg:col-span-4 space-y-4">
