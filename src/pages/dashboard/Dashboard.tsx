@@ -48,8 +48,6 @@ const links = [
     },
 ]
 
-// test line
-
 const Dashboard = (props: Props) => {
     return (
         <div>
