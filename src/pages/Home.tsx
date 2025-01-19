@@ -46,8 +46,8 @@ function Home() {
           slidesToShow: 6,
           slidesToScroll: 4,
           infinite: false,
-          dots: false
-        }
+          dots: false,
+        },
       },
       {
         breakpoint: 1024,
@@ -55,8 +55,8 @@ function Home() {
           slidesToShow: 5,
           slidesToScroll: 4,
           infinite: false,
-          dots: false
-        }
+          dots: false,
+        },
       },
       {
         breakpoint: 600,
@@ -65,8 +65,8 @@ function Home() {
           slidesToScroll: 3,
           initialSlide: 1,
           infinite: false,
-          dots: false
-        }
+          dots: false,
+        },
       },
       {
         breakpoint: 480,
@@ -74,10 +74,10 @@ function Home() {
           slidesToShow: 4,
           slidesToScroll: 3,
           infinite: false,
-          dots: false
-        }
-      }
-    ]
+          dots: false,
+        },
+      },
+    ],
   };
 
   return (
@@ -87,66 +87,72 @@ function Home() {
         <Slider {...settings}>
           {[1, 2, 3, 4, 5].map((item, i) => (
             <div
-              className={`h-[200px] md:h-[300px] lg:h-[400px] rounded-md overflow-hidden border-2 border-orange-500 bg-green-${i + 3
-                }00`}
+              key={i}
+              className={`h-[240px] md:h-[360px] lg:h-[480px] rounded-xl overflow-hidden border border-orange-500/20 bg-green-${
+                i + 3
+              }00`}
             >
               <h3>{i + 1}</h3>
             </div>
           ))}
         </Slider>
       </div>
+
       {/* Category Carousel */}
-      <>
-        <div className=" flex justify-between pt-4">
-          <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit ">
-            أفضل الفئات
-          </h1>
+      <div className="mb-20">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="relative">
+            <h2 className="font-tajawal-medium text-lg border-b-2 border-orange-400 w-fit">
+              أفضل الفئات
+            </h2>
+            <span className="absolute -bottom-1 right-0 w-1/3 h-[2px] bg-gray-100" />
+          </div>
           <Button label="عرض جميع الفئات" />
         </div>
-        <Slider {...categoryCarouselSettings}>
-          {carouselCardData.map((item) => (
-            <div>
-              <CarouselCard
-                label={item.label}
-                key={item.label}
-                link={item.link}
-                Icon={item.Icon as IconType}
-              />
-            </div>
-          ))}
-        </Slider>
-        {/* <div className="flex gap-x-4 overflow-x-auto scrollbar-thin">
 
+        {/* Categories Grid */}
+        <div className="grid grid-flow-col auto-cols-max gap-6 py-4 overflow-x-auto scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100 px-1">
           {carouselCardData.map((item) => (
-            <div>
+            <div
+              key={item.label}
+              className="min-w-[130px] transition-transform duration-300 hover:-translate-y-1"
+            >
               <CarouselCard
                 label={item.label}
-                key={item.label}
                 link={item.link}
                 Icon={item.Icon as IconType}
               />
             </div>
           ))}
-        </div> */}
-      </>
+        </div>
+      </div>
+
       {/* Auctions Section */}
-      <div className="pt-16">
+      <div className="mb-20">
         <AuctionSection />
       </div>
+
       {/* Banner Section */}
-      <div className="pt-16">
+      <div className="mb-20">
         <Banner
           title="بيكسل 9 برو"
           subtitle="عرض ملحمي للذكاء الاصطناعي من كوكل."
           price={320000}
           primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
-        //   className="my-8"
         />
       </div>
+
       {/* Products Cards */}
-      <div className="flex gap-8 pt-16 ">
-        {[1, 2, 3, 4, 5].map((item) => (
-          <div className="w-full">
+      <div className="mb-20">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="font-tajawal-medium text-lg border-b-2 border-orange-400 w-fit">
+            منتجات مميزة
+          </h2>
+          <Button label="عرض المزيد" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+          {[1, 2, 3, 4, 5].map((item) => (
             <ProductCard
               key={item}
               size="lg"
@@ -154,31 +160,36 @@ function Home() {
               productPrice={165000}
               productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw"
             />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+
       {/* Special Products */}
-      <div className="pt-16">
+      <div className="mb-20">
         <SpecialProducts />
       </div>
+
       {/* Brands Carousel */}
-      <div className="pt-16 pb-8">
-        <div className="flex justify-between pt-4">
-          <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit ">
-            تسوق بالماركات
-          </h1>
+      <div className="mb-16">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="relative">
+            <h2 className="font-tajawal-medium text-lg border-b-2 border-orange-400 w-fit">
+              تسوق بالماركات
+            </h2>
+            <span className="absolute -bottom-1 right-0 w-1/3 h-[2px] bg-gray-100" />
+          </div>
           <Button label="عرض جميع الماركات" />
         </div>
-        <div className="flex gap-x-2 py-2 overflow-x-auto scrollbar-thin">
+
+        {/* Brands Grid */}
+        <div className="grid grid-flow-col auto-cols-max gap-6 py-4 overflow-x-auto scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100 px-1">
           {techLogos.map((item) => (
-            <div>
-              <CarouselCard
-                // label={item.label}
-                img={item.image}
-                key={item.label}
-                link={item.link}
-                hasBg={false}
-              />
+            <div
+              key={item.label}
+              className="min-w-[130px] transition-transform duration-300 hover:-translate-y-1"
+            >
+              <CarouselCard img={item.image} link={item.link} hasBg={false} />
             </div>
           ))}
         </div>

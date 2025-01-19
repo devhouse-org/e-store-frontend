@@ -101,7 +101,9 @@ const AuctionSection = (props: Props) => {
                 <p className="font-tajawal-regular border-l text-center border-dark-100 px-2">
                   {remainingTime?.hours} ساعة
                 </p>
-                <p className="font-tajawal-regular text-center border-dark-100 px-2">{remainingTime?.days} يوم</p>
+                <p className="font-tajawal-regular text-center border-dark-100 px-2">
+                  {remainingTime?.days} يوم
+                </p>
               </div>
             </div>
           </div>
