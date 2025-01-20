@@ -19,8 +19,12 @@ import { IconType } from "react-icons";
 import ReviewCard from "@/components/ReviewCard";
 import ProductCard from "@/components/ProductCard";
 import Slider from "react-slick";
+import { useCartStore } from "@/store/useCartStore";
+import { useNavigate } from "react-router-dom";
 
 const Product = () => {
+  const addToCart = useCartStore((state) => state.addToCart);
+  const navigate = useNavigate();
   const [selectedStorage, setSelectedStorage] = useState("256 GB");
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
@@ -72,6 +76,22 @@ const Product = () => {
 
   const storageOptions = ["512 GB", "256 GB", "128 GB"];
 
+  const handleAddToCart = () => {
+    addToCart({
+      id: "iphone-16-pro-max", // In a real app, this would be from the API
+      name: "ايفون 16 برو ماكس ثنائي الشريحة - لون بنفسجي",
+      price: 1720000,
+      image: images[0],
+      quantity: quantity,
+      storage: selectedStorage,
+    });
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    navigate("/cart");
+  };
+
   return (
     <div className="px-12 py-6">
       <div className=" bg-white w-full p-4 rounded-md shadow my-10">
@@ -89,10 +109,11 @@ const Product = () => {
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className={`relative cursor-pointer group ${currentImage === idx
-                    ? "ring-2 ring-orange-500 rounded-lg"
-                    : ""
-                    }`}
+                  className={`relative cursor-pointer group ${
+                    currentImage === idx
+                      ? "ring-2 ring-orange-500 rounded-lg"
+                      : ""
+                  }`}
                   onClick={() => setCurrentImage(idx)}
                 >
                   <img
@@ -104,10 +125,11 @@ const Product = () => {
                   />
                   <div
                     className={`absolute inset-0 border-2 rounded-lg transition
-                    ${currentImage === idx
+                    ${
+                      currentImage === idx
                         ? "border-orange-500"
                         : "border-transparent"
-                      }
+                    }
                     group-hover:border-orange-500`}
                   />
                 </div>
@@ -162,10 +184,11 @@ const Product = () => {
                   <button
                     key={storage}
                     onClick={() => setSelectedStorage(storage)}
-                    className={`px-3 lg:px-4 py-2 rounded border ${selectedStorage === storage
-                      ? "border-orange-500 text-orange-500"
-                      : "border-gray-300"
-                      }`}
+                    className={`px-3 lg:px-4 py-2 rounded border ${
+                      selectedStorage === storage
+                        ? "border-orange-500 text-orange-500"
+                        : "border-gray-300"
+                    }`}
                   >
                     {storage}
                   </button>
@@ -200,12 +223,18 @@ const Product = () => {
             <Separator className="bg-gray-200 p-[.5px]" />
 
             <div className="flex gap-4 w-full lg:w-fit">
-              <Button size="lg" className="flex-1" label="اشتري الآن" />
+              <Button
+                size="lg"
+                className="flex-1"
+                label="اشتري الآن"
+                onClick={handleBuyNow}
+              />
               <Button
                 variant="outline"
                 size="lg"
                 className="flex-1"
                 label="إضافة الى السلة"
+                onClick={handleAddToCart}
               />
             </div>
           </div>

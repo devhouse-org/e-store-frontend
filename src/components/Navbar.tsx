@@ -2,6 +2,7 @@ import { CircleDashed, Heart, ShoppingCart, UserRound } from "lucide-react";
 import logo from "../assets/images/Logo.png";
 import CustomInput from "./CustomInput";
 import { Link, NavLink } from "react-router-dom";
+import { useCartStore } from "../store/useCartStore";
 
 type Props = {
   hasAd?: boolean;
@@ -38,6 +39,8 @@ const links = [
 ];
 
 const Navbar = (props: Props) => {
+  const cartCount = useCartStore((state) => state.cartCount);
+
   return (
     <div className="bg-white shadow-sm overflow-hidden">
       {props.hasAd && (
@@ -66,9 +69,7 @@ const Navbar = (props: Props) => {
         </div>
         <div dir="ltr" className="icons flex-1">
           <div className="flex items-center gap-x-4">
-            <Link
-              to="/dashboard"
-            >
+            <Link to="/dashboard">
               <UserRound className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
             </Link>
             <Link
@@ -77,7 +78,7 @@ const Navbar = (props: Props) => {
              bg-orange-500 hover:bg-orange-500/90 transition ease-in-out cursor-pointer rounded-full"
             >
               <ShoppingCart className="" />
-              <p className="hidden md:block">1</p>
+              <p className="hidden md:block">{cartCount}</p>
             </Link>
             <Heart className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
             <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
