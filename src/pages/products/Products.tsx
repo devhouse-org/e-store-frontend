@@ -1,15 +1,21 @@
-import AuctionCard from "@/components/AuctionCard";
+import { useState } from "react";
+import { products, getBrands } from "@/utils/data/products";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
 import ProductCard from "@/components/ProductCard";
-import { auctionPageData } from "@/utils/dummy_data/data";
-import { Link } from "react-router-dom";
 
-type Props = {};
-const Products = (props: Props) => {
+const Products = () => {
+  const [selectedBrand, setSelectedBrand] = useState<string>("all");
+  const brands = getBrands();
+
+  const filteredProducts =
+    selectedBrand === "all"
+      ? products
+      : products.filter((product) => product.brand === selectedBrand);
+
   return (
-    <div className="flex items-start flex-row mt-8 px-12 ">
-      <div className="flex-[.2] flex-col ">
+    <div className="flex items-start flex-row mt-8 px-12">
+      <div className="flex-[.2] flex-col">
         <div className="title pb-4">
           <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
             فلتر
@@ -17,7 +23,7 @@ const Products = (props: Props) => {
         </div>
         <Filter />
       </div>
-      <div className=" mx-auto flex-[.8]">
+      <div className="mx-auto flex-[.8]">
         {/* title and filter */}
         <div className="title_and_filter pb-4 flex justify-between items-center">
           {/* Title */}
@@ -220,15 +226,8 @@ const Products = (props: Props) => {
         <div className="">
           {/* Auction Cards Section */}
           <div className="auction_cards gap-4 flex justify-between flex-row flex-wrap">
-            {auctionPageData.slice(0, 12).map((item) => (
-              <Link to={`/product/${item.id}`}>
-                <ProductCard
-                  size="lg"
-                  productName="ريلمي 9 آي - اسود"
-                  productPrice={165000}
-                  productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw"
-                />
-              </Link>
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} size="lg" />
             ))}
           </div>
           <div className="pagination mt-20 mb-14">
@@ -239,4 +238,5 @@ const Products = (props: Props) => {
     </div>
   );
 };
+
 export default Products;

@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { products } from "@/utils/data/products";
 import AuctionSection from "@/components/AuctionSection";
 import Banner from "@/components/Banner";
 import CarouselCard from "@/components/CarouselCard";
@@ -6,7 +8,6 @@ import SpecialProducts from "@/components/SpecialProducts";
 import { Button } from "@/components/ui/button";
 import { carouselCardData, techLogos } from "@/utils/dummy_data/data";
 import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
-import { useState } from "react";
 import { IconType } from "react-icons";
 import Slider from "react-slick";
 
@@ -80,6 +81,9 @@ function Home() {
     ],
   };
 
+  // Get first 5 products for featured section
+  const featuredProducts = products.slice(0, 5);
+
   return (
     <div className="containe pt-4 px-4 md:px-12 mx-auto">
       {/* Slider */}
@@ -152,14 +156,8 @@ function Home() {
           <Button label="عرض المزيد" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
-          {[1, 2, 3, 4, 5].map((item) => (
-            <ProductCard
-              key={item}
-              size="lg"
-              productName="ريلمي 9 آي - اسود"
-              productPrice={165000}
-              productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw"
-            />
+          {featuredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} size="lg" />
           ))}
         </div>
       </div>

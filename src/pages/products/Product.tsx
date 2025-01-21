@@ -20,11 +20,15 @@ import ReviewCard from "@/components/ReviewCard";
 import ProductCard from "@/components/ProductCard";
 import Slider from "react-slick";
 import { useCartStore } from "@/store/useCartStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getProductById, products } from "@/utils/data/products";
+import { reviews } from "@/utils/data/reviews";
 
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
   const navigate = useNavigate();
+  const { id } = useParams();
+  const product = getProductById(id || "");
   const [selectedStorage, setSelectedStorage] = useState("256 GB");
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
@@ -77,14 +81,16 @@ const Product = () => {
   const storageOptions = ["512 GB", "256 GB", "128 GB"];
 
   const handleAddToCart = () => {
-    addToCart({
-      id: "iphone-16-pro-max", // In a real app, this would be from the API
-      name: "ايفون 16 برو ماكس ثنائي الشريحة - لون بنفسجي",
-      price: 1720000,
-      image: images[0],
-      quantity: quantity,
-      storage: selectedStorage,
-    });
+    if (product) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: quantity,
+        storage: selectedStorage,
+      });
+    }
   };
 
   const handleBuyNow = () => {
@@ -92,16 +98,25 @@ const Product = () => {
     navigate("/cart");
   };
 
+  // Get 4 related products (excluding current product)
+  const relatedProducts = products
+    .filter((p) => p.id !== id && p.category === product?.category)
+    .slice(0, 4);
+
+  if (!product) {
+    return <div>Product not found</div>;
+  }
+
   return (
     <div className="px-12 py-6">
-      <div className=" bg-white w-full p-4 rounded-md shadow my-10">
+      <div className="bg-white w-full p-4 rounded-md shadow my-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column - Images */}
           <div className="lg:col-span-4 space-y-4">
             <div className="bg-gray-100 rounded-xl p-4 flex justify-center">
               <img
-                src={images[currentImage]}
-                alt="iPhone"
+                src={product.image}
+                alt={product.name}
                 className="w-full max-w-xs lg:w-80 object-contain transition-opacity duration-300"
               />
             </div>
@@ -144,7 +159,7 @@ const Product = () => {
                 className="text-xl lg:text-2xl font-tajawal-medium text-right"
                 dir="rtl"
               >
-                ايفون 16 برو ماكس ثنائي الشريحة - لون بنفسجي
+                {product.name}
               </h1>
               <Heart className="text-gray-400 hover:text-red-500 cursor-pointer shrink-0" />
             </div>
@@ -164,10 +179,7 @@ const Product = () => {
                 ابرز الخصائص
               </h3>
               <ul className="space-y-2 font-tajawal-regular text-right text-blue-600 list-disc pr-4">
-                <li>شاشة Super Retina XDR مقاس 6.7 بوصة مع تقنية ProMotion</li>
-                <li>كاميرا احترافية ثلاثية بدقة 48 ميجابكسل</li>
-                <li>معالج A17 Pro للأداء الاستثنائي</li>
-                <li>تصميم من التيتانيوم</li>
+                <li>{product.description}</li>
               </ul>
             </div>
             <Separator className="bg-gray-200 p-[.5px]" />
@@ -216,7 +228,7 @@ const Product = () => {
 
             <div className="text-right">
               <div className="text-2xl lg:text-3xl font-tajawal-medium text-orange-500">
-                د.ع. 1,720,000
+                {product.price.toLocaleString()} د.ع
               </div>
             </div>
 
@@ -225,17 +237,19 @@ const Product = () => {
             <div className="flex gap-4 w-full lg:w-fit">
               <Button
                 size="lg"
-                className="flex-1"
-                label="اشتري الآن"
+                className="flex-1 bg-orange-500 hover:bg-orange-600"
                 onClick={handleBuyNow}
-              />
+              >
+                شراء الآن
+              </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="flex-1"
-                label="إضافة الى السلة"
+                className="flex-1 bg-orange-100 text-orange-500 hover:bg-orange-200"
                 onClick={handleAddToCart}
-              />
+              >
+                إضافة للسلة
+              </Button>
             </div>
           </div>
         </div>
@@ -289,40 +303,7 @@ const Product = () => {
               </div>
               <div className="pt-4">
                 <p className="text-right text-sm md:text-base leading-relaxed">
-                  iPhone 14 Pro Max المعالج: سداسي النواة Apple A16 Bionic
-                  تكنولوجيا 4 نانو التخزين / الرام: 128/256/512/1000 جيجا مع 6
-                  جيجا رام الكاميرا: خلفية 48+12+12 م.ب.+TOF 3D / امامية 12+SL
-                  3D الشاشة: 6.7 بوصة بدقة 1290x2796 بها نوتش جديد نظام التشغيل:
-                  IOS 16 البطارية: 4323 مللي أمبير و تدعم الشحن السريع بقوة 20
-                  واط والشحن اللاسلكي الـ MagSafe بقوة 15 واط والشحن اللاسلكي مع
-                  شواحن الـ Qi العادية بقوة 7.5 واط . مواصفات هاتف iPhone 14 Pro
-                  Max :-
-                  <br />
-                  <br />
-                  يدعم الهاتف خاصية الـ NFC . يأتي الهاتف بأبعاد 160.7×77.6×7.85
-                  ملم مع وزن 240 جرام . يدعم الهاتف شريحة إتصال من نوع Nano Sim
-                  وشريحة إتصال من نوع eSim . يدعم شبكات الاتصال الجيل الثاني الـ
-                  2G والجيل الثالث الـ 3G والجيل الرابع الـ 4G والجيل الخامس الـ
-                  5G . بالنسبة للخامات تأتي مع واجهة درع السيراميك مع‏ ‏سطح خلفي
-                  من الزجاج المركب غير اللامع مع فريم من معدن الستانلس ستيل .
-                  يأتي الهاتف مقاوم للماء والغبار بشهادة الـ IP68 المقاوم للماء
-                  حتى 6 متر لمدة نصف ساعة .
-                  <br />
-                  <br />
-                  الشاشة تأتي بطبقة مقاومة للخدش مع توافق الشاشة بالكامل لخاصية
-                  الـ Always On Display بالإضافة إلى معدل التحديث الـ 120Hz مع
-                  خاصية الـ HDR10 مع سطوع عالي جدا يصل الي 2000 شمعة . يدعم
-                  الهاتف تصوير الفيديوهات بجودة الـ 4K بمعدل التقاط 24 و25 و30
-                  و60 إطار في الثانية الواحدة كما يدعم التصوير بجودة الـ FHD
-                  بدقة 1080 بكسل بمعدل التقاط 25 و30 و60 و120 إطار في الثانية
-                  الواحدة . يدعم ميكروفون إضافي لعزل الضوضاء .
-                  <br />
-                  <br />
-                  وسائل الأمان والحماية : يدعم الهاتف بصمة الوجه Face ID . كما
-                  يدعم الهاتف معظم المستشعرات الأخرى مثل التسارع والقرب والبوصلة
-                  والجيروسكوب والضغط الجوي . السماعات الخارجية تأتي بصوت ستيريو
-                  لتحصل على صوت أفضل نسبياً . منفذ الـ USB يأتي من النوع القديم
-                  من نوع الـ Lightning . يأتي الهاتف بنظام تشغيل iOS 16 .
+                  {product.description}
                 </p>
               </div>
             </div>
@@ -337,15 +318,7 @@ const Product = () => {
                 </h1>
               </div>
               <div className="flex flex-col pt-4 gap-y-2">
-                {[1, 2, 3, 4].map((item) => (
-                  <ReviewCard
-                    key={item}
-                    rating={3.5}
-                    name="علاء"
-                    date="2024-10-12"
-                    comment="يدعم الهاتف معظم المستشعرات"
-                  />
-                ))}
+                <ReviewCard reviews={reviews} />
               </div>
             </div>
           </div>
@@ -358,14 +331,9 @@ const Product = () => {
             </h1>
           </div>
           <Slider className="my-4" {...settings}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
-              <div key={item} className="px-2">
-                <ProductCard
-                  size="sm"
-                  productName="ريلمي 9 آي - اسود"
-                  productPrice={165000}
-                  productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw"
-                />
+            {relatedProducts.map((relatedProduct) => (
+              <div key={relatedProduct.id} className="px-2">
+                <ProductCard product={relatedProduct} size="sm" />
               </div>
             ))}
           </Slider>
