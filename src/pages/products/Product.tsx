@@ -23,6 +23,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProductById, products } from "@/utils/data/products";
 import { reviews } from "@/utils/data/reviews";
+import { useWishlistStore } from "@/store/useWishlistStore";
 
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
@@ -80,6 +81,10 @@ const Product = () => {
 
   const storageOptions = ["512 GB", "256 GB", "128 GB"];
 
+  const { addToWishlist, removeFromWishlist, isWishlisted } =
+    useWishlistStore();
+  const isInWishlist = product ? isWishlisted(product.id) : false;
+
   const handleAddToCart = () => {
     if (product) {
       addToCart({
@@ -96,6 +101,16 @@ const Product = () => {
   const handleBuyNow = () => {
     handleAddToCart();
     navigate("/cart");
+  };
+
+  const handleWishlistClick = () => {
+    if (product) {
+      if (isInWishlist) {
+        removeFromWishlist(product.id);
+      } else {
+        addToWishlist(product);
+      }
+    }
   };
 
   // Get 4 related products (excluding current product)
@@ -161,7 +176,14 @@ const Product = () => {
               >
                 {product.name}
               </h1>
-              <Heart className="text-gray-400 hover:text-red-500 cursor-pointer shrink-0" />
+              <Heart
+                className={`cursor-pointer transition-colors ${
+                  isInWishlist
+                    ? "text-red-500"
+                    : "text-gray-400 hover:text-red-500"
+                }`}
+                onClick={handleWishlistClick}
+              />
             </div>
 
             <div className="flex items-center">
@@ -239,17 +261,15 @@ const Product = () => {
                 size="lg"
                 className="flex-1 bg-orange-500 hover:bg-orange-600"
                 onClick={handleBuyNow}
-              >
-                شراء الآن
-              </Button>
+                label="شراء الآن"
+              />
               <Button
                 variant="outline"
                 size="lg"
                 className="flex-1 bg-orange-100 text-orange-500 hover:bg-orange-200"
                 onClick={handleAddToCart}
-              >
-                إضافة للسلة
-              </Button>
+                label="إضافة للسلة"
+              />
             </div>
           </div>
         </div>

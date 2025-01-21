@@ -3,6 +3,7 @@ import logo from "../assets/images/Logo.png";
 import CustomInput from "./CustomInput";
 import { Link, NavLink } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
+import { useWishlistStore } from "../store/useWishlistStore";
 
 type Props = {
   hasAd?: boolean;
@@ -40,6 +41,7 @@ const links = [
 
 const Navbar = (props: Props) => {
   const cartCount = useCartStore((state) => state.cartCount);
+  const wishlistCount = useWishlistStore((state) => state.wishlistCount);
 
   return (
     <div className="bg-white shadow-sm overflow-hidden">
@@ -80,7 +82,14 @@ const Navbar = (props: Props) => {
               <ShoppingCart className="" />
               <p className="hidden md:block">{cartCount}</p>
             </Link>
-            <Heart className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            <Link to="/wishlist" className="relative">
+              <Heart className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
             <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
             <div className="hidden md:block">
               <CustomInput placeholder="ما الذي تبحث عنه" />

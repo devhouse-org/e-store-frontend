@@ -16,6 +16,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import { CartProvider } from "./context/CartContext";
+import Wishlist from "@/pages/Wishlist";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             {/* <Route path="/product/:id" element={<Product />} /> */}
 
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/wishlist" element={<Wishlist />} />
           </Route>
           {/* Auth routes */}
           <Route path="/login" element={<Login />} />
