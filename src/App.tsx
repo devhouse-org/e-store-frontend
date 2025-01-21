@@ -17,11 +17,13 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import { CartProvider } from "./context/CartContext";
 import Wishlist from "@/pages/Wishlist";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <CartProvider>
       <div dir="rtl">
+        <ScrollToTop />
         {/* <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" /> */}
         <Routes>
           <Route path="/" element={<Layout />}>
