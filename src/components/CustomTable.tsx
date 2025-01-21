@@ -13,9 +13,13 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { IconType } from "react-icons";
 import { RxTriangleLeft, RxTriangleRight } from "react-icons/rx";
 import useProductStore from "@/stores/productStore";
+import { useCartStore } from "@/store/useCartStore";
 
 const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
   const { products, updateQuantity, removeProduct } = useProductStore();
+
+  // Use this one
+  // const { products } = useCartStore();
 
   return (
     <div className="">
