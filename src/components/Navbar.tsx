@@ -4,6 +4,8 @@ import CustomInput from "./CustomInput";
 import { Link, NavLink } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
 import { useWishlistStore } from "../store/useWishlistStore";
+import { useState } from "react";
+import SearchModal from "./SearchModal";
 
 type Props = {
   hasAd?: boolean;
@@ -42,6 +44,7 @@ const links = [
 const Navbar = (props: Props) => {
   const cartCount = useCartStore((state) => state.cartCount);
   const wishlistCount = useWishlistStore((state) => state.wishlistCount);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   return (
     <div className="bg-white shadow-sm overflow-hidden">
@@ -92,11 +95,18 @@ const Navbar = (props: Props) => {
             </Link>
             <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
             <div className="hidden md:block">
-              <CustomInput placeholder="ما الذي تبحث عنه" />
+              <div onClick={() => setIsSearchModalOpen(true)}>
+                <CustomInput placeholder="ما الذي تبحث عنه" readOnly />
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+      />
     </div>
   );
 };

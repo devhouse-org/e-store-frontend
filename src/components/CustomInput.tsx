@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
 
 interface CustomInputProps {
   label?: string;
@@ -13,6 +14,7 @@ interface CustomInputProps {
   className?: string;
   error?: string;
   required?: boolean;
+  readOnly?: boolean;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -26,6 +28,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
   className = "",
   error,
   required = false,
+  readOnly = false,
 }) => {
   return (
     <div className={`flex flex-col space-y-2 ${className}`}>
@@ -52,14 +55,19 @@ const CustomInput: React.FC<CustomInputProps> = ({
               ? "border-red-500 placeholder:text-right text-right focus:ring-red-500"
               : "border-input",
             disabled ? "cursor-not-allowed opacity-50" : "",
-            "px-3 py-2 rounded-md focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+            "px-3 py-2 rounded-md focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-blue-500",
+            readOnly ? "cursor-pointer" : ""
           )}
           required={required}
+          readOnly={readOnly}
         />
         {error && (
           <span className="absolute text-sm text-red-500 bottom-0 left-0">
             {error}
           </span>
+        )}
+        {readOnly && (
+          <Search className="w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2 text-gray-400" />
         )}
       </div>
     </div>
