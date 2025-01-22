@@ -12,6 +12,7 @@ import {
   BadgeCheck,
   HandCoins,
   Truck,
+  Scale,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-separator";
@@ -24,6 +25,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getProductById, products } from "@/utils/data/products";
 import { reviews } from "@/utils/data/reviews";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useComparisonStore } from "@/store/useComparisonStore";
 
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
@@ -85,6 +87,9 @@ const Product = () => {
     useWishlistStore();
   const isInWishlist = product ? isWishlisted(product.id) : false;
 
+  const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+  const isInComparison = product ? isCompared(product.id) : false;
+
   const handleAddToCart = () => {
     if (product) {
       addToCart({
@@ -109,6 +114,16 @@ const Product = () => {
         removeFromWishlist(product.id);
       } else {
         addToWishlist(product);
+      }
+    }
+  };
+
+  const handleComparisonClick = () => {
+    if (product) {
+      if (isInComparison) {
+        removeFromComparison(product.id);
+      } else {
+        addToComparison(product);
       }
     }
   };
@@ -139,11 +154,10 @@ const Product = () => {
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className={`relative cursor-pointer group ${
-                    currentImage === idx
-                      ? "ring-2 ring-orange-500 rounded-lg"
-                      : ""
-                  }`}
+                  className={`relative cursor-pointer group ${currentImage === idx
+                    ? "ring-2 ring-orange-500 rounded-lg"
+                    : ""
+                    }`}
                   onClick={() => setCurrentImage(idx)}
                 >
                   <img
@@ -155,11 +169,10 @@ const Product = () => {
                   />
                   <div
                     className={`absolute inset-0 border-2 rounded-lg transition
-                    ${
-                      currentImage === idx
+                    ${currentImage === idx
                         ? "border-orange-500"
                         : "border-transparent"
-                    }
+                      }
                     group-hover:border-orange-500`}
                   />
                 </div>
@@ -177,11 +190,10 @@ const Product = () => {
                 {product.name}
               </h1>
               <Heart
-                className={`cursor-pointer transition-colors ${
-                  isInWishlist
-                    ? "text-red-500"
-                    : "text-gray-400 hover:text-red-500"
-                }`}
+                className={`cursor-pointer transition-colors ${isInWishlist
+                  ? "text-red-500"
+                  : "text-gray-400 hover:text-red-500"
+                  }`}
                 onClick={handleWishlistClick}
               />
             </div>
@@ -218,11 +230,10 @@ const Product = () => {
                   <button
                     key={storage}
                     onClick={() => setSelectedStorage(storage)}
-                    className={`px-3 lg:px-4 py-2 rounded border ${
-                      selectedStorage === storage
-                        ? "border-orange-500 text-orange-500"
-                        : "border-gray-300"
-                    }`}
+                    className={`px-3 lg:px-4 py-2 rounded border ${selectedStorage === storage
+                      ? "border-orange-500 text-orange-500"
+                      : "border-gray-300"
+                      }`}
                   >
                     {storage}
                   </button>
@@ -269,6 +280,16 @@ const Product = () => {
                 className="flex-1 bg-orange-100 text-orange-500 hover:bg-orange-200"
                 onClick={handleAddToCart}
                 label="إضافة للسلة"
+              />
+              <Button
+                variant="outline"
+                size="lg"
+                className={`flex-1 ${isInComparison
+                    ? "bg-orange-500 text-white hover:bg-orange-600"
+                    : "bg-orange-100 text-orange-500 hover:bg-orange-200"
+                  }`}
+                onClick={handleComparisonClick}
+                label={isInComparison ? "إزالة من المقارنة" : "إضافة للمقارنة"}
               />
             </div>
           </div>

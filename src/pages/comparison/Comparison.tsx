@@ -3,6 +3,7 @@ import { products } from "@/utils/data/products";
 import { Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCartStore } from "@/store/useCartStore";
+import { useComparisonStore } from "@/store/useComparisonStore";
 
 type Product = {
     id: string;
@@ -109,8 +110,11 @@ const DataRow = ({
 );
 
 const Comparison = () => {
-    const [slot1, setSlot1] = useState<Product | null>(products[0]);
-    const [slot2, setSlot2] = useState<Product | null>(products[1]);
+    const { comparisonItems, removeFromComparison } = useComparisonStore();
+
+    // Use the first two items from comparison store
+    const slot1 = comparisonItems[0] || null;
+    const slot2 = comparisonItems[1] || null;
 
     const specifications = [
         { label: "العلامة التجارية", key: "brand" },
@@ -134,8 +138,14 @@ const Comparison = () => {
                     <thead>
                         <tr>
                             <th className="border p-4 bg-gray-50 font-tajawal-regular">المواصفات</th>
-                            <ProductColumn product={slot1} onRemove={() => setSlot1(null)} />
-                            <ProductColumn product={slot2} onRemove={() => setSlot2(null)} />
+                            <ProductColumn
+                                product={slot1}
+                                onRemove={() => slot1 && removeFromComparison(slot1.id)}
+                            />
+                            <ProductColumn
+                                product={slot2}
+                                onRemove={() => slot2 && removeFromComparison(slot2.id)}
+                            />
                         </tr>
                     </thead>
                     <tbody>
