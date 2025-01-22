@@ -93,7 +93,9 @@ const Navbar = (props: Props) => {
                 </span>
               )}
             </Link>
-            <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            <Link to="/comparison">
+              <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            </Link>
             <div className="hidden md:block">
               <div onClick={() => setIsSearchModalOpen(true)}>
                 <CustomInput placeholder="ما الذي تبحث عنه" readOnly />

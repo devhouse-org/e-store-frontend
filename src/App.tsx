@@ -18,6 +18,7 @@ import Signup from "./pages/auth/Signup";
 import { CartProvider } from "./context/CartContext";
 import Wishlist from "@/pages/Wishlist";
 import ScrollToTop from "./components/ScrollToTop";
+import Comparison from "./pages/comparison/Comparison";
 
 function App() {
   return (
@@ -41,6 +42,12 @@ function App() {
 
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/wishlist" element={<Wishlist />} />
+
+            {/* Comparison Route */}
+            <Route path="/comparison" element={<Comparison />} />
+
+            {/* Comparison Routes */}
+            {/* <Route path="/comparison" element={<Comparison />} /> */}
           </Route>
           {/* Auth routes */}
           <Route path="/login" element={<Login />} />

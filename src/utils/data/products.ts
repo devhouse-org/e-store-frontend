@@ -6,6 +6,14 @@ export interface Product {
   description: string;
   category: string;
   brand: string;
+  // New specifications
+  ram: string;
+  cpu: string;
+  screenSize: string;
+  frontCamera: string;
+  backCamera: string;
+  storage: string;
+  os: string;
   // Add any other fields you need
 }
 
@@ -19,6 +27,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Realme",
     description: "هاتف ريلمي 9 آي بمواصفات رائعة وسعر مناسب",
+    ram: "4GB",
+    cpu: "MediaTek Helio G35",
+    screenSize: "6.5 inches",
+    frontCamera: "8MP",
+    backCamera: "13MP + 2MP + 2MP",
+    storage: "64GB",
+    os: "Android 11",
   },
   {
     id: "2",
@@ -29,6 +44,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Samsung",
     description: "هاتف سامسونج A13 بمواصفات متميزة",
+    ram: "4GB",
+    cpu: "Exynos 850",
+    screenSize: "6.6 inches",
+    frontCamera: "8MP",
+    backCamera: "50MP + 5MP + 2MP + 2MP",
+    storage: "128GB",
+    os: "Android 12",
   },
   {
     id: "3",
@@ -39,6 +61,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Xiaomi",
     description: "هاتف شاومي نوت 11 برو بمواصفات عالية",
+    ram: "8GB",
+    cpu: "MediaTek Dimensity 920",
+    screenSize: "6.67 inches",
+    frontCamera: "16MP",
+    backCamera: "108MP + 8MP + 2MP",
+    storage: "128GB",
+    os: "Android 11, MIUI 12.5",
   },
   {
     id: "4",
@@ -49,6 +78,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Apple",
     description: "هاتف ايفون 13 برو ماكس الرائد",
+    ram: "6GB",
+    cpu: "Apple A15 Bionic",
+    screenSize: "6.7 inches",
+    frontCamera: "12MP",
+    backCamera: "12MP + 12MP + 12MP",
+    storage: "256GB",
+    os: "iOS 15",
   },
   {
     id: "5",
@@ -59,6 +95,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Huawei",
     description: "هاتف هواوي P50 بوكيت المتميز",
+    ram: "8GB",
+    cpu: "Kirin 9000",
+    screenSize: "6.8 inches",
+    frontCamera: "13MP",
+    backCamera: "50MP + 13MP + 12MP",
+    storage: "256GB",
+    os: "HarmonyOS 2",
   },
   {
     id: "6",
@@ -69,6 +112,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Nokia",
     description: "هاتف نوكيا XR20 المتين",
+    ram: "6GB",
+    cpu: "Qualcomm Snapdragon 778G",
+    screenSize: "6.67 inches",
+    frontCamera: "16MP",
+    backCamera: "48MP + 16MP + 5MP",
+    storage: "128GB",
+    os: "Android 11",
   },
   {
     id: "7",
@@ -79,6 +129,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Realme",
     description: "هاتف ريلمي C25Y الاقتصادي",
+    ram: "4GB",
+    cpu: "MediaTek Helio G35",
+    screenSize: "6.5 inches",
+    frontCamera: "8MP",
+    backCamera: "13MP + 2MP + 2MP",
+    storage: "64GB",
+    os: "Android 11",
   },
   {
     id: "8",
@@ -89,6 +146,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Samsung",
     description: "هاتف سامسونج M32 متوسط المدى",
+    ram: "6GB",
+    cpu: "Exynos 1280",
+    screenSize: "6.6 inches",
+    frontCamera: "13MP",
+    backCamera: "50MP + 12MP + 5MP",
+    storage: "128GB",
+    os: "Android 12",
   },
   {
     id: "9",
@@ -99,6 +163,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Oppo",
     description: "هاتف اوبو رينو 6 المتطور",
+    ram: "8GB",
+    cpu: "MediaTek Dimensity 900",
+    screenSize: "6.5 inches",
+    frontCamera: "16MP",
+    backCamera: "48MP + 2MP",
+    storage: "128GB",
+    os: "Android 11",
   },
   {
     id: "10",
@@ -109,6 +180,13 @@ export const products: Product[] = [
     category: "phones",
     brand: "Vivo",
     description: "هاتف فيفو Y21T الاقتصادي",
+    ram: "8GB",
+    cpu: "Qualcomm Snapdragon 778G",
+    screenSize: "6.58 inches",
+    frontCamera: "16MP",
+    backCamera: "48MP + 2MP",
+    storage: "128GB",
+    os: "Android 11",
   },
 ];
 
