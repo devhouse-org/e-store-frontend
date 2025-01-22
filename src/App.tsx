@@ -18,6 +18,7 @@ import Signup from "./pages/auth/Signup";
 import { CartProvider } from "./context/CartContext";
 import Wishlist from "@/pages/Wishlist";
 import ScrollToTop from "./components/ScrollToTop";
+import ProfileDash from "./pages/dashboard/ProfileDash";
 
 function App() {
   return (
@@ -39,12 +40,12 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             {/* <Route path="/product/:id" element={<Product />} /> */}
 
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<ProfileDash />} />
             <Route path="/wishlist" element={<Wishlist />} />
+            {/* Auth routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
           </Route>
-          {/* Auth routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
         </Routes>
         {/* <Footer /> */}
       </div>
