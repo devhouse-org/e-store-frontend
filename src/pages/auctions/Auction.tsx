@@ -2,11 +2,24 @@ import { AuctionDialog } from "@/components/AuctionDialog";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { prices } from "@/utils/dummy_data/data";
-import { BadgeCheck, Facebook, HandCoins, Heart, Instagram, Mail, Share2, Truck, Twitter, X } from "lucide-react";
+import {
+  BadgeCheck,
+  Facebook,
+  HandCoins,
+  Heart,
+  Instagram,
+  Mail,
+  Share2,
+  Truck,
+  Twitter,
+  X,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti";
 import { useParams } from "react-router-dom";
 import Slider from "react-slick";
+import { getAuctionById } from "@/utils/data/auctions";
+import { products } from "@/utils/data/products";
 
 type Props = {};
 
@@ -20,15 +33,17 @@ const Auction = (props: Props) => {
   const { id } = useParams();
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
-
   const [remainingTime, setRemainingTime] = useState<timeType | null>(null);
 
-  const endTime = "2025-12-28T12:00:00";
+  const auction = id ? getAuctionById(id) : null;
 
   useEffect(() => {
+    if (!auction) return;
+
+    let intervalId: NodeJS.Timeout;
     const updateTime = () => {
       const now = new Date().getTime();
-      const end = new Date(endTime).getTime();
+      const end = new Date(auction.endTime).getTime();
       const distance = end - now;
 
       if (distance < 0) {
@@ -38,7 +53,7 @@ const Auction = (props: Props) => {
           minutes: 0,
           days: 0,
         });
-        clearInterval(intervalId); // Stop the interval when time is up
+        clearInterval(intervalId);
         return;
       }
 
@@ -58,11 +73,17 @@ const Auction = (props: Props) => {
     };
 
     updateTime();
-
-    const intervalId = setInterval(updateTime, 1000);
+    intervalId = setInterval(updateTime, 1000);
 
     return () => clearInterval(intervalId);
-  }, [endTime]);
+  }, [auction]);
+
+  if (!auction) {
+    return <div>Auction not found</div>;
+  }
+
+  // Get related products (you might want to implement a proper related products logic)
+  const relatedProducts = products.slice(0, 4); // Just get first 4 products for example
 
   const totalPrice = selectedPrices.reduce((acc, value) => acc + value, 0);
 
@@ -80,14 +101,22 @@ const Auction = (props: Props) => {
   };
 
   return (
-    <div className="container mx-auto mt-8">
-      {/* Item Details */}
+    <div className="container mx-auto px-4 py-8">
+      {/* Auction details */}
       <div className="mb-8 bg-white shadow-md shadow-light-600 rounded-md border border-light-200 overflow-hidden">
         <div className=" flex">
           {/* Right */}
           <div className="flex-1 p-4 max-w-[650px]">
             <div className="active_image">
-              <div className="replace_with_img w-full h-[300px] rounded-md border-2 bg-dark-300"></div>
+              <img
+                src={auction.image}
+                alt={auction.title}
+                className="w-full h-[300px] rounded-md border-2 object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "/path/to/fallback/image.jpg";
+                  console.log("Failed to load image:", auction.image);
+                }}
+              />
               <div className="other_images flex flex-wrap items-center gap-2 my-2">
                 {[1, 2, 3, 4].slice(0, 12).map((item) => (
                   <div className="cursor-pointer border-2 bg-green-200 h-24 w-32 object-contain rounded-md" />
@@ -102,7 +131,7 @@ const Auction = (props: Props) => {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="truncate font-tajawal-bold text-[18px] md:text-[20px] lg:text-[22px] text-black">
-                    ايفون 16 برو ماكس ثنائي الشريحة - لون بنفسجي
+                    {auction.title}
                   </p>
 
                   <div className="flex items-center">
@@ -125,7 +154,7 @@ const Auction = (props: Props) => {
               <p className="font-tajawal-bold text-black">السعر الحالي</p>
 
               <p className="font-tajawal-bold pb-2 text-[24px] text-orange-500">
-                720,000 د.ع
+                {auction.currentPrice.toLocaleString()} د.ع
               </p>
             </div>
             <div className="time_remained py-4 border-b">
@@ -158,10 +187,11 @@ const Auction = (props: Props) => {
                     <div
                       onClick={() => handlePriceSelection(price.value)}
                       key={price.id}
-                      className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${selectedPrices.includes(price.value)
-                        ? "bg-orange-200 border-orange-400"
-                        : ""
-                        }`}
+                      className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${
+                        selectedPrices.includes(price.value)
+                          ? "bg-orange-200 border-orange-400"
+                          : ""
+                      }`}
                     >
                       <p className="text-[16px]">{price.label}</p>
                     </div>
@@ -179,8 +209,6 @@ const Auction = (props: Props) => {
               </div>
             </div>
           </div>
-
-
         </div>
         <div className="px-4 pb-4 flex flex-col lg:flex-row justify-between mt-8 gap-6 items-center">
           <div className="grid grid-cols-3 gap-4 lg:gap-12 text-center text-sm w-full lg:w-auto">
@@ -218,19 +246,12 @@ const Auction = (props: Props) => {
         </div>
       </div>
 
-      {/* More Auctions */}
-      <div className="shadow-md border shadow-light-600 mt-2 rounded-md overflow-hidden mb-8 p-4">
-        <h1 className="font-tajawal-bold border-b mb-4 text-black text-[18px]">
-          مزايدات اخرى
-        </h1>
-        <div className="flex hide-scrollbar overflow-x-scroll gap-x-4 py-2">
-          {[1, 2, 3, 4, 5].map(() => (
-            <ProductCard
-              size="sm"
-              productName="ريلمي 9 آي - اسود"
-              productPrice={165000}
-              productImage="https://imgs.search.brave.com/WHP2l_3EHf2gg19MN7siqwYx7WPyHycjFStijWLttwE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtbmEuc3NsLWlt/YWdlcy1hbWF6b24u/Y29tL2ltYWdlcy9J/LzcxczB4RlZtSVFM/LmpwZw" // Replace with the actual image URL
-            />
+      {/* Related Products */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold mb-6">منتجات ذات صلة</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {relatedProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>

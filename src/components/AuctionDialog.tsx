@@ -23,8 +23,13 @@ type AuctionItemType = {
   title?: string;
 };
 
+interface AuctionDialogProps {
+  endTime: string;
+  prices?: number[];
+}
+
 export function AuctionDialog({
-  prices,
+  prices = [],
   endTime,
   currentPrice,
   image,
@@ -38,6 +43,8 @@ export function AuctionDialog({
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
     const updateTime = () => {
       const now = new Date().getTime();
       const end = new Date(endTime).getTime();
@@ -70,8 +77,7 @@ export function AuctionDialog({
     };
 
     updateTime();
-
-    const intervalId = setInterval(updateTime, 1000);
+    intervalId = setInterval(updateTime, 1000);
 
     return () => clearInterval(intervalId);
   }, [endTime]);
@@ -132,10 +138,11 @@ export function AuctionDialog({
                 <div
                   onClick={() => handlePriceSelection(price.value)}
                   key={price.id}
-                  className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${selectedPrices.includes(price.value)
-                    ? "bg-orange-200 border-orange-400"
-                    : ""
-                    }`}
+                  className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${
+                    selectedPrices.includes(price.value)
+                      ? "bg-orange-200 border-orange-400"
+                      : ""
+                  }`}
                 >
                   <p className="text-[16px]">{price.label}</p>
                 </div>
@@ -155,8 +162,9 @@ export function AuctionDialog({
           <div
             className={`p-2 flex justify-between items-center w-full bg-orange-500
                             hover:bg-orange-500/90 transition ease-in-out cursor-pointer 
-                            rounded-md text-white ${isAnimating && "bg-orange-300"
-              }`}
+                            rounded-md text-white ${
+                              isAnimating && "bg-orange-300"
+                            }`}
           >
             <p className="font-tajawal-regular">
               {totalPrice.toLocaleString()}د.ع

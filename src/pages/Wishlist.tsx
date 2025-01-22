@@ -1,11 +1,13 @@
 import { useWishlistStore } from "@/store/useWishlistStore";
 import ProductCard from "@/components/ProductCard";
+import Layout from "@/components/Layout";
+// import Layout from "@/components/Layout";
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist } = useWishlistStore();
 
   return (
-    <div className="px-12 py-6">
+    <div className="container mx-auto px-12 mt-8 py-6 min-h-[calc(100vh-200px)] ">
       <h1 className="text-2xl font-tajawal-bold mb-6">قائمة المفضلة</h1>
       {wishlist.length === 0 ? (
         <div className="text-center py-8">

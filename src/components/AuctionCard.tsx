@@ -1,43 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { AuctionDialog } from "./AuctionDialog";
+import type { Auction } from "@/utils/data/auctions";
 import { prices } from "@/utils/dummy_data/data";
 
 interface AuctionCardProps {
-  productName: string;
-  currentPrice: number;
-  startingPrice: number;
-  endTime: string;
-  imageSrc: string;
-  onSubscribe: () => void;
+  auction: Auction;
+  onSubscribe?: () => void;
 }
 
-const AuctionCard: React.FC<AuctionCardProps> = ({
-  productName,
-  currentPrice,
-  startingPrice,
-  endTime,
-  imageSrc,
-  onSubscribe,
-}) => {
-  // State to track the remaining time
+const AuctionCard: React.FC<AuctionCardProps> = ({ auction, onSubscribe }) => {
   const [remainingTime, setRemainingTime] =
     useState<string>("00 : 00 : 00 : 00");
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout; // Declare intervalId here
+
     // Function to update the remaining time
     const updateTime = () => {
       const now = new Date().getTime();
-      const end = new Date(endTime).getTime();
+      const end = new Date(auction.endTime).getTime();
       const distance = end - now;
 
       // If the auction has ended
       if (distance < 0) {
         setRemainingTime("00 : 00 : 00 : 00");
-        clearInterval(intervalId); // Stop the interval when time is up
+        if (intervalId) {
+          clearInterval(intervalId); // Stop the interval when time is up
+        }
         return;
       }
 
-      // Calculate time components (days, hours, minutes, seconds)
+      // Calculate time components
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -49,8 +42,8 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
         `${days.toString().padStart(2, "0")} : ${hours
           .toString()
           .padStart(2, "0")} : ${minutes
-            .toString()
-            .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
+          .toString()
+          .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
       );
     };
 
@@ -58,28 +51,32 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
     updateTime();
 
     // Update time every second
-    const intervalId = setInterval(updateTime, 1000);
+    intervalId = setInterval(updateTime, 1000);
 
     // Clean up the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [endTime]); // Re-run effect when endTime changes
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [auction.endTime]); // Re-run effect when endTime changes
 
   return (
     <div className="w-full max-w-md bg-white shadow-md rounded-lg border border-gray-300 overflow-hidden">
-      <div className="p-6  flex flex-col md:items-center">
+      <div className="p-6 flex flex-col md:items-center">
         <div className="flex flex-col sm:flex-row sm:gap-8">
           <div className="mx-auto md:mx-0">
             {/* Product Image */}
             <img
-              src={imageSrc}
-              alt={productName}
+              src={auction.image}
+              alt={auction.title}
               className="min-w-16 w-32 h-32 object-contain mt-4 mb-6 sm:mb-0"
             />
           </div>
           <div className="flex flex-col justify-between sm:h-full">
             {/* Product Name */}
             <h2 className="text-xl truncate text-center md:text-start font-semibold text-gray-800 mb-2 md:mb-4 font-tajawal-bold">
-              {productName}
+              {auction.title}
             </h2>
 
             {/* Prices */}
@@ -89,7 +86,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
                   السعر الحالي
                 </p>
                 <p className="text-orange-500 font-tajawal-bold text-xl">
-                  {currentPrice.toLocaleString()} د.ع
+                  {auction.currentPrice.toLocaleString()} د.ع
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row sm:gap-4 md:mt-2 sm:mt-0">
@@ -97,7 +94,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
                   تبدأ المزايدة من
                 </p>
                 <p className="text-orange-500 font-tajawal-bold text-xl">
-                  {startingPrice.toLocaleString()} د.ع
+                  {auction.startingPrice.toLocaleString()} د.ع
                 </p>
               </div>
             </div>
@@ -113,7 +110,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
             <p>{remainingTime}</p>
           </div>
           {/* Button */}
-          <AuctionDialog prices={prices} endTime="2025-12-28T12:00:00" />
+          <AuctionDialog endTime={auction.endTime} prices={prices} />
         </div>
       </div>
     </div>

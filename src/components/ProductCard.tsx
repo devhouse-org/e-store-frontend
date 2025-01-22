@@ -4,17 +4,21 @@ import { Product } from "@/utils/data/products";
 
 interface ProductCardProps {
   product: Product;
-  size: "sm" | "lg";
+  size?: "sm" | "lg";
   activeCard?: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
-  size,
+  size = "sm",
   activeCard,
 }) => {
+  if (!product) {
+    return null; // Or some fallback UI
+  }
+
   return (
-    <Link to={`/product/${product.id}`}>
+    <Link to={`/product/${product.id}`} className="block">
       <div
         className={`
           relative group cursor-pointer transition-all duration-300 ease-in-out
