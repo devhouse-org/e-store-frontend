@@ -24,11 +24,10 @@ const Wishlist = () => {
 
         <Link to="/products">
           <Button
+            label="اضف منتجات للمفضلة"
             className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-xl
-              transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-orange-200"
-          >
-            اضف منتجات للمفضلة
-          </Button>
+              transition-all duration-300  shadow-lg hover:shadow-orange-200"
+          ></Button>
         </Link>
       </div>
     );
