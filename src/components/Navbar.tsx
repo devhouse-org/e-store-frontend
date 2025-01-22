@@ -4,7 +4,7 @@ import CustomInput from "./CustomInput";
 import { Link, NavLink } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
 import { useWishlistStore } from "../store/useWishlistStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchModal from "./SearchModal";
 import { useComparisonStore } from "@/store/useComparisonStore";
 
@@ -47,6 +47,18 @@ const Navbar = (props: Props) => {
   const wishlistCount = useWishlistStore((state) => state.wishlistCount);
   const comparisonItems = useComparisonStore((state) => state.comparisonItems);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isCartAnimating, setIsCartAnimating] = useState(false);
+
+  // Watch for changes in cartCount and trigger animation
+  useEffect(() => {
+    if (cartCount > 0) {
+      setIsCartAnimating(true);
+      const timer = setTimeout(() => {
+        setIsCartAnimating(false);
+      }, 300); // Animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [cartCount]);
 
   return (
     <div className="bg-white shadow-sm overflow-hidden fixed top-0 left-0 right-0 z-40">
@@ -81,11 +93,16 @@ const Navbar = (props: Props) => {
             </Link>
             <Link
               to="/cart"
-              className="text-white gap-x-2 flex items-center justify-center px-4 py-1
-             bg-orange-500 hover:bg-orange-500/90 transition ease-in-out cursor-pointer rounded-full"
+              className={`
+                text-white gap-x-2 flex items-center justify-center px-4 py-1
+                bg-orange-500 hover:bg-orange-500/90 transition-all duration-300 cursor-pointer rounded-full
+                ${isCartAnimating ? 'scale-110 bg-green-500' : ''}
+              `}
             >
-              <ShoppingCart className="" />
-              <p className="hidden md:block">{cartCount}</p>
+              <ShoppingCart className={`transition-transform duration-300 ${isCartAnimating ? 'scale-110' : ''}`} />
+              <p className={`hidden md:block transition-all duration-300 ${isCartAnimating ? 'scale-110' : ''}`}>
+                {cartCount}
+              </p>
             </Link>
             <Link to="/wishlist" className="relative">
               <Heart className="hover:text-blue-500 transition ease-in-out cursor-pointer" />

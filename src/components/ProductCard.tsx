@@ -1,6 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {
+  Heart,
+  ShoppingCart,
+  CircleDashed,
+  CreditCard,
+  HeartCrack,
+  Plus,
+  Minus
+} from "lucide-react";
 import { Product } from "@/utils/data/products";
+import { useWishlistStore } from "@/store/useWishlistStore";
+import { useCartStore } from "@/store/useCartStore";
+import { useComparisonStore } from "@/store/useComparisonStore";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
+import { IconType } from "react-icons";
 
 interface ProductCardProps {
   product: Product;
@@ -10,9 +25,67 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
-  size = "sm",
+  size = "lg",
   activeCard,
 }) => {
+  const navigate = useNavigate();
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
+  const {
+    addToCart,
+    products: cartProducts,
+    updateQuantity,
+    removeFromCart
+  } = useCartStore();
+  const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+
+  const isInWishlist = isWishlisted(product.id);
+  const isInComparison = isCompared(product.id);
+  const cartItem = cartProducts.find(item => item.id === product.id);
+
+  const handleAddToCart = () => {
+    if (!cartItem) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: 1,
+        storage: product.storage
+      });
+    }
+  };
+
+  const handleUpdateQuantity = (newQuantity: number) => {
+    if (cartItem) {
+      if (newQuantity < 1) {
+        removeFromCart(product.id);
+      } else {
+        updateQuantity(product.id, newQuantity);
+      }
+    }
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    navigate("/cart");
+  };
+
+  const handleWishlistClick = () => {
+    if (isInWishlist) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
+  const handleComparisonClick = () => {
+    if (isInComparison) {
+      removeFromComparison(product.id);
+    } else {
+      addToComparison(product);
+    }
+  };
+
   if (!product) {
     return null; // Or some fallback UI
   }
@@ -23,31 +96,36 @@ const ProductCard: React.FC<ProductCardProps> = ({
         className={`
           relative group cursor-pointer transition-all duration-300 ease-in-out
           ${size === "lg" ? "w-64 p-4" : "w-40 p-2"}
-          ${
-            activeCard
-              ? "border-orange-400 shadow-md"
-              : "border-transparent hover:shadow-md"
+          ${activeCard
+            ? "border-orange-400 shadow-md"
+            : "border-transparent hover:shadow-md"
           }
           border-2 bg-white rounded-xl overflow-hidden text-center
         `}
       >
         {/* Product Image Container */}
-        <div
-          className={`
-            relative overflow-hidden rounded-lg
-            ${size === "lg" ? "p-6" : "p-4"}
-            flex justify-center items-center
-          `}
-        >
+        <div className="relative">
           <img
             src={product.image}
             alt={product.name}
             className={`
-              transition-all duration-300
-              ${size === "lg" ? "w-full h-26" : "h-24 w-24"}
-              object-contain group-hover:scale-105
+              w-full object-cover rounded-lg
+              ${size === "lg" ? "h-[280px]" : "h-[220px]"}
             `}
           />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleWishlistClick();
+            }}
+            className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-50"
+          >
+            <Heart
+              className={`w-5 h-5 ${isInWishlist ? "text-red-500 fill-red-500" : "text-gray-400"
+                }`}
+            />
+          </button>
         </div>
 
         {/* Product Info Container */}
@@ -73,6 +151,74 @@ const ProductCard: React.FC<ProductCardProps> = ({
           >
             {product.price.toLocaleString()} د.ع
           </p>
+
+          <div className="flex gap-2 pt-2 justify-center">
+            <Button
+              size="icon"
+              Icon={CreditCard as IconType}
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleBuyNow();
+              }}
+            />
+
+            {cartItem ? (
+              <div
+                className="flex items-center gap-2 bg-orange-100 rounded-full px-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8  text-orange-500 "
+                  onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
+                  Icon={Minus as IconType}
+                />
+                <span className="w-6 text-center font-tajawal-medium">
+                  {cartItem.quantity}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8 text-orange-500 "
+                  onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
+                  Icon={Plus as IconType}
+                />
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-orange-100 hover:bg-orange-200 text-orange-500"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAddToCart();
+                }}
+                Icon={ShoppingCart as IconType}
+              />
+            )}
+
+            <Button
+              variant="outline"
+              size="icon"
+              className={isInComparison
+                ? "bg-orange-500 text-white hover:bg-orange-600"
+                : "bg-orange-100 hover:bg-orange-200 text-orange-500"
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleComparisonClick();
+              }}
+              Icon={CircleDashed as IconType}
+            />
+          </div>
         </div>
 
         {/* Active Indicator */}

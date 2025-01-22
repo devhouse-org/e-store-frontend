@@ -15,15 +15,18 @@ interface CartStore {
   addToCart: (product: CartProduct) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
+  lastAction: 'add' | 'remove' | 'update' | null;
 }
 
 export const useCartStore = create<CartStore>((set) => ({
   cartCount: 0,
   products: [],
+  lastAction: null,
   addToCart: (product) =>
     set((state) => ({
       cartCount: state.cartCount + product.quantity,
       products: [...state.products, product],
+      lastAction: 'add'
     })),
   removeFromCart: (productId) =>
     set((state) => ({
@@ -31,6 +34,7 @@ export const useCartStore = create<CartStore>((set) => ({
       cartCount:
         state.cartCount -
         (state.products.find((p) => p.id === productId)?.quantity || 0),
+      lastAction: 'remove'
     })),
   updateQuantity: (productId, quantity) =>
     set((state) => ({
@@ -41,5 +45,6 @@ export const useCartStore = create<CartStore>((set) => ({
         state.cartCount +
         (quantity -
           (state.products.find((p) => p.id === productId)?.quantity || 0)),
+      lastAction: 'update'
     })),
 }));
