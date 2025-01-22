@@ -22,7 +22,7 @@ import ScrollToTop from "./components/ScrollToTop";
 function App() {
   return (
     <CartProvider>
-      <div dir="rtl">
+      <div dir="rtl" className="pt-[92px]">
         <ScrollToTop />
         {/* <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" /> */}
         <Routes>

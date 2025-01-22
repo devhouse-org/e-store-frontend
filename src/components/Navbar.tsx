@@ -47,7 +47,7 @@ const Navbar = (props: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   return (
-    <div className="bg-white shadow-sm overflow-hidden">
+    <div className="bg-white shadow-sm overflow-hidden fixed top-0 left-0 right-0 z-40">
       {props.hasAd && (
         <div className="ad bg-orange-500 text-white font-bold flex justify-center items-center py-1">
           <h1 className="font-tajawal-regular">{props.adTitle}</h1>
