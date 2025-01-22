@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -15,9 +15,23 @@ import { RxTriangleLeft, RxTriangleRight } from "react-icons/rx";
 import useProductStore from "@/stores/productStore";
 import { useCartStore } from "@/store/useCartStore";
 
-const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
-  const { updateQuantity, removeProduct } = useProductStore();
-  const { products } = useCartStore();
+const ProductsTable: React.FC = () => {
+  const { products, updateQuantity, removeFromCart } = useCartStore();
+
+  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      removeFromCart(productId);
+    } else {
+      updateQuantity(productId, newQuantity);
+    }
+  };
+
+  // Calculate total using useMemo to avoid unnecessary recalculations
+  const total = useMemo(() => {
+    return products.reduce((acc, product) => {
+      return acc + (product.price * product.quantity);
+    }, 0);
+  }, [products]);
 
   return (
     <div className="">
@@ -44,13 +58,10 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                     />
                     <div>
                       <div>{product.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {product.description}
-                      </div>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{product.price}</TableCell>
+                <TableCell>{product.price.toLocaleString()} د.ع</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 border w-fit p-.5 rounded">
                     <Button
@@ -58,7 +69,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                       size="sm"
                       className="text-green-600"
                       Icon={Plus as IconType}
-                      onClick={() => updateQuantity(product.id, 1)}
+                      onClick={() => handleUpdateQuantity(product.id, product.quantity + 1)}
                     />
                     <span className="">{product.quantity}</span>
                     <Button
@@ -66,7 +77,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                       size="sm"
                       className="text-red-600"
                       Icon={Minus as IconType}
-                      onClick={() => updateQuantity(product.id, -1)}
+                      onClick={() => handleUpdateQuantity(product.id, product.quantity - 1)}
                     />
                   </div>
                 </TableCell>
@@ -76,7 +87,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                     size="sm"
                     className="bg-orange-50 hover:bg-orange-200 rounded-full p-2.5 border-orange-600 border text-orange-600"
                     Icon={Trash2 as IconType}
-                    onClick={() => removeProduct(product.id)}
+                    onClick={() => removeFromCart(product.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -86,7 +97,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-4 " dir="rtl">
+      <div className="md:hidden space-y-4" dir="rtl">
         {products.map((product) => (
           <Card key={product.id}>
             <CardContent className="p-4">
@@ -98,8 +109,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                 />
                 <div className="flex-1">
                   <h3 className="font-medium">{product.name}</h3>
-                  <p className="text-sm text-gray-500">{product.description}</p>
-                  <p className="font-medium mt-2">{product.price}</p>
+                  <p className="font-medium mt-2">{product.price.toLocaleString()} د.ع</p>
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center gap-2">
                       <Button
@@ -107,7 +117,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                         size="sm"
                         className="text-green-600"
                         Icon={RxTriangleRight as IconType}
-                        onClick={() => updateQuantity(product.id, 1)}
+                        onClick={() => handleUpdateQuantity(product.id, product.quantity + 1)}
                       />
                       <span className="">{product.quantity}</span>
                       <Button
@@ -115,7 +125,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                         size="sm"
                         className="text-red-600"
                         Icon={RxTriangleLeft as IconType}
-                        onClick={() => updateQuantity(product.id, -1)}
+                        onClick={() => handleUpdateQuantity(product.id, product.quantity - 1)}
                       />
                     </div>
                     <Button
@@ -123,7 +133,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
                       size="sm"
                       className="bg-orange-50 hover:bg-orange-200 rounded-full p-2.5 border-orange-600 border text-orange-600"
                       Icon={Trash2 as IconType}
-                      onClick={() => removeProduct(product.id)}
+                      onClick={() => removeFromCart(product.id)}
                     />
                   </div>
                 </div>
@@ -136,7 +146,7 @@ const ProductsTable: React.FC<{ total: string }> = ({ total }) => {
       {/* Total */}
       <div className="mt-6 text-right" dir="rtl">
         <div className="text-lg text-orange-500 font-medium">
-          المجموع الكلي: {total}
+          المجموع الكلي: {total.toLocaleString()} د.ع
         </div>
       </div>
     </div>

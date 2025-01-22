@@ -227,7 +227,7 @@ const Products = () => {
           {/* Auction Cards Section */}
           <div className="auction_cards gap-4 flex justify-between flex-row flex-wrap">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} size="lg" />
+              <ProductCard showBtns={true} key={product.id} product={product} size="lg" />
             ))}
           </div>
           <div className="pagination mt-20 mb-14">

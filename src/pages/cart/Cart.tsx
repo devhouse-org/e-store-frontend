@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import Items from './steps/Items';
 import Address from './steps/Address';
 import Payment from './steps/Payment';
+import { Link } from "react-router-dom";
+import { useCartStore } from "@/store/useCartStore";
+import { Button } from "@/components/ui/button";
+import { ShoppingBag } from "lucide-react";
 
 type Props = {}
 
@@ -30,7 +34,31 @@ const steps = [
 ]
 
 const Cart = (props: Props) => {
+    const { products: cartProducts } = useCartStore();
     const [active, setActive] = useState(steps[0]);
+
+    if (cartProducts.length === 0) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4">
+                <div className="text-center space-y-3">
+                    <div className="bg-orange-100 p-3 rounded-full w-fit mx-auto">
+                        <ShoppingBag className="w-8 h-8 text-orange-500" />
+                    </div>
+                    <h2 className="text-2xl font-tajawal-medium">السلة فارغة</h2>
+                    <p className="text-gray-500 font-tajawal-regular">
+                        لم تقم بإضافة أي منتج إلى السلة بعد
+                    </p>
+                </div>
+
+                <Link to="/products">
+                    <Button
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+                        label="تسوق الآن"
+                    />
+                </Link>
+            </div>
+        );
+    }
 
     const activeStep = () => {
         switch (active.value) {

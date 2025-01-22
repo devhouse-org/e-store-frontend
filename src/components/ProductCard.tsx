@@ -7,7 +7,8 @@ import {
   CreditCard,
   HeartCrack,
   Plus,
-  Minus
+  Minus,
+  X
 } from "lucide-react";
 import { Product } from "@/utils/data/products";
 import { useWishlistStore } from "@/store/useWishlistStore";
@@ -21,12 +22,14 @@ interface ProductCardProps {
   product: Product;
   size?: "sm" | "lg";
   activeCard?: boolean;
+  showBtns?: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   size = "lg",
   activeCard,
+  showBtns = false
 }) => {
   const navigate = useNavigate();
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
@@ -151,74 +154,83 @@ const ProductCard: React.FC<ProductCardProps> = ({
           >
             {product.price.toLocaleString()} د.ع
           </p>
+          {
+            showBtns && (
+              <div className="space-y-2">
+                <div className="flex gap-2 justify-center">
+                  <Button
+                    size="icon"
+                    Icon={CreditCard as IconType}
+                    className="bg-orange-500 hover:bg-orange-600 text-white"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleBuyNow();
+                    }}
+                  />
 
-          <div className="flex gap-2 pt-2 justify-center">
-            <Button
-              size="icon"
-              Icon={CreditCard as IconType}
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleBuyNow();
-              }}
-            />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-orange-100 hover:bg-orange-200 text-orange-500"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (cartItem) {
+                        removeFromCart(product.id);
+                      } else {
+                        handleAddToCart();
+                      }
+                    }}
+                    Icon={(cartItem ? X : ShoppingCart) as IconType}
+                  />
 
-            {cartItem ? (
-              <div
-                className="flex items-center gap-2 bg-orange-100 rounded-full px-2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="w-8 h-8  text-orange-500 "
-                  onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
-                  Icon={Minus as IconType}
-                />
-                <span className="w-6 text-center font-tajawal-medium">
-                  {cartItem.quantity}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="w-8 h-8 text-orange-500 "
-                  onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
-                  Icon={Plus as IconType}
-                />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={isInComparison
+                      ? "bg-orange-500 text-white hover:bg-orange-600"
+                      : "bg-orange-100 hover:bg-orange-200 text-orange-500"
+                    }
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleComparisonClick();
+                    }}
+                    Icon={CircleDashed as IconType}
+                  />
+                </div>
+
+                {cartItem && (
+                  <div
+                    className="flex items-center gap-2 bg-orange-100 rounded-full px-2 py-1 justify-center"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-8 h-8 text-orange-500"
+                      onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
+                      Icon={Minus as IconType}
+                    />
+                    <span className="w-6 text-center font-tajawal-medium">
+                      {cartItem.quantity}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-8 h-8 text-orange-500"
+                      onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
+                      Icon={Plus as IconType}
+                    />
+                  </div>
+                )}
               </div>
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="bg-orange-100 hover:bg-orange-200 text-orange-500"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAddToCart();
-                }}
-                Icon={ShoppingCart as IconType}
-              />
-            )}
-
-            <Button
-              variant="outline"
-              size="icon"
-              className={isInComparison
-                ? "bg-orange-500 text-white hover:bg-orange-600"
-                : "bg-orange-100 hover:bg-orange-200 text-orange-500"
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleComparisonClick();
-              }}
-              Icon={CircleDashed as IconType}
-            />
-          </div>
+            )
+          }
         </div>
 
         {/* Active Indicator */}
