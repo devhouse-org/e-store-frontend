@@ -20,6 +20,7 @@ import Wishlist from "@/pages/Wishlist";
 import ScrollToTop from "./components/ScrollToTop";
 import ProfileDash from "./pages/dashboard/ProfileDash";
 import Comparison from "./pages/comparison/Comparison";
+import NotFound from "./components/NotFound";
 
 function App() {
   return (
@@ -50,8 +51,8 @@ function App() {
             {/* Comparison Route */}
             <Route path="/comparison" element={<Comparison />} />
 
-            {/* Comparison Routes */}
-            {/* <Route path="/comparison" element={<Comparison />} /> */}
+            {/* 404 Route - Add this at the end */}
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
         {/* <Footer /> */}
