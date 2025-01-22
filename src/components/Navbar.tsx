@@ -6,6 +6,7 @@ import { useCartStore } from "../store/useCartStore";
 import { useWishlistStore } from "../store/useWishlistStore";
 import { useState } from "react";
 import SearchModal from "./SearchModal";
+import { useComparisonStore } from "@/store/useComparisonStore";
 
 type Props = {
   hasAd?: boolean;
@@ -44,6 +45,7 @@ const links = [
 const Navbar = (props: Props) => {
   const cartCount = useCartStore((state) => state.cartCount);
   const wishlistCount = useWishlistStore((state) => state.wishlistCount);
+  const comparisonItems = useComparisonStore((state) => state.comparisonItems);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   return (
@@ -93,7 +95,14 @@ const Navbar = (props: Props) => {
                 </span>
               )}
             </Link>
-            <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            <Link to="/comparison" className="relative">
+              <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+              {comparisonItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                  {comparisonItems.length}
+                </span>
+              )}
+            </Link>
             <div className="hidden md:block">
               <div onClick={() => setIsSearchModalOpen(true)}>
                 <CustomInput placeholder="ما الذي تبحث عنه" readOnly />

@@ -19,6 +19,7 @@ import { CartProvider } from "./context/CartContext";
 import Wishlist from "@/pages/Wishlist";
 import ScrollToTop from "./components/ScrollToTop";
 import ProfileDash from "./pages/dashboard/ProfileDash";
+import Comparison from "./pages/comparison/Comparison";
 
 function App() {
   return (
@@ -45,6 +46,12 @@ function App() {
             {/* Auth routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+
+            {/* Comparison Route */}
+            <Route path="/comparison" element={<Comparison />} />
+
+            {/* Comparison Routes */}
+            {/* <Route path="/comparison" element={<Comparison />} /> */}
           </Route>
         </Routes>
         {/* <Footer /> */}
