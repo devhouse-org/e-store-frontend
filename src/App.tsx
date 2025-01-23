@@ -21,6 +21,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import ProfileDash from "./pages/dashboard/ProfileDash";
 import Comparison from "./pages/comparison/Comparison";
 import NotFound from "./components/NotFound";
+import Blogs from "./pages/blog/Blogs";
+import Blog from "./pages/blog/Blog";
 
 function App() {
   return (
@@ -50,6 +52,10 @@ function App() {
 
             {/* Comparison Route */}
             <Route path="/comparison" element={<Comparison />} />
+
+            {/* Blog Routes */}
+            <Route path="/blog" element={<Blogs />} />
+            <Route path="/blog/:id" element={<Blog />} />
 
             {/* 404 Route - Add this at the end */}
             <Route path="*" element={<NotFound />} />
