@@ -33,7 +33,6 @@ function Home() {
     cssEase: "ease-out",
     rtl: true,
     dotsClass: "slick-dots slick-thumb",
-    pauseOnHover: true,
     beforeChange: (current: any, next: any) => {
       setOldSlide(current);
       setActiveSlide(next);
