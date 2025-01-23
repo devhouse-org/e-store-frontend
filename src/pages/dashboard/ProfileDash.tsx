@@ -15,7 +15,7 @@ const ProfileDash: React.FC = () => {
               <div className="hidden md:block h-full">
                 <div className="relative w-full h-full flex items-center justify-center">
                   <img
-                    src="src/assets/images/login_phone.png"
+                    src="src/assets/images/login_bg.webp"
                     alt="Decorative"
                     className="absolute inset-0 object-cover w-full h-full rounded-r-lg"
                   />
