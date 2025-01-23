@@ -60,9 +60,9 @@ const Brands = () => {
                                     className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 />
                             </div>
-                            <p className="text-center mt-2 text-gray-700 font-tajawal-medium group-hover:text-orange-500 transition-colors">
+                            {/* <p className="text-center mt-2 text-gray-700 font-tajawal-medium group-hover:text-orange-500 transition-colors">
                                 {brand.name.replace(/-/g, ' ')}
-                            </p>
+                            </p> */}
                         </Link>
                     ))}
                 </div>

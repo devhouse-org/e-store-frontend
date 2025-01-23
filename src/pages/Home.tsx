@@ -122,7 +122,7 @@ function Home() {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-flow-col auto-cols-max gap-6 py-4 overflow-x-auto scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100 px-1">
+        <div className="grid grid-flow-col  auto-cols-max gap-6 py-4 overflow-x-auto scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100 px-1">
           {carouselCardData.map((item) => (
             <div
               key={item.label}
