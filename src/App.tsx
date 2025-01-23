@@ -23,6 +23,7 @@ import Comparison from "./pages/comparison/Comparison";
 import NotFound from "./components/NotFound";
 import Blogs from "./pages/blog/Blogs";
 import Blog from "./pages/blog/Blog";
+import Brands from "./pages/brands/Brands";
 
 function App() {
   return (
@@ -56,6 +57,9 @@ function App() {
             {/* Blog Routes */}
             <Route path="/blog" element={<Blogs />} />
             <Route path="/blog/:id" element={<Blog />} />
+
+            {/* Brands Route */}
+            <Route path="/brands" element={<Brands />} />
 
             {/* 404 Route - Add this at the end */}
             <Route path="*" element={<NotFound />} />
