@@ -16,9 +16,9 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen p-6">
-      <Card className="h-full">
-        <CardContent className="p-8 h-full">
+    <div className="h-screen p6 pt-14 mx-4 md:mx-0">
+      <Card className="bgblack h-[80vh] container mx-auto">
+        <CardContent className="p-0 h-full">
           <div className="flex flex-col h-full">
             <div className="grid gap-8 md:grid-cols-2 md:grid-flow-col-reverse flex-1">
               {/* Decorative Image with iPhone Frame */}
@@ -39,8 +39,8 @@ const Login = () => {
                   alt="E-store Logo"
                   className="h-8 mb-8"
                 />
-                <h2 className="text-3xl font-bold">أهلاً بعودتك!</h2>
-                <p className="text-muted-foreground text-center max-w-[400px]">
+                <h2 className="text-3xl font-tajawal-bold">أهلاً بعودتك!</h2>
+                <p className="text-muted-foreground text-center max-w-[400px] font-tajawal-regular">
                   يُرجى تسجيل الدخول للمتابعة
                 </p>
 
@@ -50,13 +50,13 @@ const Login = () => {
                 >
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
                         الهاتف
                       </label>
                       <Input
                         type="tel"
                         required
-                        className="w-full text-right"
+                        className="w-full text-right font-tajawal-regular"
                         placeholder="أدخل رقم الهاتف"
                         value={formData.phone}
                         onChange={(e) =>
@@ -65,13 +65,13 @@ const Login = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
                         كلمة المرور
                       </label>
                       <Input
                         type="password"
                         required
-                        className="w-full"
+                        className="w-full font-tajawal-regular"
                         placeholder="أدخل كلمة المرور"
                         value={formData.password}
                         onChange={(e) =>
@@ -87,11 +87,11 @@ const Login = () => {
                         type="checkbox"
                         className="h-4 w-4 text-primary border-gray-300 rounded"
                       />
-                      <label className="text-gray-600">تذكرني</label>
+                      <label className="text-gray-600 font-tajawal-regular">تذكرني</label>
                     </div>
                     <Link
                       to="/forgot-password"
-                      className="text-[#D35A3B] hover:text-[#bf4f33]"
+                      className="text-[#D35A3B] hover:text-[#bf4f33] font-tajawal-medium"
                     >
                       نسيت كلمة المرور؟
                     </Link>
@@ -100,14 +100,14 @@ const Login = () => {
                   <Button
                     type="submit"
                     label="تسجيل الدخول"
-                    className="w-full bg-[#D35A3B] hover:bg-[#bf4f33] h-11 mt-6"
+                    className="w-full bg-[#D35A3B] hover:bg-[#bf4f33] h-11 mt-6 font-tajawal-medium"
                   />
 
-                  <p className="text-center text-sm text-gray-600 mt-4">
+                  <p className="text-center text-sm text-gray-600 mt-4 font-tajawal-regular">
                     ليس لديك حساب؟{" "}
                     <Link
                       to="/signup"
-                      className="text-[#D35A3B] hover:text-[#bf4f33] font-medium"
+                      className="text-[#D35A3B] hover:text-[#bf4f33] font-tajawal-medium"
                     >
                       إنشاء حساب جديد
                     </Link>

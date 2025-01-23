@@ -5,11 +5,10 @@ const Pagination = () => {
         <li key={pageNumber}>
           <a
             href="#"
-            className={`block h-8 w-8 rounded ${
-              pageNumber === 1
-                ? "border-orange-400 bg-orange-400 text-white"
-                : "border border-gray-100 bg-white text-center leading-8 text-gray-900"
-            }`}
+            className={` h-8 w-8 flex justify-center items-center rounded-full ${pageNumber === 1
+              ? "border-orange-400 bg-orange-400 text-white"
+              : "border border-gray-100 bg-white text-center leading-8 text-gray-900"
+              }`}
           >
             {pageNumber}
           </a>

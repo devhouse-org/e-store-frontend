@@ -18,16 +18,16 @@ const Signup = () => {
   };
 
   return (
-    <div className="h-screen p-6">
-      <Card className="h-full">
-        <CardContent className="p-8 h-full">
+    <div className="h-screen p6 pt-14 mx-4 md:mx-0">
+      <Card className="bgblack h-[80vh] container mx-auto">
+        <CardContent className="p-0 h-full">
           <div className="flex flex-col h-full">
             <div className="grid gap-8 md:grid-cols-2 md:grid-flow-col-reverse flex-1">
               {/* Decorative Image with iPhone Frame */}
               <div className="hidden md:block h-full">
                 <div className="relative w-full h-full flex items-center justify-center">
                   <img
-                    src="src/assets/images/login_phone.png"
+                    src="src/assets/images/signup_bg.webp"
                     alt="Decorative"
                     className="absolute inset-0 object-cover w-full h-full rounded-r-lg"
                   />
@@ -41,8 +41,8 @@ const Signup = () => {
                   alt="E-store Logo"
                   className="h-8 mb-8"
                 />
-                <h2 className="text-3xl font-bold">إنشاء حساب جديد</h2>
-                <p className="text-muted-foreground text-center max-w-[400px]">
+                <h2 className="text-3xl font-tajawal-bold">إنشاء حساب جديد</h2>
+                <p className="text-muted-foreground text-center max-w-[400px] font-tajawal-regular">
                   قم بإنشاء حسابك للوصول إلى جميع المميزات
                 </p>
 
@@ -52,13 +52,13 @@ const Signup = () => {
                 >
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
                         الاسم
                       </label>
                       <Input
                         type="text"
                         required
-                        className="w-full text-right"
+                        className="w-full text-right font-tajawal-regular"
                         placeholder="أدخل اسمك الكامل"
                         value={formData.name}
                         onChange={(e) =>
@@ -67,13 +67,13 @@ const Signup = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
                         الهاتف
                       </label>
                       <Input
                         type="tel"
                         required
-                        className="w-full text-right"
+                        className="w-full text-right font-tajawal-regular"
                         placeholder="أدخل رقم الهاتف"
                         value={formData.phone}
                         onChange={(e) =>
@@ -82,13 +82,13 @@ const Signup = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
                         كلمة المرور
                       </label>
                       <Input
                         type="password"
                         required
-                        className="w-full"
+                        className="w-full font-tajawal-regular"
                         placeholder="أدخل كلمة المرور"
                         value={formData.password}
                         onChange={(e) =>
@@ -97,13 +97,13 @@ const Signup = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
                         تأكيد كلمة المرور
                       </label>
                       <Input
                         type="password"
                         required
-                        className="w-full"
+                        className="w-full font-tajawal-regular"
                         placeholder="تأكيد كلمة المرور"
                         value={formData.confirmPassword}
                         onChange={(e) =>
@@ -119,14 +119,14 @@ const Signup = () => {
                   <Button
                     type="submit"
                     label="إنشاء حساب"
-                    className="w-full bg-[#D35A3B] hover:bg-[#bf4f33] h-11 mt-6"
+                    className="w-full bg-[#D35A3B] hover:bg-[#bf4f33] h-11 mt-6 font-tajawal-medium"
                   />
 
-                  <p className="text-center text-sm text-gray-600 mt-4">
+                  <p className="text-center text-sm text-gray-600 mt-4 font-tajawal-regular">
                     لديك حساب بالفعل؟{" "}
                     <Link
                       to="/login"
-                      className="text-[#D35A3B] hover:text-[#bf4f33] font-medium"
+                      className="text-[#D35A3B] hover:text-[#bf4f33] font-tajawal-medium"
                     >
                       تسجيل الدخول
                     </Link>

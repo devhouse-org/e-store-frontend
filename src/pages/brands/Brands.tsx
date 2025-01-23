@@ -38,7 +38,7 @@ const Brands = () => {
                     <input
                         type="text"
                         placeholder="ابحث عن علامة تجارية..."
-                        className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent font-tajawal-regular"
+                        className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent font-tajawal-medium text-right"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -60,9 +60,6 @@ const Brands = () => {
                                     className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 />
                             </div>
-                            {/* <p className="text-center mt-2 text-gray-700 font-tajawal-medium group-hover:text-orange-500 transition-colors">
-                                {brand.name.replace(/-/g, ' ')}
-                            </p> */}
                         </Link>
                     ))}
                 </div>
@@ -70,7 +67,7 @@ const Brands = () => {
                 {/* No Results */}
                 {filteredBrands.length === 0 && (
                     <div className="text-center py-12">
-                        <p className="text-gray-500 font-tajawal-regular">
+                        <p className="text-gray-500 font-tajawal-medium">
                             لم يتم العثور على نتائج للبحث: {searchQuery}
                         </p>
                     </div>

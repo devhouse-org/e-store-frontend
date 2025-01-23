@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 
 const ProfileDash: React.FC = () => {
   return (
-    <div className="h-screen p-6">
-      <Card className="h-full">
-        <CardContent className="p-8 h-full">
+    <div className="h-screen p6 pt-14 mx-4 md:mx-0">
+      <Card className="bgblack h-[80vh] container mx-auto">
+        <CardContent className="p-0 h-full">
           <div className="flex flex-col h-full">
             <div className="grid gap-8 md:grid-cols-2 md:grid-flow-col-reverse flex-1">
               {/* Decorative Image with iPhone Frame */}
@@ -29,8 +29,8 @@ const ProfileDash: React.FC = () => {
                   alt="E-store Logo"
                   className="h-8 mb-8"
                 />
-                <h2 className="text-3xl font-bold">أهلاً بك!</h2>
-                <p className="text-muted-foreground text-center max-w-[400px]">
+                <h2 className="text-3xl font-tajawal-bold">أهلاً بك!</h2>
+                <p className="text-muted-foreground text-center max-w-[400px] font-tajawal-regular">
                   سجل الدخول واستمتع بتجربة تسوق فريدة للأحدث الأجهزة
                   والإلكترونيات نتطلع لخدمتك!
                 </p>
@@ -39,25 +39,25 @@ const ProfileDash: React.FC = () => {
                   <Link to="/login">
                     <Button
                       label="تسجيل الدخول"
-                      className="w-full bg-[#D35A3B] hover:bg-[#bf4f33] h-11"
+                      className="w-full bg-[#D35A3B] hover:bg-[#bf4f33] h-11 font-tajawal-medium"
                     />
                   </Link>
                   <Link to="/signup">
                     <Button
                       label="إنشاء حساب"
                       variant="outline"
-                      className="w-full h-11"
+                      className="w-full h-11 font-tajawal-medium"
                     />
                   </Link>
                 </div>
 
                 <div className="flex items-center gap-4 w-full max-w-[400px] my-4">
                   <Separator className="flex-1" />
-                  <span className="text-muted-foreground">أو</span>
+                  <span className="text-muted-foreground font-tajawal-regular">أو</span>
                   <Separator className="flex-1" />
                 </div>
 
-                <button className="w-full max-w-[400px] h-11 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-gray-600">
+                <button className="w-full max-w-[400px] h-11 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-gray-600 font-tajawal-medium">
                   التسجيل باستخدام
                   <img
                     src="src/assets/images/google.png"
@@ -68,7 +68,7 @@ const ProfileDash: React.FC = () => {
 
                 {/* Social Media Links */}
                 <div className="text-center w-full max-w-[400px] mt-6">
-                  <p className="text-gray-600 mb-3">تابعنا على</p>
+                  <p className="text-gray-600 mb-3 font-tajawal-regular">تابعنا على</p>
                   <div className="flex justify-center gap-4">
                     <a
                       href="#"
