@@ -11,17 +11,25 @@ import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
 import { IconType } from "react-icons";
 import Slider from "react-slick";
 
+import ban1 from "@/assets/images/banners/1.webp";
+import ban2 from "@/assets/images/banners/2.webp";
+import ban3 from "@/assets/images/banners/3.webp";
+import ban4 from "@/assets/images/banners/4.webp";
+import ban5 from "@/assets/images/banners/5.webp";
+
 function Home() {
   const [oldSlide, setOldSlide] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeSlide2, setActiveSlide2] = useState(0);
+
+  const banners = [ban1, ban2, ban3, ban4, ban5];
 
   const settings = {
     dots: true,
     infinite: true,
     autoplay: true,
     speed: 400,
-    autoplaySpeed: 6000,
+    autoplaySpeed: 4000,
     cssEase: "ease-out",
     rtl: true,
     dotsClass: "slick-dots slick-thumb",
@@ -89,14 +97,12 @@ function Home() {
       {/* Slider */}
       <div className="pb-14 pt-8">
         <Slider {...settings}>
-          {[1, 2, 3, 4, 5].map((item, i) => (
+          {banners.map((item, i) => (
             <div
               key={i}
-              className={`h-[240px] md:h-[360px] lg:h-[480px] rounded-xl overflow-hidden border border-orange-500/20 bg-green-${
-                i + 3
-              }00`}
+              className={`h-[240px] md:h-[360px] outline-none border-none lg:h-[480px] rounded-xl overflow-hidden`}
             >
-              <h3>{i + 1}</h3>
+              <img src={item} alt="" className="focus:outline-none border-none w-full h-full object-cover" />
             </div>
           ))}
         </Slider>

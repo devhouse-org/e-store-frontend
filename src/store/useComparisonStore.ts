@@ -20,8 +20,8 @@ export const useComparisonStore = create<ComparisonStore>((set, get) => ({
             return;
         }
 
-        // Check if comparison list is full (max 2 items)
-        if (comparisonItems.length >= 2) {
+        // Check if comparison list is full (max 4 items)
+        if (comparisonItems.length >= 4) {
             return;
         }
 

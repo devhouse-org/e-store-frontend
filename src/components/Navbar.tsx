@@ -28,12 +28,12 @@ const links = [
   {
     id: 3,
     label: "التدوينات",
-    link: "#",
+    link: "/blog",
   },
   {
     id: 4,
     label: "الماركات التجارية",
-    link: "#",
+    link: "/brands",
   },
   {
     id: 5,
@@ -77,49 +77,77 @@ const Navbar = (props: Props) => {
             <NavLink
               key={link.id}
               to={link.link}
-              className="text-nowrap hover:bg-orange-100/70 cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular"
+              className={({ isActive }) => `
+                text-nowrap cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular
+                ${isActive ? 'bg-orange-100 text-orange-500' : 'hover:bg-orange-100/70'}
+              `}
             >
               {link.label}
             </NavLink>
           ))}
         </ul>
         <div className="logo md:flex-1 flex justify-center items-center">
-          <img src={logo} alt="e-store logo" />
+          <Link to="/">
+            <img src={logo} alt="e-store logo" />
+          </Link>
         </div>
         <div dir="ltr" className="icons flex-1">
           <div className="flex items-center gap-x-4">
-            <Link to="/dashboard">
-              <UserRound className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
-            </Link>
-            <Link
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) => `
+                transition ease-in-out cursor-pointer
+                ${isActive ? 'text-orange-500' : 'hover:text-orange-500'}
+              `}
+            >
+              <UserRound />
+            </NavLink>
+
+            <NavLink
               to="/cart"
-              className={`
+              className={({ isActive }) => `
                 text-white gap-x-2 flex items-center justify-center px-4 py-1
-                bg-orange-500 hover:bg-orange-500/90 transition-all duration-300 cursor-pointer rounded-full
+                transition-all duration-300 cursor-pointer rounded-full
                 ${isCartAnimating ? 'scale-110 bg-green-500' : ''}
+                ${isActive ? 'bg-orange-600' : 'bg-orange-500 hover:bg-orange-500/90'}
               `}
             >
               <ShoppingCart className={`transition-transform duration-300 ${isCartAnimating ? 'scale-110' : ''}`} />
               <p className={`hidden md:block transition-all duration-300 ${isCartAnimating ? 'scale-110' : ''}`}>
                 {cartCount}
               </p>
-            </Link>
-            <Link to="/wishlist" className="relative">
-              <Heart className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            </NavLink>
+
+            <NavLink
+              to="/wishlist"
+              className={({ isActive }) => `
+                relative transition ease-in-out cursor-pointer
+                ${isActive ? 'text-orange-500' : 'hover:text-orange-500'}
+              `}
+            >
+              <Heart />
               {wishlistCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
                   {wishlistCount}
                 </span>
               )}
-            </Link>
-            <Link to="/comparison" className="relative">
-              <CircleDashed className="hover:text-blue-500 transition ease-in-out cursor-pointer" />
+            </NavLink>
+
+            <NavLink
+              to="/comparison"
+              className={({ isActive }) => `
+                relative transition ease-in-out cursor-pointer
+                ${isActive ? 'text-orange-500' : 'hover:text-orange-500'}
+              `}
+            >
+              <CircleDashed />
               {comparisonItems.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-orange-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
                   {comparisonItems.length}
                 </span>
               )}
-            </Link>
+            </NavLink>
+
             <div className="hidden md:block">
               <div onClick={() => setIsSearchModalOpen(true)}>
                 <CustomInput placeholder="ما الذي تبحث عنه" readOnly />

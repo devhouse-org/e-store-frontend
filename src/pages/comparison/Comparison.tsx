@@ -24,9 +24,12 @@ type Product = {
 
 const EmptySlot = () => (
     <div className="flex flex-col items-center justify-center gap-4 py-8">
-        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+        <Link
+
+            to="/products"
+            className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
             <Plus className="w-8 h-8 text-gray-400" />
-        </div>
+        </Link>
         <p className="text-gray-500 text-center font-tajawal-regular">
             أضف جهازاً للمقارنة
         </p>
@@ -54,7 +57,7 @@ const ProductColumn = ({ product, onRemove }: { product: Product | null, onRemov
     };
 
     return (
-        <th className="border p-4 bg-gray-50 min-w-[250px]">
+        <th className="border p-4 bg-gray-50 min-w-[200px]">
             <div className="flex flex-col items-center gap-2">
                 {product ? (
                     <>
@@ -68,16 +71,16 @@ const ProductColumn = ({ product, onRemove }: { product: Product | null, onRemov
                             <img
                                 src={product.image}
                                 alt={product.name}
-                                className="w-32 h-32 object-cover mx-auto rounded-lg"
+                                className="w-24 h-24 object-cover mx-auto rounded-lg"
                             />
                         </div>
-                        <h3 className="font-semibold font-tajawal-regular">{product.name}</h3>
+                        <h3 className="font-semibold font-tajawal-regular text-sm">{product.name}</h3>
                         <p className="text-orange-500 font-tajawal-regular">
                             {product.price.toLocaleString()} د.ع
                         </p>
                         <button
                             onClick={() => handleAddToCart(product)}
-                            className="bg-orange-500 text-white px-4 py-1 rounded-full hover:bg-orange-600 transition-colors font-tajawal-regular text-sm"
+                            className="bg-orange-500 text-white px-3 py-1 rounded-full hover:bg-orange-600 transition-colors font-tajawal-regular text-sm"
                         >
                             إضافة إلى السلة
                         </button>
@@ -101,9 +104,9 @@ const DataRow = ({
 }) => (
     <tr>
         <td className="border p-4 bg-gray-50 font-tajawal-regular">{label}</td>
-        {slots.map((product, idx) => (
-            <td key={idx} className="border p-4 text-center font-tajawal-regular">
-                {product ? getValue(product) : "-"}
+        {[0, 1, 2, 3].map((index) => (
+            <td key={`cell-${index}`} className="border p-4 text-center font-tajawal-regular">
+                {slots[index] ? getValue(slots[index]) : "-"}
             </td>
         ))}
     </tr>
@@ -112,9 +115,13 @@ const DataRow = ({
 const Comparison = () => {
     const { comparisonItems, removeFromComparison } = useComparisonStore();
 
-    // Use the first two items from comparison store
-    const slot1 = comparisonItems[0] || null;
-    const slot2 = comparisonItems[1] || null;
+    // Use up to 4 items from comparison store
+    const slots = [
+        comparisonItems[0] || null,
+        comparisonItems[1] || null,
+        comparisonItems[2] || null,
+        comparisonItems[3] || null
+    ];
 
     const specifications = [
         { label: "العلامة التجارية", key: "brand" },
@@ -126,7 +133,6 @@ const Comparison = () => {
         { label: "الكاميرا الخلفية", key: "backCamera" },
         { label: "سعة التخزين", key: "storage" },
         { label: "نظام التشغيل", key: "os" },
-        // { label: "الوصف", key: "description" },
     ];
 
     return (
@@ -138,14 +144,18 @@ const Comparison = () => {
                     <thead>
                         <tr>
                             <th className="border p-4 bg-gray-50 font-tajawal-regular">المواصفات</th>
-                            <ProductColumn
-                                product={slot1}
-                                onRemove={() => slot1 && removeFromComparison(slot1.id)}
-                            />
-                            <ProductColumn
-                                product={slot2}
-                                onRemove={() => slot2 && removeFromComparison(slot2.id)}
-                            />
+                            {/* Fixed column order by using index as position */}
+                            {[0, 1, 2, 3].map((index) => (
+                                <ProductColumn
+                                    key={`slot-${index}`}
+                                    product={slots[index]}
+                                    onRemove={() => {
+                                        if (slots[index]) {
+                                            removeFromComparison(slots[index]!.id);
+                                        }
+                                    }}
+                                />
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
@@ -154,7 +164,7 @@ const Comparison = () => {
                                 key={spec.key}
                                 label={spec.label}
                                 getValue={(product) => product?.[spec.key as keyof Product] || "-"}
-                                slots={[slot1, slot2]}
+                                slots={slots}
                             />
                         ))}
                     </tbody>
