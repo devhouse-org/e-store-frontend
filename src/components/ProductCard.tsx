@@ -98,12 +98,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div
         className={`
           relative group cursor-pointer transition-all duration-300 ease-in-out
-          ${size === "lg" ? "w-64 p-4" : "w-40 p-2"}
+          ${size === "lg" ? "w-72 p-4" : "w-40 p-2"}
           ${activeCard
             ? "border-orange-400 shadow-md"
-            : "border-transparent hover:shadow-md"
+            : "bordertransparent hover:shadow-md"
           }
-          border-2 bg-white rounded-xl overflow-hidden text-center
+          border bg-white rounded-xl overflow-hidden textcenter
         `}
       >
         {/* Product Image Container */}
@@ -112,7 +112,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={product.image}
             alt={product.name}
             className={`
-              w-full object-cover rounded-lg
+              w-full object-contain rounded-lg
               ${size === "lg" ? "h-[280px]" : "h-[220px]"}
             `}
           />
