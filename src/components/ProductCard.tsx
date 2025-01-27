@@ -90,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   if (!product) {
-    return null; // Or some fallback UI
+    return null;
   }
 
   return (
@@ -125,15 +125,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-50"
           >
             <Heart
-              className={`w-5 h-5 ${isInWishlist ? "text-red-500 fill-red-500" : "text-gray-400"
-                }`}
+              className={`w-5 h-5 ${isInWishlist ? "text-red-500 fill-red-500" : "text-gray-400"}`}
             />
           </button>
         </div>
 
         {/* Product Info Container */}
         <div className={`mt-3 space-y-2 ${size === "lg" ? "px-4" : "px-2"}`}>
-          {/* Product Name */}
           <h2
             className={`
               ${size === "lg" ? "text-lg" : "text-sm"}
@@ -144,7 +142,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {product.name}
           </h2>
 
-          {/* Product Price */}
           <p
             className={`
               ${size === "lg" ? "text-xl" : "text-base"}
@@ -154,83 +151,79 @@ const ProductCard: React.FC<ProductCardProps> = ({
           >
             {product.price.toLocaleString()} د.ع
           </p>
-          {
-            showBtns && (
-              <div className="space-y-2">
-                <div className="flex gap-2 justify-center">
-                  <Button
-                    size="icon"
-                    Icon={CreditCard as IconType}
-                    className="bg-orange-500 hover:bg-orange-600 text-white"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleBuyNow();
-                    }}
-                  />
 
+          {showBtns && (
+            <div className="flex items-center justify-between">
+              {/* Left side buttons */}
+              <div className="flex gap-2">
+                <Button
+                  size="icon"
+                  Icon={CreditCard as IconType}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleBuyNow();
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={isInComparison
+                    ? "bg-orange-500 text-white hover:bg-orange-600"
+                    : "bg-orange-100 hover:bg-orange-200 text-orange-500"
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleComparisonClick();
+                  }}
+                  Icon={CircleDashed as IconType}
+                />
+              </div>
+
+              {/* Right side - Cart button or quantity controls */}
+              {cartItem ? (
+                <div
+                  className="flex items-center gap-2 px-2 bg-orange-100/25 rounded-md py-1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="bg-orange-100 hover:bg-orange-200 text-orange-500"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (cartItem) {
-                        removeFromCart(product.id);
-                      } else {
-                        handleAddToCart();
-                      }
-                    }}
-                    Icon={(cartItem ? X : ShoppingCart) as IconType}
+                    className="w-8 h-8 text-orange-500"
+                    onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
+                    Icon={Minus as IconType}
                   />
-
+                  <span className="w-6 text-center font-tajawal-medium">
+                    {cartItem.quantity}
+                  </span>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className={isInComparison
-                      ? "bg-orange-500 text-white hover:bg-orange-600"
-                      : "bg-orange-100 hover:bg-orange-200 text-orange-500"
-                    }
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleComparisonClick();
-                    }}
-                    Icon={CircleDashed as IconType}
+                    className="w-8 h-8 text-black"
+                    onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
+                    Icon={Plus as IconType}
                   />
                 </div>
-
-                {cartItem && (
-                  <div
-                    className="flex items-center gap-2 bg-orange-100 rounded-full px-2 py-1 justify-center"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-8 h-8 text-orange-500"
-                      onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
-                      Icon={Minus as IconType}
-                    />
-                    <span className="w-6 text-center font-tajawal-medium">
-                      {cartItem.quantity}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-8 h-8 text-orange-500"
-                      onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
-                      Icon={Plus as IconType}
-                    />
-                  </div>
-                )}
-              </div>
-            )
-          }
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="bg-orange-100 hover:bg-orange-200 text-orange-500"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddToCart();
+                  }}
+                  Icon={ShoppingCart as IconType}
+                />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Active Indicator */}
