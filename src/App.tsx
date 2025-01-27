@@ -28,7 +28,7 @@ import Brands from "./pages/brands/Brands";
 function App() {
   return (
     <CartProvider>
-      <div dir="rtl" className="pt-[92px]">
+      <div dir="rtl" className="pt-[92px] bg-blue-100/10">
         <ScrollToTop />
         {/* <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" /> */}
         <Routes>

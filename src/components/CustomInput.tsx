@@ -50,13 +50,13 @@ const CustomInput: React.FC<CustomInputProps> = ({
           onChange={onChange}
           disabled={disabled}
           className={cn(
-            "text-base font-tajawal-medium",
+            "text-base font-tajawal-medium text-right placeholder:text-right",
             error
-              ? "border-red-500 placeholder:text-right text-right focus:ring-red-500"
+              ? "border-red-500 focus:ring-red-500"
               : "border-input",
             disabled ? "cursor-not-allowed opacity-50" : "",
             "px-3 py-2 rounded-md focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-blue-500",
-            readOnly ? "cursor-pointer" : ""
+            readOnly ? "cursor-pointer pl-8" : ""  // Added left padding for search icon
           )}
           required={required}
           readOnly={readOnly}
@@ -67,7 +67,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           </span>
         )}
         {readOnly && (
-          <Search className="w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2 text-gray-400" />
+          <Search className="w-4 h-4 absolute top-1/2 -translate-y-1/2 left-2 text-gray-400" />
         )}
       </div>
     </div>

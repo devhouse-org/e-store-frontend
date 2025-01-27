@@ -1,4 +1,4 @@
-import { CircleDashed, Heart, ShoppingCart, UserRound } from "lucide-react";
+import { CircleDashed, Heart, Search, ShoppingCart, UserRound } from "lucide-react";
 import logo from "../assets/images/Logo.png";
 import CustomInput from "./CustomInput";
 import { Link, NavLink } from "react-router-dom";

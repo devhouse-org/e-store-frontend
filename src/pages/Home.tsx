@@ -106,7 +106,7 @@ function Home() {
           {banners.map((item, i) => (
             <div
               key={i}
-              className={`h-[240px] md:h-[360px] outline-none border-none lg:h-[480px] rounded-xl overflow-hidden`}
+              className={`h-[280px] md:h-[380px] outline-none border-none lg:h-[480px] roundedxl overflow-hidden`}
             >
               <img src={item} alt="" className="focus:outline-none border-none w-full h-full object-cover" />
             </div>
@@ -144,12 +144,43 @@ function Home() {
         </div>
       </div>
 
+      {/* new banner section */}
+      {/* <div className="mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h[600px]">
+          <div className="h-full">
+            <Banner
+              title="بيكسل 9 برو"
+              subtitle="عرض ملحمي للذكاء الاصطناعي من كوكل."
+              price={320000}
+              primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
+              className="h-full"
+            />
+          </div>
+
+          <div className="grid grid-rows-2 gap-4 h-full">
+            <Banner
+              title="ايفون 15 برو ماكس"
+              subtitle="تجربة تصوير احترافية مع كاميرا متطورة."
+              price={450000}
+              primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
+            />
+
+            <Banner
+              title="سامسونج جالكسي زد فولد 5"
+              subtitle="الجيل الجديد من الهواتف القابلة للطي."
+              price={380000}
+              primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
+            />
+          </div>
+        </div>
+      </div> */}
+
       {/* Auctions Section */}
       <div className="mb-20">
         <AuctionSection />
       </div>
 
-      {/* Banner Section */}
+      {/* old Banner Section */}
       <div className="mb-20">
         <Banner
           title="بيكسل 9 برو"
@@ -160,10 +191,10 @@ function Home() {
       </div>
 
       {/* Products Cards */}
-      <div className="mb-20">
+      <div className="mb-20 bg-white p-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-tajawal-medium text-lg border-b-2 border-orange-400 w-fit">
-            منتجات مميزة
+            الاكثر مبيعاً
           </h2>
           <Button label="عرض المزيد" />
         </div>
@@ -180,7 +211,7 @@ function Home() {
       </div>
 
       {/* Brands Carousel */}
-      <div className="mb-16">
+      <div className="mb-16 bg-white p-4 rounded-md">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="relative">

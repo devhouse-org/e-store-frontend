@@ -19,7 +19,7 @@ const Banner: React.FC<BannerProps> = ({
 }) => {
   return (
     <div
-      className={`relative w-full bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-xl overflow-hidden border border-gray-100 ${className}`}
+      className={`relative w-full bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 ${className}`}
     >
       <div className="flex flex-col md:flex-row justify-between p-6 md:p-10">
         {/* Left content */}
