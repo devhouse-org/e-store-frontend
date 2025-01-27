@@ -33,6 +33,13 @@ function Home() {
     cssEase: "ease-out",
     rtl: true,
     dotsClass: "slick-dots slick-thumb",
+    customPaging: (i: any) => (
+      <div className="w-8 h-1 px-1 my-2">
+        <div
+          className={`w-full h-full ${i === activeSlide ? "bg-orange-500" : "bg-orange-100"} rounded-full`}
+        />
+      </div>
+    ),
     beforeChange: (current: any, next: any) => {
       setOldSlide(current);
       setActiveSlide(next);
@@ -92,7 +99,7 @@ function Home() {
   const featuredProducts = products.slice(0, 5);
 
   return (
-    <div className="containe pt-4 px-4 md:px-12 mx-auto">
+    <div className=" pt-4 px-4 md:px-12 mx-auto">
       {/* Slider */}
       <div className="pb-14 pt-8">
         <Slider {...settings}>
