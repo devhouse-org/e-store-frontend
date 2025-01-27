@@ -115,7 +115,7 @@ function Home() {
       </div>
 
       {/* Category Carousel */}
-      <div className="mb-20">
+      <div className="mb-20 bg-white p-4 rounded-md shadow-md">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="relative">
@@ -211,7 +211,7 @@ function Home() {
       </div>
 
       {/* Brands Carousel */}
-      <div className="mb-16 bg-white p-4 rounded-md">
+      <div className="mb-16 bg-white p-4 rounded-md shadow-md">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="relative">
