@@ -89,7 +89,7 @@ const Payment = ({ setActive }: any) => {
         <div className="text-center space-y-4 animate-fade-in">
           <CheckCircle className="w-20 h-20 text-green-500 mx-auto animate-bounce" />
           <h2 className="text-2xl font-semibold text-gray-800">
-            تم الدفع بنجاح!
+            تم حجز الطلب بنجاح!
           </h2>
           <p className="text-gray-600">جاري تحويلك للصفحة الرئيسية...</p>
         </div>
@@ -115,8 +115,8 @@ const Payment = ({ setActive }: any) => {
                     className={`p-4 cursor-pointer transition-all duration-200 bg-white border-2 
                                         ${
                                           selected.id === item.id
-                                            ? "border-orange-500 ring-2 ring-orange-200"
-                                            : "border-gray-100 hover:border-orange-200"
+                                            ? "border-orange-50 ring-2 ring-orange-200"
+                                            : "border-gray-100 hover:border-orange-100"
                                         } 
                                         rounded-lg shadow-sm`}
                   >

@@ -29,7 +29,7 @@ const ProductsTable: React.FC = () => {
   // Calculate total using useMemo to avoid unnecessary recalculations
   const total = useMemo(() => {
     return products.reduce((acc, product) => {
-      return acc + (product.price * product.quantity);
+      return acc + product.price * product.quantity;
     }, 0);
   }, [products]);
 
@@ -39,7 +39,7 @@ const ProductsTable: React.FC = () => {
       <div className="hidden md:block">
         <Table dir="rtl">
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-orange-50">
               <TableHead className="text-right">المنتجات</TableHead>
               <TableHead className="text-right">السعر</TableHead>
               <TableHead className="text-right">الكمية</TableHead>
@@ -48,8 +48,8 @@ const ProductsTable: React.FC = () => {
           </TableHeader>
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="font-medium">
+              <TableRow className="hover:bg-orange-50" key={product.id}>
+                <TableCell className="font-medium ">
                   <div className="flex items-center gap-4">
                     <img
                       src={product.image}
@@ -69,7 +69,9 @@ const ProductsTable: React.FC = () => {
                       size="sm"
                       className="text-green-600"
                       Icon={Plus as IconType}
-                      onClick={() => handleUpdateQuantity(product.id, product.quantity + 1)}
+                      onClick={() =>
+                        handleUpdateQuantity(product.id, product.quantity + 1)
+                      }
                     />
                     <span className="">{product.quantity}</span>
                     <Button
@@ -77,7 +79,9 @@ const ProductsTable: React.FC = () => {
                       size="sm"
                       className="text-red-600"
                       Icon={Minus as IconType}
-                      onClick={() => handleUpdateQuantity(product.id, product.quantity - 1)}
+                      onClick={() =>
+                        handleUpdateQuantity(product.id, product.quantity - 1)
+                      }
                     />
                   </div>
                 </TableCell>
@@ -85,7 +89,7 @@ const ProductsTable: React.FC = () => {
                   <Button
                     variant="arrows"
                     size="sm"
-                    className="bg-orange-50 hover:bg-orange-200 rounded-full p-2.5 border-orange-600 border text-orange-600"
+                    className="bg-orange-50 hover:bg-orange-100 rounded-full p-2.5 border-orange-600 border text-orange-600"
                     Icon={Trash2 as IconType}
                     onClick={() => removeFromCart(product.id)}
                   />
@@ -109,7 +113,9 @@ const ProductsTable: React.FC = () => {
                 />
                 <div className="flex-1">
                   <h3 className="font-medium">{product.name}</h3>
-                  <p className="font-medium mt-2">{product.price.toLocaleString()} د.ع</p>
+                  <p className="font-medium mt-2">
+                    {product.price.toLocaleString()} د.ع
+                  </p>
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center gap-2">
                       <Button
@@ -117,7 +123,9 @@ const ProductsTable: React.FC = () => {
                         size="sm"
                         className="text-green-600"
                         Icon={RxTriangleRight as IconType}
-                        onClick={() => handleUpdateQuantity(product.id, product.quantity + 1)}
+                        onClick={() =>
+                          handleUpdateQuantity(product.id, product.quantity + 1)
+                        }
                       />
                       <span className="">{product.quantity}</span>
                       <Button
@@ -125,13 +133,15 @@ const ProductsTable: React.FC = () => {
                         size="sm"
                         className="text-red-600"
                         Icon={RxTriangleLeft as IconType}
-                        onClick={() => handleUpdateQuantity(product.id, product.quantity - 1)}
+                        onClick={() =>
+                          handleUpdateQuantity(product.id, product.quantity - 1)
+                        }
                       />
                     </div>
                     <Button
                       variant="arrows"
                       size="sm"
-                      className="bg-orange-50 hover:bg-orange-200 rounded-full p-2.5 border-orange-600 border text-orange-600"
+                      className="bg-orange-50 hover:bg-orange-100 rounded-full p-2.5 border-orange-600 border text-orange-600"
                       Icon={Trash2 as IconType}
                       onClick={() => removeFromCart(product.id)}
                     />

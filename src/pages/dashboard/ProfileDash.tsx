@@ -5,7 +5,6 @@ import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import x from "/src/assets/images/x.svg";
 
-
 const ProfileDash: React.FC = () => {
   return (
     <div className="h-screen p6 pt-14 mx-4 md:mx-0">
@@ -55,7 +54,9 @@ const ProfileDash: React.FC = () => {
 
                 <div className="flex items-center gap-4 w-full max-w-[400px] my-4">
                   <Separator className="flex-1" />
-                  <span className="text-muted-foreground font-tajawal-regular">أو</span>
+                  <span className="text-muted-foreground font-tajawal-regular">
+                    أو
+                  </span>
                   <Separator className="flex-1" />
                 </div>
 
@@ -68,9 +69,20 @@ const ProfileDash: React.FC = () => {
                   />
                 </button>
 
+                <button className="w-full max-w-[400px] h-11 flex items-center justify-center gap-3 bg-black hover:bg-gray-900 border border-gray-200 rounded-lg text-white font-tajawal-medium">
+                  التسجيل باستخدام
+                  <img
+                    src="src/assets/images/apple.png"
+                    alt="Apple"
+                    className="w-5 h-5"
+                  />
+                </button>
+
                 {/* Social Media Links */}
                 <div className="text-center w-full max-w-[400px] mt-6">
-                  <p className="text-gray-600 mb-3 font-tajawal-regular">تابعنا على</p>
+                  <p className="text-gray-600 mb-3 font-tajawal-regular">
+                    تابعنا على
+                  </p>
                   <div className="flex justify-center gap-4">
                     <a
                       href="#"

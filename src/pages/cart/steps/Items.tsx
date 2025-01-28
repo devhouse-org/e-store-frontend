@@ -1,6 +1,7 @@
 import ProductsTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import { MoveRight } from "lucide-react";
+import { IconType } from "react-icons";
 import { Link } from "react-router-dom";
 
 type Props = {};
@@ -32,13 +33,15 @@ const Items = ({ setActive }: any) => {
   return (
     <div>
       <div className="">
-        <ProductsTable total={"40000"} />
+        <ProductsTable />
       </div>
       <div className="footer mt-4 flex items-center justify-between">
         {/* <button onClick={() => setActive(steps[1])}>Delivery</button> */}
         <Link to={"/"}>
           <Button
-            label="العودة إلى الرئيسية"
+            className="w-20"
+            // label="العودة إلى الرئيسية"
+            Icon={MoveRight as IconType}
             variant={"secondary"}
             action={() => setActive(steps[1])}
           />
