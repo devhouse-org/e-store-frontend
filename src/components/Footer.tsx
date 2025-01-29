@@ -2,6 +2,7 @@ import {
   Home,
   Mail,
   Paperclip,
+  Phone,
   Pin,
   Recycle,
   Shield,
@@ -36,7 +37,7 @@ const Footer = (props: Props) => {
                   تواصل معنا
                 </h1>
                 <div className="flex gap-x-4 py-2 md:py-4">
-                  <Home className="text-white" />
+                  <Phone className="text-white" />
                   <div className="gap-x-4 items-center">
                     <p className="text-white">9647712345643+</p>
                     <p className="text-white">9647812345643+</p>

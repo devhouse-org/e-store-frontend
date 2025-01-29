@@ -112,21 +112,19 @@ const Payment = ({ setActive }: any) => {
                   <div
                     key={item.id}
                     onClick={() => setSelected(item)}
-                    className={`p-4 cursor-pointer transition-all duration-200 bg-white border-2 
-                                        ${
-                                          selected.id === item.id
-                                            ? "border-orange-50 ring-2 ring-orange-200"
-                                            : "border-gray-100 hover:border-orange-100"
-                                        } 
+                    className={`p-4 cursor-pointer transition-all duration-200 bg-white border 
+                                        ${selected.id === item.id
+                        ? "border-orange-200"
+                        : "border-gray-100 hover:border-orange-100"
+                      } 
                                         rounded-lg shadow-sm`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`${
-                          selected.id === item.id
-                            ? "text-orange-500"
-                            : "text-gray-500"
-                        }`}
+                        className={`${selected.id === item.id
+                          ? "text-orange-500"
+                          : "text-gray-500"
+                          }`}
                       >
                         {item.icon}
                       </div>
