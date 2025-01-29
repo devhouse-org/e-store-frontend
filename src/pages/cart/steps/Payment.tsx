@@ -98,68 +98,66 @@ const Payment = ({ setActive }: any) => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-6 text-right">
-        اختر طريقة الدفع
-      </h2>
+    <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex-1">
+        <h2 className="text-2xl font-semibold mb-6 text-right">
+          اختر طريقة الدفع
+        </h2>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="flex-1">
-          {!showCreditCardForm ? (
-            <>
-              <div className="grid grid-cols-1 gap-4">
-                {payments.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setSelected(item)}
-                    className={`p-4 cursor-pointer transition-all duration-200 bg-white border 
-                                        ${selected.id === item.id
-                        ? "border-orange-200"
-                        : "border-gray-100 hover:border-orange-100"
-                      } 
-                                        rounded-lg shadow-sm`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`${selected.id === item.id
-                          ? "text-orange-500"
-                          : "text-gray-500"
-                          }`}
-                      >
-                        {item.icon}
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg">{item.label}</h3>
-                        <p className="text-gray-500 text-sm">
-                          {item.description}
-                        </p>
-                      </div>
+        {!showCreditCardForm ? (
+          <>
+            <div className="grid grid-cols-1 gap-4">
+              {payments.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setSelected(item)}
+                  className={`p-4 cursor-pointer transition-all duration-200 bg-white border 
+                                      ${selected.id === item.id
+                      ? "border-orange-200"
+                      : "border-gray-100 hover:border-orange-100"
+                    } 
+                                      rounded-lg shadow-sm`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`${selected.id === item.id
+                        ? "text-orange-500"
+                        : "text-gray-500"
+                        }`}
+                    >
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-lg">{item.label}</h3>
+                      <p className="text-gray-500 text-sm">
+                        {item.description}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
-              <div className="mt-8 flex items-center justify-between">
-                <Button
-                  label="الشحن والتسليم"
-                  variant="secondary"
-                  onClick={() => setActive(steps[1])}
-                />
-                <Button
-                  label="تأكيد الدفع"
-                  className="min-w-[120px]"
-                  onClick={handlePaymentSubmit}
-                />
-              </div>
-            </>
-          ) : (
-            <CreditCardForm onSubmit={handleCreditCardSubmit} />
-          )}
-        </div>
+            <div className="mt-8 flex items-center justify-between">
+              <Button
+                label="الشحن والتسليم"
+                variant="secondary"
+                onClick={() => setActive(steps[1])}
+              />
+              <Button
+                label="تأكيد الدفع"
+                className="min-w-[120px]"
+                onClick={handlePaymentSubmit}
+              />
+            </div>
+          </>
+        ) : (
+          <CreditCardForm onSubmit={handleCreditCardSubmit} />
+        )}
+      </div>
 
-        <div className="w-full md:w-[380px]">
-          <CartReviewCard cart={cart} />
-        </div>
+      <div className="w-full md:w-[380px]">
+        <CartReviewCard cart={cart} />
       </div>
     </div>
   );

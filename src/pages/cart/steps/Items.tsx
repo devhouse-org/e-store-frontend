@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { MoveRight } from "lucide-react";
 import { IconType } from "react-icons";
 import { Link } from "react-router-dom";
+import CartReviewCard from "@/components/CartReviewCard";
+import { cart } from "@/utils/dummy_data/data";
+import { useCart } from "@/context/CartContext";
 
 type Props = {};
 enum StepsEnum {
@@ -31,22 +34,23 @@ const steps = [
 
 const Items = ({ setActive }: any) => {
   return (
-    <div>
-      <div className="">
+    <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex-1">
         <ProductsTable />
+        <div className="mt-8 flex items-center justify-between">
+          <Link to={"/"}>
+            <Button
+              className="w-20"
+              Icon={MoveRight as IconType}
+              variant={"secondary"}
+            />
+          </Link>
+          <Button label="الشحن والتسليم" onClick={() => setActive(steps[1])} />
+        </div>
       </div>
-      <div className="footer mt-4 flex items-center justify-between">
-        {/* <button onClick={() => setActive(steps[1])}>Delivery</button> */}
-        <Link to={"/"}>
-          <Button
-            className="w-20"
-            // label="العودة إلى الرئيسية"
-            Icon={MoveRight as IconType}
-            variant={"secondary"}
-            action={() => setActive(steps[1])}
-          />
-        </Link>
-        <Button label="الشحن والتسليم" onClick={() => setActive(steps[1])} />
+
+      <div className="w-full md:w-[380px]">
+        <CartReviewCard cart={cart} />
       </div>
     </div>
   );

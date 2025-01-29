@@ -31,10 +31,9 @@ const steps = [
 
 const Address = ({ setActive }: any) => {
     return (
-        <div>
-            <div className="flex items-start justify-between">
-
-                <div className="flex flex-col md:flex-row flex-wrap gap-4">
+        <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-1">
+                <div className="grid grid-cols-2 gap-4">
                     {locations.map((location) => (
                         <LocationCard
                             key={location.id}
@@ -48,19 +47,24 @@ const Address = ({ setActive }: any) => {
                     ))}
                 </div>
 
-                <div className='hidden md:block'>
-                    <CartReviewCard cart={cart} />
+                <div className="mt-8 flex items-center justify-between">
+                    <Button
+                        label="المنتجات"
+                        variant="secondary"
+                        onClick={() => setActive(steps[0])}
+                    />
+                    <Button
+                        label="الدفع"
+                        onClick={() => setActive(steps[2])}
+                    />
                 </div>
             </div>
 
-            <div className='footer mt-4 flex items-center justify-between'>
-                {/* <button onClick={() => setActive(steps[1])}>Delivery</button> */}
-                <Button label='المنتجات' variant={"secondary"} onClick={() => setActive(steps[0])} />
-                <Button label='الدفع' onClick={() => setActive(steps[2])} />
+            <div className="w-full md:w-[380px]">
+                <CartReviewCard cart={cart} />
             </div>
         </div>
     )
-
 }
 
 export default Address
