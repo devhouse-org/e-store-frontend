@@ -103,28 +103,25 @@ const Cart = (props: Props) => {
                     {i === steps.length - 1 ? (
                       // Last step (flag)
                       <div
-                        className={`flex items-center justify-center w-12 h-12 rounded-full ${
-                          status === "upcoming"
-                            ? "bg-white text-orange-500"
-                            : "bg-orange-500 text-white"
-                        } border border-orange-500 font-medium transition-colors duration-200`}
+                        className={`flex items-center justify-center w-12 h-12 rounded-full ${status === "upcoming"
+                          ? "bg-white text-orange-500"
+                          : "bg-orange-500 text-white"
+                          } border border-orange-500 font-medium transition-colors duration-200`}
                       >
                         <Flag
-                          className={`w-4 h-4 ${
-                            status === "upcoming"
-                              ? "text-orange-500"
-                              : "text-white"
-                          }`}
+                          className={`w-4 h-4 ${status === "upcoming"
+                            ? "text-orange-500"
+                            : "text-white"
+                            }`}
                         />
                       </div>
                     ) : (
                       // Other steps (numbers)
                       <div
-                        className={`flex items-center justify-center w-12 h-12 rounded-full ${
-                          status === "upcoming"
-                            ? "bg-white text-orange-500"
-                            : "bg-orange-500 text-white"
-                        } border border-orange-500 font-medium transition-colors duration-200`}
+                        className={`flex items-center justify-center w-12 h-12 rounded-full ${status === "upcoming"
+                          ? "bg-white text-orange-500"
+                          : "bg-orange-500 text-white"
+                          } border border-orange-500 font-medium transition-colors duration-200`}
                       >
                         {i + 1}
                       </div>
@@ -137,13 +134,12 @@ const Cart = (props: Props) => {
 
           {/* Dynamically positioned text below */}
           <div
-            className={`mt-4 w-full ${
-              active.id === 1
-                ? "text-start"
-                : active.id === steps.length
+            className={`mt-4 w-full ${active.id === 1
+              ? "text-start"
+              : active.id === steps.length
                 ? "text-end"
                 : "text-center"
-            }`}
+              }`}
           >
             <span className="text-sm font-medium text-gray-600">
               {active.label.ar}
@@ -151,7 +147,7 @@ const Cart = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className="border border-light-200 mb-8 mt4 p-4 rounded-md shadow-md">
+      <div className="mt-4 border border-light-200 mb-8 bg-white p-4 rounded-md shadow-md">
         {activeStep()}
       </div>
     </div>

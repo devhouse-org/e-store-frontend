@@ -78,7 +78,7 @@ const Navbar = (props: Props) => {
               key={link.id}
               to={link.link}
               className={({ isActive }) => `
-                text-nowrap cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular
+                text-nowrap mt-1.5 cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular
                 ${isActive ? 'bg-orange-100 text-orange-500' : 'hover:bg-orange-100/70'}
               `}
             >

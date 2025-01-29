@@ -39,7 +39,7 @@ const ProductsTable: React.FC = () => {
       <div className="hidden md:block">
         <Table dir="rtl">
           <TableHeader>
-            <TableRow className="hover:bg-orange-50">
+            <TableRow className="hover:bg-none">
               <TableHead className="text-right">المنتجات</TableHead>
               <TableHead className="text-right">السعر</TableHead>
               <TableHead className="text-right">الكمية</TableHead>
@@ -48,7 +48,7 @@ const ProductsTable: React.FC = () => {
           </TableHeader>
           <TableBody>
             {products.map((product) => (
-              <TableRow className="hover:bg-orange-50" key={product.id}>
+              <TableRow className="hover:bg-orange-50/15" key={product.id}>
                 <TableCell className="font-medium ">
                   <div className="flex items-center gap-4">
                     <img

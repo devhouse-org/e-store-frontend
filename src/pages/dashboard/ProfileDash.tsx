@@ -8,7 +8,7 @@ import x from "/src/assets/images/x.svg";
 const ProfileDash: React.FC = () => {
   return (
     <div className="h-screen p6 pt-14 mx-4 md:mx-0">
-      <Card className="bgblack h-[80vh] container mx-auto">
+      <Card className="h-[80vh] max-h-[800px] container mx-auto">
         <CardContent className="p-0 h-full">
           <div className="flex flex-col h-full">
             <div className="grid gap-8 md:grid-cols-2 md:grid-flow-col-reverse flex-1">
@@ -61,7 +61,9 @@ const ProfileDash: React.FC = () => {
                 </div>
 
                 <button className="w-full max-w-[400px] h-11 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-gray-600 font-tajawal-medium">
-                  التسجيل باستخدام
+                  <p className="mt-1.5">
+                    التسجيل باستخدام
+                  </p>
                   <img
                     src="src/assets/images/google.png"
                     alt="Google"
@@ -69,8 +71,11 @@ const ProfileDash: React.FC = () => {
                   />
                 </button>
 
-                <button className="w-full max-w-[400px] h-11 flex items-center justify-center gap-3 bg-black hover:bg-gray-900 border border-gray-200 rounded-lg text-white font-tajawal-medium">
-                  التسجيل باستخدام
+                <button className="flex hover:bg-black/90 justify-center items-center gap-2 w-full max-w-[400px] bg-black text-white rounded-lg p-2 font-tajawal-medium">
+                  <p className="mt-1.5">
+                    التسجيل باستخدام
+
+                  </p>
                   <img
                     src="src/assets/images/apple.png"
                     alt="Apple"
