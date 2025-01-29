@@ -2,7 +2,7 @@ import CartReviewCard from "@/components/CartReviewCard";
 import { Button } from "@/components/ui/button";
 import { cart } from "@/utils/dummy_data/data";
 import React, { useState } from "react";
-import { CreditCard, Wallet, Truck, CheckCircle } from "lucide-react";
+import { CreditCard, Wallet, Truck, CheckCircle, LucideArrowRight } from "lucide-react";
 import CreditCardForm from "@/components/CreditCardForm";
 import { useNavigate } from "react-router-dom";
 
@@ -101,7 +101,10 @@ const Payment = ({ setActive }: any) => {
     <div className="flex flex-col md:flex-row gap-8">
       <div className="flex-1">
         <h2 className="text-2xl font-semibold mb-6 text-right">
-          اختر طريقة الدفع
+          {
+            showCreditCardForm ? <button onClick={() => setShowCreditCardForm(false)}><LucideArrowRight /></button> : "اختر طريقة الدفع"
+          }
+          {/* اختر طريقة الدفع */}
         </h2>
 
         {!showCreditCardForm ? (
@@ -152,7 +155,9 @@ const Payment = ({ setActive }: any) => {
             </div>
           </>
         ) : (
-          <CreditCardForm onSubmit={handleCreditCardSubmit} />
+          <>
+            <CreditCardForm onSubmit={handleCreditCardSubmit} />
+          </>
         )}
       </div>
 
