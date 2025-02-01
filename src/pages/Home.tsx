@@ -254,6 +254,55 @@ function Home() {
         />
       </div>
 
+      {/* Grid Banner */}
+      {/* Grid Banner */}
+      <div className="w-full mx-auto p-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[600px]">
+          {/* Left banner taking full height */}
+          <div className="group cursor-pointer relative bg-gray-100 rounded-lg h-full w-full overflow-hidden">
+            <img
+              className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
+              src="https://framerusercontent.com/images/7xR7TetootHNEHS8SguWlmMjAW8.jpg?scale-down-to=1024"
+              alt="Left banner"
+            />
+            <div className="absolute top-10 right-0 p-4">
+              <p className="text-black text-sm font-tajawal-medium">سريع ودقيق</p>
+              <h3 className="text-black text-2xl font-tajawal-medium">التركيز التلقائي مع مستشعر Lidar</h3>
+            </div>
+          </div>
+
+          {/* Right column with two banners */}
+          <div className="grid grid-rows-2 gap-4 h-full">
+            {/* Top right banner */}
+            <div className="group relative  bg-gray-100 rounded-lg overflow-hidden h-[295px]">
+              <img
+                className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
+                src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d9e4c8553309056.png"
+                alt="Top right banner"
+              />
+              <div className="absolute bottom-0 right-0 p-4">
+                <p className="text-white text-sm font-tajawal-medium">سريع ودقيق</p>
+                <h3 className="text-white text-2xl font-tajawal-medium">التركيز التلقائي مع مستشعر Lidar</h3>
+              </div>
+            </div>
+
+            {/* Bottom right banner */}
+            <div className="group relative bg-gray-100 rounded-lg overflow-hidden h-[295px]">
+              <img
+                className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
+                src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d93cc3558396192.png"
+                alt="Bottom right banner"
+              />
+              <div className="absolute bottom-0 right-0 p-4">
+                <p className="text-white text-sm font-tajawal-medium">سريع ودقيق</p>
+                <h3 className="text-white text-2xl font-tajawal-medium">التركيز التلقائي مع مستشعر Lidar</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       {/* Products Cards */}
       <div className="mb-20 bg-white p-4">
         <div className="flex justify-between items-center mb-6">
