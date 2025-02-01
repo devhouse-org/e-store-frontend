@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
 
 interface ProductCardProps {
-  product: Product;
+  product: any;
   size?: "sm" | "lg";
   activeCard?: boolean;
   showBtns?: boolean;
