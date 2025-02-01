@@ -274,7 +274,7 @@ function Home() {
           {/* Right column with two banners */}
           <div className="grid grid-rows-2 gap-4 h-full">
             {/* Top right banner */}
-            <div className="group relative  bg-gray-100 rounded-lg overflow-hidden h-[295px]">
+            <div className="group relative bg-gray-100 rounded-lg overflow-hidden h-[295px]">
               <img
                 className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
                 src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d9e4c8553309056.png"
@@ -287,7 +287,7 @@ function Home() {
             </div>
 
             {/* Bottom right banner */}
-            <div className="group relative bg-gray-100 rounded-lg overflow-hidden h-[295px]">
+            <div className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]">
               <img
                 className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
                 src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d93cc3558396192.png"
