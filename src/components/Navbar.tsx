@@ -63,8 +63,9 @@ const Navbar = (props: Props) => {
   return (
     <div className="bg-white shadow-sm overflow-hidden fixed top-0 left-0 right-0 z-40">
       {props.hasAd && (
-        <div className="ad bg-orange-500 text-white font-bold flex justify-center items-center py-1">
+        <div className="ad relative overflow-hidden bg-orange-500 text-white font-bold flex justify-center items-center py-1">
           <h1 className="font-tajawal-regular">{props.adTitle}</h1>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full animate-light-effect"></div>
         </div>
       )}
 

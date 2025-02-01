@@ -164,12 +164,10 @@ function Home() {
               <button
                 key={item.id}
                 onClick={() => setSelectedCategory(item.label)}
-                className={`border rounded-md transition-all ${selectedCategory === item.label
-                  ? "border-orange-500"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                className=""
               >
-                <Button variant="outline" label={item.label} />
+                <Button variant={selectedCategory === item.label
+                  ? "default" : "outline"} color="orange" label={item.label} />
               </button>
             ))}
           </div>
@@ -274,9 +272,9 @@ function Home() {
           {/* Right column with two banners */}
           <div className="grid grid-rows-2 gap-4 h-full">
             {/* Top right banner */}
-            <div className="group relative bg-gray-100 rounded-lg overflow-hidden h-[295px]">
+            <div className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]">
               <img
-                className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
+                className="object-cover group-hover:scale-110 cursor-pointer transition-all duration-300 w-full h-full"
                 src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d9e4c8553309056.png"
                 alt="Top right banner"
               />
