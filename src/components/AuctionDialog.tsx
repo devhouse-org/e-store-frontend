@@ -38,9 +38,16 @@ export function AuctionDialog({
   const imgSrc =
     "https://ardes.bg/uploads/original/konzola-xbox-series-x-1tb-466538.jpg";
   const [remainingTime, setRemainingTime] = useState<TimeType | null>(null);
-
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedPrices([]);
+      setIsAnimating(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -98,7 +105,7 @@ export function AuctionDialog({
   const totalPrice = selectedPrices.reduce((acc, value) => acc + value, 0);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button label="زايد الان" variant={"blue"} />
       </DialogTrigger>
@@ -138,11 +145,10 @@ export function AuctionDialog({
                 <div
                   onClick={() => handlePriceSelection(price.value)}
                   key={price.id}
-                  className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${
-                    selectedPrices.includes(price.value)
+                  className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${selectedPrices.includes(price.value)
                       ? "bg-orange-200 border-orange-400"
                       : ""
-                  }`}
+                    }`}
                 >
                   <p className="text-[16px]">{price.label}</p>
                 </div>
@@ -162,9 +168,8 @@ export function AuctionDialog({
           <div
             className={`p-2 flex justify-between items-center w-full bg-orange-500
                             hover:bg-orange-500/90 transition ease-in-out cursor-pointer 
-                            rounded-md text-white ${
-                              isAnimating && "bg-orange-300"
-                            }`}
+                            rounded-md text-white ${isAnimating && "bg-orange-300"
+              }`}
           >
             <p className="font-tajawal-regular">
               {totalPrice.toLocaleString()}د.ع

@@ -42,8 +42,8 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction, onSubscribe }) => {
         `${days.toString().padStart(2, "0")} : ${hours
           .toString()
           .padStart(2, "0")} : ${minutes
-          .toString()
-          .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
+            .toString()
+            .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
       );
     };
 
@@ -110,7 +110,9 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction, onSubscribe }) => {
             <p>{remainingTime}</p>
           </div>
           {/* Button */}
-          <AuctionDialog endTime={auction.endTime} prices={prices} />
+          <div onClick={(e) => { e.preventDefault(); e.stopPropagation() }}>
+            <AuctionDialog endTime={auction.endTime} prices={prices} />
+          </div>
         </div>
       </div>
     </div>

@@ -155,7 +155,7 @@ const Footer = (props: Props) => {
           </li>
         </ul>
         <h1 className="font-tajawal-regular text-[12px] mt-4 md:mt-0 md:text-[14px]">
-          حقوق النشر 2024 متجر إي ستور. جميع الحقوق محفوظة.
+          حقوق النشر 2024 متجر ي ستور. جميع الحقوق محفوظة.
         </h1>
       </div>
     </div>
