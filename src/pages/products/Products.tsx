@@ -3,6 +3,7 @@ import { products, getBrands } from "@/utils/data/products";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
 import ProductCard from "@/components/ProductCard";
+import { LucideCircleDashed, LucideCreditCard, LucideShoppingCart } from "lucide-react";
 
 const Products = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
@@ -226,8 +227,63 @@ const Products = () => {
         <div className="">
           {/* Auction Cards Section */}
           <div className="auction_cards gap-4 flex justify-between flex-row flex-wrap">
+            {/* // <ProductCard showBtns={true} key={product.id} product={product} size="lg" /> */}
             {filteredProducts.map((product) => (
-              <ProductCard showBtns={true} key={product.id} product={product} size="lg" />
+              <div className="relative flex flex-col w-full sm:w-80 rounded-xl bg-white bg-clip-border shadow-md">
+                {/* Image Container */}
+                <div className="relative mx-4 p-1 mt-4 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border ">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="px-6 py-4 flex-grow">
+                  <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal antialiased">
+                    {product.name}
+                  </h5>
+                  <p className="line-clamp-2 font-sans text-base font-light leading-relaxed text-inherit antialiased">
+
+                    {product.description}
+                  </p>
+                </div>
+
+                {/* Footer */}
+                <div className="p-6 pt-0 mt-auto">
+
+                  <p className="mb-2 font-tajawal-bold text-orange-500 text-xl">
+                    د.ع {product.price.toLocaleString()}
+                  </p>
+                  <div className="flex justify-between items-center">
+                    {/* Left side button */}
+                    <button
+                      type="button"
+                      className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                    >
+                      <LucideShoppingCart />
+                    </button>
+
+                    {/* Right side buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                      >
+                        <LucideCreditCard />
+                      </button>
+                      <button
+                        type="button"
+                        className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                      >
+                        <LucideCircleDashed />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              // <ProductCard showBtns={true} key={product.id} product={product} size="lg" />
             ))}
           </div>
           <div className="pagination mt-20 mb-14">
