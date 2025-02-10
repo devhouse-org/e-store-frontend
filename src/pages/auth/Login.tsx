@@ -6,17 +6,39 @@ import { Link } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    phone: "",
+    email: "",
     password: "",
   });
 
+
+  // const odooUrl = "https://estore-test.odoo.com/jsonrpc";
+
+  const login = async (email: string, password: string) => {
+    const response = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    if (data.session_id) {
+      console.log("Login successful! Session ID:", data.session_id);
+      localStorage.setItem("session_id", data.session_id);
+    } else {
+      console.error("Login failed:", data.error);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    login(formData.email, formData.password);
   };
 
   return (
     <div className="h-screen p6 pt-14 mx-4 md:mx-0">
+      {/* <Button onClick={login}>Login</Button> */}
       <Card className="bgblack h-[80vh] container mx-auto">
         <CardContent className="p-0 h-full">
           <div className="flex flex-col h-full">
@@ -51,16 +73,17 @@ const Login = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
-                        الهاتف
+                        {/* الهاتف */}
+                        البريد الإلكتروني
                       </label>
                       <Input
                         type="tel"
                         required
                         className="w-full text-right font-tajawal-regular"
-                        placeholder="أدخل رقم الهاتف"
-                        value={formData.phone}
+                        placeholder="أدخل البريد الإلكتروني"
+                        value={formData.email}
                         onChange={(e) =>
-                          setFormData({ ...formData, phone: e.target.value })
+                          setFormData({ ...formData, email: e.target.value })
                         }
                       />
                     </div>
