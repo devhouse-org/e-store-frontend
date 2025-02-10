@@ -2,17 +2,60 @@ import { useState } from "react";
 import { products, getBrands } from "@/utils/data/products";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
-import ProductCard from "@/components/ProductCard";
-import { LucideCircleDashed, LucideCreditCard, LucideShoppingCart } from "lucide-react";
+import { LucideCircleDashed, LucideCreditCard, LucideShoppingCart, Plus, Minus } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
+import { useComparisonStore } from "@/store/useComparisonStore";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { IconType } from "react-icons";
 
 const Products = () => {
+  const navigate = useNavigate();
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
   const brands = getBrands();
+  const { addToCart, products: cartProducts, updateQuantity, removeFromCart } = useCartStore();
+  const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
 
   const filteredProducts =
     selectedBrand === "all"
       ? products
       : products.filter((product) => product.brand === selectedBrand);
+
+  const handleAddToCart = (product: any) => {
+    const cartItem = cartProducts.find(item => item.id === product.id);
+    if (!cartItem) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: 1,
+        storage: product.storage
+      });
+    }
+  };
+
+  const handleBuyNow = (product: any) => {
+    handleAddToCart(product);
+    navigate("/cart");
+  };
+
+  const handleComparisonClick = (product: any) => {
+    const isInComparison = isCompared(product.id);
+    if (isInComparison) {
+      removeFromComparison(product.id);
+    } else {
+      addToComparison(product);
+    }
+  };
+
+  const handleUpdateQuantity = (product: any, newQuantity: number) => {
+    if (newQuantity < 1) {
+      removeFromCart(product.id);
+    } else {
+      updateQuantity(product.id, newQuantity);
+    }
+  };
 
   return (
     <div className="flex items-start flex-row mt-8 px-12">
@@ -223,68 +266,107 @@ const Products = () => {
           </div>
         </div>
 
-        {/* Auction Cards and Pagination */}
         <div className="">
-          {/* Auction Cards Section */}
           <div className="auction_cards gap-4 flex justify-between flex-row flex-wrap">
-            {/* // <ProductCard showBtns={true} key={product.id} product={product} size="lg" /> */}
-            {filteredProducts.map((product) => (
-              <div className="relative flex flex-col w-full sm:w-80 rounded-xl bg-white bg-clip-border shadow-md">
-                {/* Image Container */}
-                <div className="relative mx-4 p-1 mt-4 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border ">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+            {/* products cards */}
+            {filteredProducts.map((product) => {
+              const cartItem = cartProducts.find(item => item.id === product.id);
 
-                {/* Content */}
-                <div className="px-6 py-4 flex-grow">
-                  <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal antialiased">
-                    {product.name}
-                  </h5>
-                  <p className="line-clamp-2 font-sans text-base font-light leading-relaxed text-inherit antialiased">
+              return (
+                <div key={product.id} className="relative flex flex-col w-full sm:w-80 rounded-xl bg-white bg-clip-border shadow-md">
+                  <div className="relative mx-4 p-1 mt-4 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border ">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
 
-                    {product.description}
-                  </p>
-                </div>
+                  {/* Content */}
+                  <div className="px-6 py-4 flex-grow">
+                    <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal antialiased">
+                      {product.name}
+                    </h5>
+                    <p className="line-clamp-2 font-sans text-base font-light leading-relaxed text-inherit antialiased">
+                      {product.description}
+                    </p>
+                  </div>
 
-                {/* Footer */}
-                <div className="p-6 pt-0 mt-auto">
+                  {/* Footer */}
+                  <div className="p-6 pt-0 mt-auto">
+                    <p className="mb-2 font-tajawal-bold text-orange-500 text-xl">
+                      د.ع {product.price.toLocaleString()}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      {/* Cart Button or Quantity Controls */}
+                      {cartItem ? (
+                        <div
+                          onClick={(e) => e.preventDefault()}
+                          className="flex items-center gap-2 px-2 bg-orange-100/25 rounded-md py-1"
+                        >
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-8 h-8 text-orange-500"
+                            onClick={() => handleUpdateQuantity(product, cartItem.quantity - 1)}
+                            Icon={Minus as IconType}
+                          />
+                          <span className="w-6 text-center font-tajawal-medium">
+                            {cartItem.quantity}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-8 h-8 text-black"
+                            onClick={() => handleUpdateQuantity(product, cartItem.quantity + 1)}
+                            Icon={Plus as IconType}
+                          />
+                        </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAddToCart(product);
+                          }}
+                          className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        >
+                          <LucideShoppingCart />
+                        </button>
+                      )}
 
-                  <p className="mb-2 font-tajawal-bold text-orange-500 text-xl">
-                    د.ع {product.price.toLocaleString()}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    {/* Left side button */}
-                    <button
-                      type="button"
-                      className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    >
-                      <LucideShoppingCart />
-                    </button>
+                      {/* Right side buttons */}
+                      <div className="flex gap-2">
+                        {/* Buy Now button */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleBuyNow(product);
+                          }}
+                          className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        >
+                          <LucideCreditCard />
+                        </button>
 
-                    {/* Right side buttons */}
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                      >
-                        <LucideCreditCard />
-                      </button>
-                      <button
-                        type="button"
-                        className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                      >
-                        <LucideCircleDashed />
-                      </button>
+                        {/* Compare button */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleComparisonClick(product);
+                          }}
+                          className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
+                            ${isCompared(product.id)
+                              ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
+                              : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
+                            }`}
+                        >
+                          <LucideCircleDashed />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              // <ProductCard showBtns={true} key={product.id} product={product} size="lg" />
-            ))}
+              );
+            })}
           </div>
           <div className="pagination mt-20 mb-14">
             <Pagination />
