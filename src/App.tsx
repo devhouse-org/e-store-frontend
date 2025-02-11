@@ -24,6 +24,7 @@ import NotFound from "./components/NotFound";
 import Blogs from "./pages/blog/Blogs";
 import Blog from "./pages/blog/Blog";
 import Brands from "./pages/brands/Brands";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 function App() {
   return (
@@ -45,7 +46,14 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             {/* <Route path="/product/:id" element={<Product />} /> */}
 
-            <Route path="/dashboard" element={<ProfileDash />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/wishlist" element={<Wishlist />} />
             {/* Auth routes */}
             <Route path="/login" element={<Login />} />

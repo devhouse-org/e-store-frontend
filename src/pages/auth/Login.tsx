@@ -2,32 +2,36 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-
-  // const odooUrl = "https://estore-test.odoo.com/jsonrpc";
-
   const login = async (email: string, password: string) => {
-    const response = await fetch("http://localhost:5000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
-    if (data.session_id) {
-      console.log("Login successful! Session ID:", data.session_id);
-      localStorage.setItem("session_id", data.session_id);
-    } else {
-      console.error("Login failed:", data.error);
+      const data = await response.json();
+      if (data.session_id) {
+        localStorage.setItem("session_id", data.session_id);
+        navigate("/dashboard"); // Redirect to dashboard after successful login
+      } else {
+        console.error("Login failed:", data.error);
+        // You might want to show an error message to the user here
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      // Handle network or other errors
     }
   };
 

@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { isAuthenticated, logout } from "@/utils/auth";
 import { PenLine, User, UserRound } from "lucide-react";
 import React from "react";
 
@@ -51,6 +54,18 @@ const links = [
 // test line again
 
 const Dashboard = (props: Props) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div>
       {/* Parent container for scrolling */}
@@ -87,12 +102,12 @@ const Dashboard = (props: Props) => {
                 </li>
               ))}
               <li>
-                <a
-                  href="/login"
+                <button
+                  onClick={handleLogout}
                   className="mt-4 text-sm w-full py-1 rounded-md bg-red-500 text-white block text-center hover:bg-red-600 transition-colors"
                 >
                   تسجيل خروج
-                </a>
+                </button>
               </li>
             </ul>
           </div>

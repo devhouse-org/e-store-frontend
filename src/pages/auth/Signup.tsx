@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
     phone: "",
     password: "",
     confirmPassword: "",
@@ -14,8 +15,36 @@ const Signup = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    signup();
     console.log(formData);
   };
+
+
+  const signup = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/signup", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.error) {
+        console.error('Error creating contact:', result.error);
+      } else {
+        console.log('Contact created successfully:', result.result);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  }
 
   return (
     <div className="h-screen p6 pt-14 mx-4 md:mx-0">
@@ -63,6 +92,21 @@ const Signup = () => {
                         value={formData.name}
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
+                        البريد الإلكتروني
+                      </label>
+                      <Input
+                        type="email"
+                        required
+                        className="w-full text-right font-tajawal-regular"
+                        placeholder="أدخل البريد الإلكتروني"
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
                         }
                       />
                     </div>
