@@ -15,6 +15,7 @@ const Products = () => {
   const brands = getBrands();
   const { addToCart, products: cartProducts, updateQuantity, removeFromCart } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+  const [prods, setProds] = useState<any[]>([]);
 
   const fetchProducts = async (currentUid: number, currentOffset: number, domain: any[] = []) => {
     try {
@@ -25,6 +26,7 @@ const Products = () => {
       });
 
       const data = await response.json();
+      setProds(data);
       console.log("Fetched Products:", data);
       return data;
     } catch (error) {
@@ -295,14 +297,14 @@ const Products = () => {
         <div className="">
           <div className="auction_cards gap-4 flex justify-between flex-row flex-wrap">
             {/* products cards */}
-            {filteredProducts.map((product) => {
+            {prods.map((product) => {
               const cartItem = cartProducts.find(item => item.id === product.id);
 
               return (
                 <div key={product.id} className="relative flex flex-col w-full sm:w-80 rounded-xl bg-white bg-clip-border shadow-md">
                   <div className="relative mx-4 p-1 mt-4 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border ">
                     <img
-                      src={product.image}
+                      src={`data:image/png;base64,${product.image_1920}`}
                       alt={product.name}
                       className="w-full h-full object-contain"
                     />
@@ -313,15 +315,15 @@ const Products = () => {
                     <h5 className="mb-2 block text-xl font-tajawal-medium leading-snug tracking-normal antialiased">
                       {product.name}
                     </h5>
-                    <p className="line-clamp-2 text-base font-tajawal-regular leading-relaxed text-inherit antialiased">
+                    {/* <p className="line-clamp-2 text-base font-tajawal-regular leading-relaxed text-inherit antialiased">
                       {product.description}
-                    </p>
+                    </p> */}
                   </div>
 
                   {/* Footer */}
                   <div className="p-6 pt-0 mt-auto">
                     <p className="mb-2 font-tajawal-bold text-orange-500 text-xl">
-                      د.ع {product.price.toLocaleString()}
+                      د.ع {product.list_price.toLocaleString()}
                     </p>
                     <div className="flex justify-between items-center">
                       {/* Cart Button or Quantity Controls */}
