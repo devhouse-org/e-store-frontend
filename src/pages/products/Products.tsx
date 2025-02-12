@@ -16,9 +16,11 @@ const Products = () => {
   const { addToCart, products: cartProducts, updateQuantity, removeFromCart } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
   const [prods, setProds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchProducts = async (currentUid: number, currentOffset: number, domain: any[] = []) => {
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:5000/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,6 +34,8 @@ const Products = () => {
     } catch (error) {
       console.error("Error fetching products:", error);
       return [];
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,6 +88,33 @@ const Products = () => {
       updateQuantity(product.id, newQuantity);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+          <p className="text-gray-500 font-tajawal-medium">جاري تحميل المنتجات...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (prods.length === 0 && !loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 font-tajawal-medium text-lg">لا توجد منتجات متوفرة</p>
+          <Button
+            onClick={() => fetchProducts(Number(localStorage.getItem("session_id")), 0, [])}
+            className="mt-4"
+            variant="outline"
+            label="إعادة المحاولة"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-start flex-row mt-8 px-12">
