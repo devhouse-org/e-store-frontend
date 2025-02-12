@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isAuthenticated, logout } from "@/utils/auth";
 import { PenLine, User, UserRound } from "lucide-react";
@@ -54,15 +54,22 @@ const links = [
 // test line again
 
 const Dashboard = (props: Props) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
+    } else {
+      setName(localStorage.getItem("name") || "");
+      setEmail(localStorage.getItem("email") || "");
     }
   }, [navigate]);
 
   const handleLogout = () => {
+
     logout();
   };
 
@@ -81,14 +88,14 @@ const Dashboard = (props: Props) => {
               {/* name & email & edit */}
               <div className="w-full">
                 <div className="flex-1 flex justify-between items-center">
-                  <strong>name</strong>
+                  <strong>{name}</strong>
                   <PenLine
                     className="text-orange-500 p-1 rounded-md hover:bg-slate-200/50 transition ease-in-out cursor-pointer"
                     size={24}
                   />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[12px]">email@example.com</p>
+                  <p className="text-[12px]">{email}</p>
                 </div>
               </div>
             </div>

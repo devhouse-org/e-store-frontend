@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { products, getBrands } from "@/utils/data/products";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
@@ -15,6 +15,32 @@ const Products = () => {
   const brands = getBrands();
   const { addToCart, products: cartProducts, updateQuantity, removeFromCart } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+
+  const fetchProducts = async (currentUid: number, currentOffset: number, domain: any[] = []) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentUid, currentOffset, domain }),
+      });
+
+      const data = await response.json();
+      console.log("Fetched Products:", data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const currentUid = localStorage.getItem("session_id");
+    if (currentUid) {
+      fetchProducts(Number(currentUid), 0, []);
+    } else {
+      navigate("/login");
+    }
+  }, []);
 
   const filteredProducts =
     selectedBrand === "all"
@@ -284,10 +310,10 @@ const Products = () => {
 
                   {/* Content */}
                   <div className="px-6 py-4 flex-grow">
-                    <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal antialiased">
+                    <h5 className="mb-2 block text-xl font-tajawal-medium leading-snug tracking-normal antialiased">
                       {product.name}
                     </h5>
-                    <p className="line-clamp-2 font-sans text-base font-light leading-relaxed text-inherit antialiased">
+                    <p className="line-clamp-2 text-base font-tajawal-regular leading-relaxed text-inherit antialiased">
                       {product.description}
                     </p>
                   </div>

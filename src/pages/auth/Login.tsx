@@ -24,10 +24,11 @@ const Login = () => {
       const data = await response.json();
       if (data.session_id) {
         localStorage.setItem("session_id", data.session_id);
-        navigate("/dashboard"); // Redirect to dashboard after successful login
+        localStorage.setItem("name", data.name);
+        localStorage.setItem("email", data.email);
+        navigate("/dashboard");
       } else {
         console.error("Login failed:", data.error);
-        // You might want to show an error message to the user here
       }
     } catch (error) {
       console.error("Login error:", error);

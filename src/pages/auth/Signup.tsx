@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +19,7 @@ const Signup = () => {
     console.log(formData);
   };
 
+  const navigate = useNavigate();
 
   const signup = async () => {
     try {
@@ -39,7 +40,9 @@ const Signup = () => {
       if (result.error) {
         console.error('Error creating contact:', result.error);
       } else {
-        console.log('Contact created successfully:', result.result);
+        await localStorage.setItem("name", result.name);
+        await localStorage.setItem("email", result.email);
+        navigate("/dashboard")
       }
     } catch (error) {
       console.error('Fetch error:', error);

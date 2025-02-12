@@ -5,5 +5,7 @@ export const isAuthenticated = () => {
 
 export const logout = () => {
     localStorage.removeItem("session_id");
+    localStorage.removeItem("name");
+    localStorage.removeItem("email");
     window.location.href = "/login";
 }; 
