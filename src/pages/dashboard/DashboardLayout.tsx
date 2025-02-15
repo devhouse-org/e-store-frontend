@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { isAuthenticated, logout } from "@/utils/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -63,24 +63,24 @@ const DashboardLayout = () => {
                         {/* name & email & edit */}
                         <div className="w-full">
                             <div className="flex-1 flex justify-between items-center">
-                                <strong>{name}</strong>
+                                <strong className="line-clamp-1">{name}</strong>
                                 <PenLine
                                     className="text-orange-500 p-1 rounded-md hover:bg-slate-200/50 transition ease-in-out cursor-pointer"
                                     size={24}
                                 />
                             </div>
                             <div className="flex-1">
-                                <p className="text-[12px]">{email}</p>
+                                <p className="text-[12px] line-clamp-1">{email}</p>
                             </div>
                         </div>
                     </div>
                     <div>
                         {links.map((link) => (
-                            <Link to={link.link} key={link.id} className="mb-2 rounded-md py-1">
-                                <p className="text-sm text-black hover:bg-black/5 p-2 transition ease-in-out duration-200 rounded-md my-1">
+                            <NavLink to={link.link} key={link.id} className={`mb-2 rounded-md py-1 `}>
+                                <p className="font-tajawal-medium text-sm text-black hover:bg-black/5 p-2 transition ease-in-out duration-200 rounded-md my-1">
                                     {link.label}
                                 </p>
-                            </Link>
+                            </NavLink>
                         ))}
                         <button
                             onClick={handleLogout}
@@ -93,7 +93,7 @@ const DashboardLayout = () => {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 border border-black p-4 mt-4">
+            <div className="flex-1 border border-gray-300 mt-4">
                 <Outlet />
             </div>
         </div>
