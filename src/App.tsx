@@ -12,6 +12,7 @@ import Auction from "./pages/auctions/Auction";
 import Products from "./pages/products/Products";
 import Product from "./pages/products/Product";
 import Cart from "./pages/cart/Cart";
+import DashboardLayout from "./pages/dashboard/DashboardLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -25,6 +26,9 @@ import Blogs from "./pages/blog/Blogs";
 import Blog from "./pages/blog/Blog";
 import Brands from "./pages/brands/Brands";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import PurchaseHistory from "./pages/dashboard/PurchaseHistory";
+import DashboardComparisons from "./pages/dashboard/DashboardComparisons";
+import Profile from "./pages/dashboard/Profile";
 
 function App() {
   return (
@@ -50,10 +54,16 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <DashboardLayout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="history" element={<PurchaseHistory />} />
+              <Route path="wishlist" element={<Wishlist />} />
+              <Route path="comparisons" element={<DashboardComparisons />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
             <Route path="/wishlist" element={<Wishlist />} />
             {/* Auth routes */}
             <Route path="/login" element={<Login />} />
