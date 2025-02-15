@@ -285,8 +285,8 @@ const Product = () => {
                 variant="outline"
                 size="lg"
                 className={`flex-1 ${isInComparison
-                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                    : "bg-orange-100 text-orange-500 hover:bg-orange-200"
+                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                  : "bg-orange-100 text-orange-500 hover:bg-orange-200"
                   }`}
                 onClick={handleComparisonClick}
                 label={isInComparison ? "إزالة من المقارنة" : "إضافة للمقارنة"}
@@ -333,7 +333,7 @@ const Product = () => {
       </div>
       {/* Description section */}
       <div>
-        <div className="border border-light-100 p-4 shadow-md flex flex-col lg:flex-row gap-4">
+        <div className="bg-white border border-light-100 p-4 shadow-md flex flex-col lg:flex-row gap-4">
           {/* Product Description Section */}
           <div className="w-full md:flex-[0.8]">
             <div className="flex flex-col justify-between">
@@ -365,7 +365,7 @@ const Product = () => {
           </div>
         </div>
 
-        <div className="shadow-md border shadow-light-600 mt-2 rounded-md overflow-hidden mb-8 p-4">
+        <div className="bg-white shadow-md border shadow-light-600 mt-2 rounded-md overflow-hidden mb-8 p-4">
           <div className="border-b mb-4">
             <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit">
               منتجات ذات صلة
