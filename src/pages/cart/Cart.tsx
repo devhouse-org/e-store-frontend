@@ -49,21 +49,24 @@ const Cart = (props: Props) => {
 
   if (cartProducts.length === 0) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4">
-        <div className="text-center space-y-3">
-          <div className="bg-orange-100 p-3 rounded-full w-fit mx-auto">
-            <ShoppingBag className="w-8 h-8 text-orange-500" />
+      <div className="min-h-[80vh] flex flex-col items-center justify-center gap-8 px-4 max-w-md mx-auto">
+        <div className="text-center space-y-4">
+          <div className="bg-orange-100 p-4 rounded-full w-fit mx-auto animate-pulse">
+            <ShoppingBag className="w-10 h-10 text-orange-500" />
           </div>
-          <h2 className="text-2xl font-tajawal-medium">السلة فارغة</h2>
-          <p className="text-gray-500 font-tajawal-regular">
+          <h2 className="text-3xl font-tajawal-bold text-gray-800">
+            السلة فارغة
+          </h2>
+          <p className="text-gray-600 font-tajawal-regular text-lg">
             لم تقم بإضافة أي منتج إلى السلة بعد
           </p>
         </div>
 
         <Link to="/products">
           <Button
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8"
             label="تسوق الآن"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-xl
+              transition-all duration-300 shadow-lg hover:shadow-orange-200"
           />
         </Link>
       </div>
@@ -103,25 +106,28 @@ const Cart = (props: Props) => {
                     {i === steps.length - 1 ? (
                       // Last step (flag)
                       <div
-                        className={`flex items-center justify-center w-12 h-12 rounded-full ${status === "upcoming"
-                          ? "bg-white text-orange-500"
-                          : "bg-orange-500 text-white"
-                          } border border-orange-500 font-medium transition-colors duration-200`}
+                        className={`flex items-center justify-center w-12 h-12 rounded-full ${
+                          status === "upcoming"
+                            ? "bg-white text-orange-500"
+                            : "bg-orange-500 text-white"
+                        } border border-orange-500 font-medium transition-colors duration-200`}
                       >
                         <Flag
-                          className={`w-4 h-4 ${status === "upcoming"
-                            ? "text-orange-500"
-                            : "text-white"
-                            }`}
+                          className={`w-4 h-4 ${
+                            status === "upcoming"
+                              ? "text-orange-500"
+                              : "text-white"
+                          }`}
                         />
                       </div>
                     ) : (
                       // Other steps (numbers)
                       <div
-                        className={`flex items-center justify-center w-12 h-12 rounded-full ${status === "upcoming"
-                          ? "bg-white text-orange-500"
-                          : "bg-orange-500 text-white"
-                          } border border-orange-500 font-medium transition-colors duration-200`}
+                        className={`flex items-center justify-center w-12 h-12 rounded-full ${
+                          status === "upcoming"
+                            ? "bg-white text-orange-500"
+                            : "bg-orange-500 text-white"
+                        } border border-orange-500 font-medium transition-colors duration-200`}
                       >
                         {i + 1}
                       </div>
@@ -134,12 +140,13 @@ const Cart = (props: Props) => {
 
           {/* Dynamically positioned text below */}
           <div
-            className={`mt-4 w-full ${active.id === 1
-              ? "text-start"
-              : active.id === steps.length
+            className={`mt-4 w-full ${
+              active.id === 1
+                ? "text-start"
+                : active.id === steps.length
                 ? "text-end"
                 : "text-center"
-              }`}
+            }`}
           >
             <span className="text-sm font-medium text-gray-600">
               {active.label.ar}
