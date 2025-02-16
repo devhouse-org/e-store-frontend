@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* ... */
 @font-face {
   font-family: "tajawal-light";
@@ -21,4 +22,123 @@
 @font-face {
   font-family: "tajawal-bold";
   src: url("/src/assets/fonts/TajawalBold.ttf") format("truetype");
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    /* White background */
+    --foreground: 20 14.3% 4.1%;
+    /* Dark text */
+    --card: 0 0% 100%;
+    /* Matches background for light mode */
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 16 85.7% 55.1%;
+    /* Updated primary to #EF5D2A */
+    --primary-foreground: 0 0% 100%;
+    /* White text on primary background */
+    --secondary: 40 70% 90%;
+    /* Soft beige for light contrast */
+    --secondary-foreground: 24 9.8% 10%;
+    /* Slightly darker text */
+    --muted: 40 50% 88%;
+    /* Subdued light color */
+    --muted-foreground: 25 5.3% 44.7%;
+    /* Gray text on muted background */
+    --accent: 200 65% 60%;
+    /* Light blue for accents */
+    --accent-foreground: 24 9.8% 10%;
+    --destructive: 0 72.2% 55%;
+    /* Strong red for warnings */
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 16 85.7% 55.1%;
+    /* Match primary for focus rings */
+    --radius: 0.5rem;
+    --chart-1: 16 85.7% 55.1;
+    /* Match primary */
+    --chart-2: 200 65% 60%;
+    /* Light blue */
+    --chart-3: 40 70% 65%;
+    /* Soft beige contrast */
+    --chart-4: 280 65% 55%;
+    /* Purple tones */
+    --chart-5: 120 60% 45%;
+    /* Green tones */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+
+  .dark {
+    --background: 20 14.3% 4.1%;
+    /* Dark gray background */
+    --foreground: 60 9.1% 97.8%;
+    /* Light text */
+    --card: 20 14.3% 4.1%;
+    /* Match dark mode background */
+    --card-foreground: 60 9.1% 97.8%;
+    --popover: 20 14.3% 4.1%;
+    --popover-foreground: 60 9.1% 97.8%;
+    --primary: 16 85.7% 55.1;
+    /* Match primary color */
+    --primary-foreground: 0 0% 100%;
+    /* White text */
+    --secondary: 30 15% 20%;
+    /* Muted brown for contrast */
+    --secondary-foreground: 60 9.1% 97.8%;
+    --muted: 30 12% 18%;
+    /* Very muted dark tone */
+    --muted-foreground: 60 9.1% 97.8%;
+    --accent: 200 65% 50%;
+    /* Medium blue for accents */
+    --accent-foreground: 60 9.1% 97.8%;
+    --destructive: 0 72.2% 50.6%;
+    /* Darker red for warnings */
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 30 12% 18%;
+    /* Muted border */
+    --input: 30 12% 18%;
+    /* Matches muted */
+    --ring: 16 85.7% 55.1;
+    /* Match primary */
+    --chart-1: 16 85.7% 55.1;
+    /* Match primary */
+    --chart-2: 200 65% 50%;
+    /* Blue tone */
+    --chart-3: 120 50% 40%;
+    /* Earthy green */
+    --chart-4: 280 65% 60%;
+    /* Purple highlights */
+    --chart-5: 340 75% 50%;
+    /* Vibrant pink-red */
+  }
+}
+
+/* @layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+} */
+
+@keyframes lightEffect {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-light-effect {
+  animation: lightEffect 4s linear infinite;
 }
