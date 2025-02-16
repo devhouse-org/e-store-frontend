@@ -13,10 +13,11 @@ const Signup = () => {
     confirmPassword: "",
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     signup();
-    console.log(formData);
   };
 
   const navigate = useNavigate();
@@ -38,11 +39,17 @@ const Signup = () => {
 
       const result = await response.json();
       if (result.error) {
-        console.error('Error creating contact:', result.error);
+        if (result.data && result.data.arguments && result.data.arguments[0] === 'You can not have two users with the same login!') {
+          setError("البريد الإلكتروني مستخدم من قبل");
+        } else {
+          setError("You can not have two users with the same login!");
+          console.log(result.error.data.message)
+          // console.error('Error creating contact:', result.error);
+        }
       } else {
-        await localStorage.setItem("name", result.name);
-        await localStorage.setItem("email", result.email);
-        navigate("/dashboard")
+        localStorage.setItem("name", result.name);
+        localStorage.setItem("email", result.email);
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error('Fetch error:', error);
@@ -108,10 +115,14 @@ const Signup = () => {
                         className="w-full text-right font-tajawal-regular"
                         placeholder="أدخل البريد الإلكتروني"
                         value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value });
+                          setError(null); // Clear error when user changes email
+                        }}
                       />
+                      {error && (
+                        <p className="text-red-500 text-sm mt-1">البريد الإلكتروني مستخدم من قبل</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
