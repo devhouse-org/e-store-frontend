@@ -2,15 +2,24 @@ import LocationCard from '@/components/LocationCard'
 import { Button } from '@/components/ui/button'
 import { locations } from '@/utils/dummy_data/data'
 import { LucidePlusCircle } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { IconType } from 'react-icons'
 
 const Profile = () => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+
+    useEffect(() => {
+        setName(localStorage.getItem("name") || "");
+        setEmail(localStorage.getItem("email") || "");
+        setPhoneNumber(localStorage.getItem("phone") || "");
+    }, []);
+
     return (
         <div className="p4 space-y-4">
             {/* Header */}
-            <h1 className="text-xl text-gray-500 font-tajawal-bold">تعديل الملف الشخصي</h1>
-
+            <h1 className="text-xl text-gray-500 font-tajawal-bold">الملف الشخصي</h1>
             {/* Profile Form */}
             <div className="bg-white p-6 rounded shadow">
                 <form className="space-y-4">
@@ -21,6 +30,8 @@ const Profile = () => {
                                 type="text"
                                 className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
                                 placeholder="أدخل اسمك الكامل"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                             />
                         </div>
                         <div className="flex-1 flex items-center gap-x-2">
@@ -29,6 +40,8 @@ const Profile = () => {
                                 type="email"
                                 className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
                                 placeholder="أدخل بريدك الإلكتروني"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <div className="flex-1 flex items-center gap-x-2">
@@ -37,6 +50,8 @@ const Profile = () => {
                                 type="text"
                                 className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
                                 placeholder="أدخل رقم هاتفك"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
                             />
                         </div>
                         {/* <div className="flex-1 flex items-center gap-x-2">

@@ -49,8 +49,8 @@ const Dashboard = () => {
           <h2 className="text-lg font-tajawal-medium">الطلبات الحالية (4)</h2>
           <table className="w-full mt-2">
             <thead className='bg-black/5 text-black'>
-              <tr className="text-left">
-                <th className='text-right'>#</th>
+              <tr className="text-left h-10">
+                <th className='text-right px-2'>#</th>
                 <th className='text-right'>رقم الطلب</th>
                 <th className='text-right'>التاريخ</th>
                 <th className='text-right'>المبلغ</th>
@@ -60,8 +60,8 @@ const Dashboard = () => {
             </thead>
             <tbody>
               {Array(4).fill(0).map((_, index) => (
-                <tr key={index} className="border-t">
-                  <td>{index + 1}</td>
+                <tr key={index} className="border-t h-10">
+                  <td className='px-2'>{index + 1}</td>
                   <td>20230126</td>
                   <td>26-01-2023</td>
                   <td>980.000 د.ع</td>
@@ -97,8 +97,8 @@ const Dashboard = () => {
         <h2 className="text-lg font-tajawal-medium">عناوين الشحن</h2>
         <table className="w-full mt-2">
           <thead className='bg-black/5 text-black'>
-            <tr className="text-left">
-              <th className='text-right'>#</th>
+            <tr className="text-left h-10">
+              <th className='text-right px-2'>#</th>
               <th className='text-right'>المدينة</th>
               <th className='text-right'>رقم الهاتف</th>
               <th className='text-right'>المحافظة</th>
@@ -108,8 +108,8 @@ const Dashboard = () => {
           </thead>
           <tbody>
             {Array(2).fill(0).map((_, index) => (
-              <tr key={index} className="border-t">
-                <td>{index + 1}</td>
+              <tr key={index} className="border-t h-10">
+                <td className='px-2'>{index + 1}</td>
                 <td>الكاظمية</td>
                 <td>07701234567</td>
                 <td>بغداد</td>
