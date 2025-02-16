@@ -28,7 +28,7 @@ const links = [
     {
         id: 5,
         link: "/dashboard/profile",
-        label: "تعديل الملف الشخصي",
+        label: "الملف الشخصي",
     },
 ];
 
