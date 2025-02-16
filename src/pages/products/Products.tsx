@@ -40,12 +40,12 @@ const Products = () => {
   };
 
   useEffect(() => {
-    const currentUid = localStorage.getItem("session_id");
-    if (currentUid) {
-      fetchProducts(Number(currentUid), 0, []);
-    } else {
-      navigate("/login");
-    }
+    // const currentUid = localStorage.getItem("session_id");
+    fetchProducts(0, 0, []);
+    // if (currentUid) {
+    // } else {
+    //   // navigate("/login");
+    // }
   }, []);
 
   const filteredProducts =
