@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 import { useSavedComparisonsStore } from "@/store/useSavedComparisonsStore";
 import { Product } from "@/types";
 import { IconType } from "react-icons";
@@ -151,6 +151,7 @@ const Comparison = () => {
     toast({
       title: "تم حفظ المقارنة",
       description: "يمكنك العثور على المقارنة المحفوظة في لوحة التحكم",
+      variant: "success", // Added success variant for positive feedback
     });
   };
 
