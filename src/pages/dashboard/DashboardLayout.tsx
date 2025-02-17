@@ -54,7 +54,7 @@ const DashboardLayout = () => {
         <div className="flex items-start min-h-[100vh] p-4">
             {/* Sidebar */}
             <div className="sticky top-[100px] p-4 self-start w-[300px]">
-                <div className="p-4 bg-white border border-light-400 shadow-md shadow-light-400">
+                <div className="p-4 h-full bg-white border border-light-400 shadow-md shadow-light-400">
                     <div className="mb-4 flex gap-x-4 items-center">
                         {/* img */}
                         <div className="bg-slate-200/50 flex justify-center items-center rounded-full">
@@ -62,15 +62,17 @@ const DashboardLayout = () => {
                         </div>
                         {/* name & email & edit */}
                         <div className="w-full">
-                            <div className="flex-1 flex justify-between items-center">
-                                <strong className="line-clamp-1">{name}</strong>
-                                <PenLine
-                                    className="text-orange-500 p-1 rounded-md hover:bg-slate-200/50 transition ease-in-out cursor-pointer"
-                                    size={24}
-                                />
+                            <div className=" flex-1 flex justify-between items-center">
+                                <strong className="line-clamp-1">{name.slice(0, 15)}...</strong>
+                                <Link to="/dashboard/profile">
+                                    <PenLine
+                                        className="text-orange-500 p-1 rounded-md hover:bg-slate-200/50 transition ease-in-out cursor-pointer"
+                                        size={24}
+                                    />
+                                </Link>
                             </div>
                             <div className="flex-1">
-                                <p className="text-[12px] line-clamp-1">{email}</p>
+                                <p className="text-[12px] line-clamp-1">{email.slice(0, 20)}...</p>
                             </div>
                         </div>
                     </div>
