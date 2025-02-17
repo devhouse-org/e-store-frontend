@@ -1,15 +1,22 @@
 import { useRef, useState } from "react";
-import { products } from "@/utils/data/products";
+import { Product, products } from "@/utils/data/products";
 import AuctionSection from "@/components/AuctionSection";
 import Banner from "@/components/Banner";
 import CarouselCard from "@/components/CarouselCard";
 import ProductCard from "@/components/ProductCard";
 import SpecialProducts from "@/components/SpecialProducts";
 import { Button } from "@/components/ui/button";
-import { carouselCardData, productsData, techLogos } from "@/utils/dummy_data/data";
+import {
+  carouselCardData,
+  productsData,
+  techLogos,
+} from "@/utils/dummy_data/data";
 import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
 import { IconType } from "react-icons";
 import Slider from "react-slick";
+import { Link } from "react-router-dom";
+import { useWishlistStore } from "@/store/useWishlistStore";
+import { Heart } from "lucide-react";
 
 import ban1 from "@/assets/images/banners/1.webp";
 import ban2 from "@/assets/images/banners/2.webp";
@@ -23,19 +30,21 @@ function Home() {
   const [activeSlide2, setActiveSlide2] = useState(0);
 
   const banners = [ban1, ban2, ban3, ban4, ban5];
-  const [selectedCategory, setSelectedCategory] = useState(carouselCardData[0].label);
+  const [selectedCategory, setSelectedCategory] = useState(
+    carouselCardData[0].label
+  );
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts = productsData.filter(
-    product => product.category === selectedCategory
+    (product) => product.category === selectedCategory
   );
 
-  const scrollCategories = (direction: 'left' | 'right') => {
+  const scrollCategories = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
       const scrollAmount = 300;
       const container = scrollContainerRef.current;
 
-      if (direction === 'left') {
+      if (direction === "left") {
         container.scrollLeft -= scrollAmount;
       } else {
         container.scrollLeft += scrollAmount;
@@ -55,7 +64,9 @@ function Home() {
     customPaging: (i: any) => (
       <div className="w-8 h-1 px-1 my-2">
         <div
-          className={`w-full h-full ${i === activeSlide ? "bg-orange-500" : "bg-orange-100"} rounded-full`}
+          className={`w-full h-full ${
+            i === activeSlide ? "bg-orange-500" : "bg-orange-100"
+          } rounded-full`}
         />
       </div>
     ),
@@ -135,7 +146,11 @@ function Home() {
               key={i}
               className={`h-[280px] md:h-[380px] outline-none border-none lg:h-[480px] roundedxl overflow-hidden`}
             >
-              <img src={item} alt="" className="focus:outline-none border-none w-full h-full object-cover" />
+              <img
+                src={item}
+                alt=""
+                className="focus:outline-none border-none w-full h-full object-cover"
+              />
             </div>
           ))}
         </Slider>
@@ -145,14 +160,14 @@ function Home() {
       <div className="mb-20 bg-white p-4 rounded-md shadow-md">
         <div className="relative">
           <button
-            onClick={() => scrollCategories('left')}
+            onClick={() => scrollCategories("left")}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
           >
             <LucideArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
 
           <button
-            onClick={() => scrollCategories('right')}
+            onClick={() => scrollCategories("right")}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
           >
             <LucideArrowRight className="w-5 h-5 text-gray-600" />
@@ -166,24 +181,29 @@ function Home() {
                 onClick={() => setSelectedCategory(item.label)}
                 className=""
               >
-                <Button variant={selectedCategory === item.label
-                  ? "default" : "outline"} color="orange" label={item.label} />
+                <Button
+                  variant={
+                    selectedCategory === item.label ? "default" : "outline"
+                  }
+                  color="orange"
+                  label={item.label}
+                />
               </button>
             ))}
           </div>
         </div>
 
-        {/* Products Carousel */}
+        {/* Products Grid */}
         <div className="relative">
           <button
-            onClick={() => scrollCategories('left')}
+            onClick={() => scrollCategories("left")}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
           >
             <LucideArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
 
           <button
-            onClick={() => scrollCategories('right')}
+            onClick={() => scrollCategories("right")}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
           >
             <LucideArrowRight className="w-5 h-5 text-gray-600" />
@@ -192,14 +212,56 @@ function Home() {
           {/* Products Grid */}
           <div
             ref={scrollContainerRef}
-            className="grid grid-flow-col auto-cols-max gap-6 py-4 overflow-x-auto hide-scrollbar px-12"
+            className="grid grid-flow-col auto-cols-max gap-8 py-6 overflow-x-auto hide-scrollbar px-8"
           >
             {filteredProducts.map((product) => (
-              <div key={product.id}>
-                <ProductCard
-                  product={product}
-                  size="sm"
-                />
+              <div
+                key={product.id}
+                className="w-[220px] bg-white rounded-2xl p-4 transition-shadow duration-200 hover:shadow-lg border border-gray-100"
+              >
+                <Link to={`/product/${product.id}`} className="block">
+                  <div className="relative mb-4">
+                    <div className="relative rounded-xl overflow-hidden bg-gray-50 p-4">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-[180px] object-contain"
+                      />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        useWishlistStore.getState().isWishlisted(product.id)
+                          ? useWishlistStore
+                              .getState()
+                              .removeFromWishlist(product.id)
+                          : useWishlistStore
+                              .getState()
+                              .addToWishlist(product as Product);
+                      }}
+                      className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <Heart
+                        className={`w-5 h-5 ${
+                          useWishlistStore.getState().isWishlisted(product.id)
+                            ? "text-red-500 fill-red-500"
+                            : "text-gray-400"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-gray-800 line-clamp-2 min-h-[40px]">
+                      {product.name}
+                    </h3>
+                    <div className="pt-2 border-t border-gray-100">
+                      <p className="text-lg font-bold text-gray-900">
+                        {product.price.toLocaleString()} د.ع
+                      </p>
+                    </div>
+                  </div>
+                </Link>
               </div>
             ))}
           </div>
@@ -264,8 +326,12 @@ function Home() {
               alt="Left banner"
             />
             <div className="absolute top-10 right-0 p-4">
-              <p className="text-black text-sm font-tajawal-medium">سريع ودقيق</p>
-              <h3 className="text-black text-2xl font-tajawal-medium">التركيز التلقائي مع مستشعر Lidar</h3>
+              <p className="text-black text-sm font-tajawal-medium">
+                سريع ودقيق
+              </p>
+              <h3 className="text-black text-2xl font-tajawal-medium">
+                التركيز التلقائي مع مستشعر Lidar
+              </h3>
             </div>
           </div>
 
@@ -279,8 +345,12 @@ function Home() {
                 alt="Top right banner"
               />
               <div className="absolute bottom-0 right-0 p-4">
-                <p className="text-white text-sm font-tajawal-medium">سريع ودقيق</p>
-                <h3 className="text-white text-2xl font-tajawal-medium">التركيز التلقائي مع مستشعر Lidar</h3>
+                <p className="text-white text-sm font-tajawal-medium">
+                  سريع ودقيق
+                </p>
+                <h3 className="text-white text-2xl font-tajawal-medium">
+                  التركيز التلقائي مع مستشعر Lidar
+                </h3>
               </div>
             </div>
 
@@ -292,14 +362,17 @@ function Home() {
                 alt="Bottom right banner"
               />
               <div className="absolute bottom-0 right-0 p-4">
-                <p className="text-white text-sm font-tajawal-medium">سريع ودقيق</p>
-                <h3 className="text-white text-2xl font-tajawal-medium">التركيز التلقائي مع مستشعر Lidar</h3>
+                <p className="text-white text-sm font-tajawal-medium">
+                  سريع ودقيق
+                </p>
+                <h3 className="text-white text-2xl font-tajawal-medium">
+                  التركيز التلقائي مع مستشعر Lidar
+                </h3>
               </div>
             </div>
           </div>
         </div>
       </div>
-
 
       {/* Products Cards */}
       <div className="mb-20 bg-white p-4">
