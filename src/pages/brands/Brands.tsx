@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 // Import all brand images
 const brandImages = import.meta.glob('/src/assets/images/brands/all/*.{png,jpg,jpeg,webp}', {
     eager: true,
-    as: 'url'
+    query: 'url'
 });
 
 const Brands = () => {
