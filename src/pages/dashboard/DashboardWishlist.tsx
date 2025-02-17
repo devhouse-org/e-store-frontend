@@ -39,9 +39,10 @@ const DashboardWishlist = (props: Props) => {
     return (
         <div className="p-4 space-y-4 h-full">
             <h1 className="text-xl text-gray-500 font-tajawal-bold">المفضلات ({wishlist.length})</h1>
-            <div className="">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
+            <div className="xl:container xl:mx-auto">
+                <div className="mx-auto">
+                    {/* grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10 */}
+                    <div className="flex flex-wrap gap-4">
                         {wishlist.map((product) => (
                             <ProductCard product={product} size="lg" />
                         ))}
