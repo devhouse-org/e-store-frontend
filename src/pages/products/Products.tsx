@@ -8,6 +8,7 @@ import { useComparisonStore } from "@/store/useComparisonStore";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Products = () => {
   const navigate = useNavigate();
@@ -21,13 +22,13 @@ const Products = () => {
   const fetchProducts = async (currentUid: number, currentOffset: number, domain: any[] = []) => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentUid, currentOffset, domain }),
+      const response = await axiosInstance.post("/products", {
+        currentUid,
+        currentOffset,
+        domain,
       });
 
-      const data = await response.json();
+      const data = response.data;
       setProds(data);
       console.log("Fetched Products:", data);
       return data;
