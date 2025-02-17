@@ -29,6 +29,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import PurchaseHistory from "./pages/dashboard/PurchaseHistory";
 import DashboardComparisons from "./pages/dashboard/DashboardComparisons";
 import Profile from "./pages/dashboard/Profile";
+import DashboardWishlist from "./pages/dashboard/DashboardWishlist";
 
 function App() {
   return (
@@ -60,7 +61,7 @@ function App() {
             >
               <Route index element={<Dashboard />} />
               <Route path="history" element={<PurchaseHistory />} />
-              <Route path="wishlist" element={<Wishlist />} />
+              <Route path="wishlist" element={<DashboardWishlist />} />
               <Route path="comparisons" element={<DashboardComparisons />} />
               <Route path="profile" element={<Profile />} />
             </Route>

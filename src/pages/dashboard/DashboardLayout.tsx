@@ -51,7 +51,7 @@ const DashboardLayout = () => {
     };
 
     return (
-        <div className="flex items-start h-[100vh] p-4">
+        <div className="flex items-start min-h-[100vh] p-4">
             {/* Sidebar */}
             <div className="sticky top-[100px] p-4 self-start w-[300px]">
                 <div className="p-4 bg-white border border-light-400 shadow-md shadow-light-400">
