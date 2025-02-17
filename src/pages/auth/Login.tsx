@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,15 +14,12 @@ const Login = () => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await axiosInstance.post("/login", {
+        email,
+        password,
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.session_id) {
         localStorage.setItem("session_id", data.session_id);
         localStorage.setItem("name", data.name);
