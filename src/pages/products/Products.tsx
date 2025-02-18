@@ -110,7 +110,7 @@ const Products = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
           <p className="text-gray-500 font-tajawal-medium">
@@ -123,7 +123,7 @@ const Products = () => {
 
   if (prods.length === 0 && !loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-500 font-tajawal-medium text-lg">
             لا توجد منتجات متوفرة
@@ -142,28 +142,28 @@ const Products = () => {
   }
 
   return (
-    <div className="relative flex flex-col lg:flex-row mt-8">
+    <div className="relative flex flex-col lg:flex-row">
       {/* Mobile Filter Toggle Button */}
       <Button
         variant="ghost"
         size="icon"
         Icon={Menu as IconType}
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed bottom-4 right-4 z-50 bg-orange-500 text-white hover:bg-orange-600 rounded-full w-12 h-12 shadow-lg"
+        className="lg:hidden fixed bottom-4 right-4 z-30 bg-orange-500 text-white hover:bg-orange-600 rounded-full w-12 h-12 shadow-lg"
       />
 
       {/* Filter sidebar */}
       <div
         className={`
-          fixed lg:sticky top-0 inset-y-0 right-0 z-40 w-64 bg-white 
-          transform transition-transform duration-300 ease-in-out h-screen
+          fixed lg:sticky lg:top-[72px] top-[100px] right-0 z-30 w-[280px] bg-white 
+          transform transition-transform duration-300 ease-in-out h-[calc(100vh-72px)]
           overflow-y-auto
           ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
-          lg:w-80 lg:transform-none lg:transition-none
+          lg:transform-none lg:transition-none
           border-l
         `}
       >
-        <div className="p-4">
+        <div className="h-full">
           <Filter />
         </div>
       </div>
@@ -171,15 +171,15 @@ const Products = () => {
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed top-[72px] inset-x-0 bottom-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main content */}
-      <div className="flex-1 px-4 md:px-8 lg:px-12">
+      <div className="flex-1 px-4 md:px-8 lg:px-12 pb-20 pt-4">
         {/* Title and filter section */}
-        <div className="title_and_filter pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="title_and_filter pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-10">
           {/* Title */}
           <div className="title">
             <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
@@ -188,7 +188,7 @@ const Products = () => {
           </div>
 
           {/* Filter */}
-          <div className="filter flex items-center gap-x-4">
+          <div className="filter flex items-center gap-x-4 ">
             <div className="brand ">
               <div className="relative flex items-center gap-x-2">
                 <p className="font-tajawal-regular">العلامة التجارية</p>
