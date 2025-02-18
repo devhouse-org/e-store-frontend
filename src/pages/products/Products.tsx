@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { products, getBrands } from "@/utils/data/products";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
-import { LucideCircleDashed, LucideCreditCard, LucideShoppingCart, Plus, Minus } from "lucide-react";
+import {
+  LucideCircleDashed,
+  LucideCreditCard,
+  LucideShoppingCart,
+  Plus,
+  Minus,
+  Menu,
+} from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
 import { useNavigate } from "react-router-dom";
@@ -14,12 +21,23 @@ const Products = () => {
   const navigate = useNavigate();
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
   const brands = getBrands();
-  const { addToCart, products: cartProducts, updateQuantity, removeFromCart } = useCartStore();
-  const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+  const {
+    addToCart,
+    products: cartProducts,
+    updateQuantity,
+    removeFromCart,
+  } = useCartStore();
+  const { addToComparison, removeFromComparison, isCompared } =
+    useComparisonStore();
   const [prods, setProds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  const fetchProducts = async (currentUid: number, currentOffset: number, domain: any[] = []) => {
+  const fetchProducts = async (
+    currentUid: number,
+    currentOffset: number,
+    domain: any[] = []
+  ) => {
     try {
       setLoading(true);
       const response = await axiosInstance.post("/products", {
@@ -55,7 +73,7 @@ const Products = () => {
       : products.filter((product) => product.brand === selectedBrand);
 
   const handleAddToCart = (product: any) => {
-    const cartItem = cartProducts.find(item => item.id === product.id);
+    const cartItem = cartProducts.find((item) => item.id === product.id);
     if (!cartItem) {
       addToCart({
         id: product.id,
@@ -63,7 +81,7 @@ const Products = () => {
         price: product.price,
         image: product.image,
         quantity: 1,
-        storage: product.storage
+        storage: product.storage,
       });
     }
   };
@@ -95,7 +113,9 @@ const Products = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-          <p className="text-gray-500 font-tajawal-medium">جاري تحميل المنتجات...</p>
+          <p className="text-gray-500 font-tajawal-medium">
+            جاري تحميل المنتجات...
+          </p>
         </div>
       </div>
     );
@@ -105,9 +125,13 @@ const Products = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 font-tajawal-medium text-lg">لا توجد منتجات متوفرة</p>
+          <p className="text-gray-500 font-tajawal-medium text-lg">
+            لا توجد منتجات متوفرة
+          </p>
           <Button
-            onClick={() => fetchProducts(Number(localStorage.getItem("session_id")), 0, [])}
+            onClick={() =>
+              fetchProducts(Number(localStorage.getItem("session_id")), 0, [])
+            }
             className="mt-4"
             variant="outline"
             label="إعادة المحاولة"
@@ -118,18 +142,49 @@ const Products = () => {
   }
 
   return (
-    <div className="flex items-start flex-row mt-8 px-12">
-      <div className="flex-[.2] flex-col">
-        <div className="title pb-4">
-          <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
-            فلتر
-          </h1>
+    <div className="relative flex flex-col lg:flex-row mt-8 px-4 md:px-8 lg:px-12">
+      {/* Mobile Filter Toggle Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        Icon={Menu as IconType}
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="lg:hidden fixed bottom-4 right-4 z-50 bg-orange-500 text-white hover:bg-orange-600 rounded-full w-12 h-12 shadow-lg"
+      >
+        {/* <Menu className="h-6 w-6" /> */}
+      </Button>
+
+      {/* Filter sidebar */}
+      <div
+        className={`
+          fixed lg:static inset-y-0 right-0 z-40 w-64 bg-white transform transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
+          lg:w-1/4 xl:w-1/5 lg:transform-none lg:transition-none
+          overflow-y-auto h-screen lg:h-auto
+        `}
+      >
+        <div className="sticky top-0 p-4">
+          <div className="title pb-4">
+            <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
+              فلتر
+            </h1>
+          </div>
+          <Filter />
         </div>
-        <Filter />
       </div>
-      <div className="mx-auto flex-[.8]">
-        {/* title and filter */}
-        <div className="title_and_filter pb-4 flex justify-between items-center">
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main content */}
+      <div className="lg:w-3/4 xl:w-4/5 lg:pr-8">
+        {/* Title and filter section */}
+        <div className="title_and_filter pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           {/* Title */}
           <div className="title">
             <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
@@ -326,49 +381,53 @@ const Products = () => {
           </div>
         </div>
 
-        <div className="">
-          <div className="auction_cards gap-4 flex justify-between flex-row flex-wrap">
-            {/* products cards */}
-            {prods.map((product) => {
-              const cartItem = cartProducts.find(item => item.id === product.id);
+        {/* Products grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {prods.map((product) => {
+            const cartItem = cartProducts.find(
+              (item) => item.id === product.id
+            );
 
-              return (
-                <div key={product.id} className="relative flex flex-col w-full sm:w-80 rounded-xl bg-white bg-clip-border shadow-md">
-                  <div className="relative mx-4 p-1 mt-4 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border ">
-                    <img
-                      src={`data:image/png;base64,${product.image_1920}`}
-                      alt={product.name}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
+            return (
+              <div
+                key={product.id}
+                className="relative flex flex-col rounded-xl bg-white bg-clip-border shadow-md h-full"
+              >
+                {/* Product image */}
+                <div className="relative mx-4 p-1 mt-4 h-48 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
+                  <img
+                    src={`data:image/png;base64,${product.image_1920}`}
+                    alt={product.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
 
-                  {/* Content */}
-                  <div className="px-6 py-4 flex-grow">
-                    <h5 className="mb-2 block text-xl font-tajawal-medium leading-snug tracking-normal antialiased">
-                      {product.name}
-                    </h5>
-                    {/* <p className="line-clamp-2 text-base font-tajawal-regular leading-relaxed text-inherit antialiased">
-                      {product.description}
-                    </p> */}
-                  </div>
+                {/* Product content */}
+                <div className="p-6 flex flex-col h-full">
+                  <h5 className="mb-2 block text-lg font-tajawal-medium leading-snug tracking-normal antialiased">
+                    {product.name}
+                  </h5>
 
-                  {/* Footer */}
-                  <div className="p-6 pt-0 mt-auto">
-                    <p className="mb-2 font-tajawal-bold text-orange-500 text-xl">
+                  {/* Price and buttons */}
+                  <div className="mt-auto pt-4">
+                    <p className="mb-4 font-tajawal-bold text-orange-500 text-xl">
                       د.ع {product.list_price.toLocaleString()}
                     </p>
-                    <div className="flex justify-between items-center">
-                      {/* Cart Button or Quantity Controls */}
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      {/* Cart controls */}
                       {cartItem ? (
-                        <div
-                          onClick={(e) => e.preventDefault()}
-                          className="flex items-center gap-2 px-2 bg-orange-100/25 rounded-md py-1"
-                        >
+                        <div className="flex items-center justify-center gap-2 px-2 bg-orange-100/25 rounded-md py-1 flex-1">
                           <Button
                             variant="ghost"
                             size="icon"
                             className="w-8 h-8 text-black"
-                            onClick={() => handleUpdateQuantity(product, cartItem.quantity + 1)}
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                product,
+                                cartItem.quantity + 1
+                              )
+                            }
                             Icon={Plus as IconType}
                           />
                           <span className="w-6 text-center font-tajawal-medium">
@@ -378,7 +437,12 @@ const Products = () => {
                             variant="ghost"
                             size="icon"
                             className="w-8 h-8 text-orange-500"
-                            onClick={() => handleUpdateQuantity(product, cartItem.quantity - 1)}
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                product,
+                                cartItem.quantity - 1
+                              )
+                            }
                             Icon={Minus as IconType}
                           />
                         </div>
@@ -388,15 +452,14 @@ const Products = () => {
                             e.preventDefault();
                             handleAddToCart(product);
                           }}
-                          className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          className="flex-1 select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                         >
-                          <LucideShoppingCart />
+                          <LucideShoppingCart className="mx-auto" />
                         </button>
                       )}
 
-                      {/* Right side buttons */}
-                      <div className="flex gap-2">
-                        {/* Buy Now button */}
+                      {/* Action buttons */}
+                      <div className="flex gap-2 justify-center">
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -407,17 +470,17 @@ const Products = () => {
                           <LucideCreditCard />
                         </button>
 
-                        {/* Compare button */}
                         <button
                           onClick={(e) => {
                             e.preventDefault();
                             handleComparisonClick(product);
                           }}
                           className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                            ${isCompared(product.id)
+                          ${
+                            isCompared(product.id)
                               ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
                               : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                            }`}
+                          }`}
                         >
                           <LucideCircleDashed />
                         </button>
@@ -425,12 +488,13 @@ const Products = () => {
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-          <div className="pagination mt-20 mb-14">
-            <Pagination />
-          </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="pagination mt-20 mb-14">
+          <Pagination />
         </div>
       </div>
     </div>

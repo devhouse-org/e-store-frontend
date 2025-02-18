@@ -79,7 +79,7 @@ const Filter = () => {
   };
 
   return (
-    <Card className="w-64" dir="rtl">
+    <Card className="w-full" dir="rtl">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center font-tajawal-medium">
           <CardTitle className="text-lg font-medium">فلتر</CardTitle>
