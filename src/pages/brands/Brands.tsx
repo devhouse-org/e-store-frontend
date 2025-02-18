@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 // Import all brand images
 const brandImages = import.meta.glob('/src/assets/images/brands/all/*.{png,jpg,jpeg,webp}', {
     eager: true,
-    query: 'url'
+    as: 'url'
 });
 
 const Brands = () => {
@@ -54,8 +54,9 @@ const Brands = () => {
                             className="group"
                         >
                             <div className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-center">
+                                <>{console.log(brand)}</>
                                 <img
-                                    src={brand.image}
+                                    src={brand.image as string}
                                     alt={brand.name}
                                     className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 />
