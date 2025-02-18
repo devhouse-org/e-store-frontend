@@ -142,7 +142,7 @@ const Products = () => {
   }
 
   return (
-    <div className="relative flex flex-col lg:flex-row mt-8 px-4 md:px-8 lg:px-12">
+    <div className="relative flex flex-col lg:flex-row mt-8">
       {/* Mobile Filter Toggle Button */}
       <Button
         variant="ghost"
@@ -150,25 +150,20 @@ const Products = () => {
         Icon={Menu as IconType}
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="lg:hidden fixed bottom-4 right-4 z-50 bg-orange-500 text-white hover:bg-orange-600 rounded-full w-12 h-12 shadow-lg"
-      >
-        {/* <Menu className="h-6 w-6" /> */}
-      </Button>
+      />
 
       {/* Filter sidebar */}
       <div
         className={`
-          fixed lg:static inset-y-0 right-0 z-40 w-64 bg-white transform transition-transform duration-300 ease-in-out
+          fixed lg:sticky top-0 inset-y-0 right-0 z-40 w-64 bg-white 
+          transform transition-transform duration-300 ease-in-out h-screen
+          overflow-y-auto
           ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
-          lg:w-1/4 xl:w-1/5 lg:transform-none lg:transition-none
-          overflow-y-auto h-screen lg:h-auto
+          lg:w-80 lg:transform-none lg:transition-none
+          border-l
         `}
       >
-        <div className="sticky top-0 p-4">
-          <div className="title pb-4">
-            <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
-              فلتر
-            </h1>
-          </div>
+        <div className="p-4">
           <Filter />
         </div>
       </div>
@@ -182,7 +177,7 @@ const Products = () => {
       )}
 
       {/* Main content */}
-      <div className="lg:w-3/4 xl:w-4/5 lg:pr-8">
+      <div className="flex-1 px-4 md:px-8 lg:px-12">
         {/* Title and filter section */}
         <div className="title_and_filter pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           {/* Title */}

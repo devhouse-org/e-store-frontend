@@ -79,8 +79,8 @@ const Filter = () => {
   };
 
   return (
-    <Card className="w-full" dir="rtl">
-      <CardHeader className="pb-3">
+    <Card className="w-full border-0 shadow-none" dir="rtl">
+      <CardHeader className="pb-3 sticky top-0 bg-white z-10">
         <div className="flex justify-between items-center font-tajawal-medium">
           <CardTitle className="text-lg font-medium">فلتر</CardTitle>
           <Button
