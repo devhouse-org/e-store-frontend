@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
@@ -29,7 +29,17 @@ const Products = () => {
   } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const [prods, setProds] = useState<any[]>([]);
+  const [prods, setProds] = useState<{
+    products: any[];
+    total: number;
+    offset: number;
+    limit: number;
+  }>({
+    products: [],
+    total: 0,
+    offset: 0,
+    limit: 10,
+  });
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -52,7 +62,7 @@ const Products = () => {
       return data;
     } catch (error) {
       console.error("Error fetching products:", error);
-      return [];
+      return { products: [], total: 0, offset: 0, limit: 10 };
     } finally {
       setLoading(false);
     }
@@ -121,7 +131,7 @@ const Products = () => {
     );
   }
 
-  if (prods.length === 0 && !loading) {
+  if (prods.products.length === 0 && !loading) {
     return (
       <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
         <div className="text-center">
@@ -384,7 +394,8 @@ const Products = () => {
             );
 
             return (
-              <div
+              <Link
+                to={`/product/${product.id}`}
                 key={product.id}
                 className="relative flex flex-col rounded-xl bg-white bg-clip-border shadow-md h-full"
               >
@@ -417,12 +428,14 @@ const Products = () => {
                             variant="ghost"
                             size="icon"
                             className="w-8 h-8 text-black"
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
                               handleUpdateQuantity(
                                 product,
                                 cartItem.quantity + 1
-                              )
-                            }
+                              );
+                            }}
                             Icon={Plus as IconType}
                           />
                           <span className="w-6 text-center font-tajawal-medium">
@@ -432,18 +445,21 @@ const Products = () => {
                             variant="ghost"
                             size="icon"
                             className="w-8 h-8 text-orange-500"
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
                               handleUpdateQuantity(
                                 product,
                                 cartItem.quantity - 1
-                              )
-                            }
+                              );
+                            }}
                             Icon={Minus as IconType}
                           />
                         </div>
                       ) : (
                         <button
                           onClick={(e) => {
+                            e.stopPropagation();
                             e.preventDefault();
                             handleAddToCart(product);
                           }}
@@ -457,6 +473,7 @@ const Products = () => {
                       <div className="flex gap-2 justify-center">
                         <button
                           onClick={(e) => {
+                            e.stopPropagation();
                             e.preventDefault();
                             handleBuyNow(product);
                           }}
@@ -467,14 +484,16 @@ const Products = () => {
 
                         <button
                           onClick={(e) => {
+                            e.stopPropagation();
                             e.preventDefault();
                             handleComparisonClick(product);
                           }}
                           className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${isCompared(product.id)
+                          ${
+                            isCompared(product.id)
                               ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
                               : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                            }`}
+                          }`}
                         >
                           <LucideCircleDashed />
                         </button>
@@ -482,7 +501,7 @@ const Products = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Heart,
   Share2,
@@ -26,12 +26,15 @@ import { getProductById, products } from "@/utils/data/products";
 import { reviews } from "@/utils/data/reviews";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
   const navigate = useNavigate();
   const { id } = useParams();
-  const product = getProductById(id || "");
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedStorage, setSelectedStorage] = useState("256 GB");
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
@@ -87,7 +90,8 @@ const Product = () => {
     useWishlistStore();
   const isInWishlist = product ? isWishlisted(product.id) : false;
 
-  const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+  const { addToComparison, removeFromComparison, isCompared } =
+    useComparisonStore();
   const isInComparison = product ? isCompared(product.id) : false;
 
   const handleAddToCart = () => {
@@ -133,8 +137,67 @@ const Product = () => {
     .filter((p) => p.id !== id && p.category === product?.category)
     .slice(0, 4);
 
-  if (!product) {
-    return <div>Product not found</div>;
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.post(
+          "/product-details",
+          { product_id: id },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.data.error) {
+          throw new Error("Failed to fetch product details");
+        }
+
+        const data = await response.data();
+        setProduct(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProductDetails();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+          <p className="text-gray-500 font-tajawal-medium">
+            جاري تحميل المنتج...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 font-tajawal-medium text-lg">
+            {error || "المنتج غير موجود"}
+          </p>
+          <Button
+            onClick={() => window.history.back()}
+            className="mt-4"
+            variant="outline"
+            label="العودة للخلف"
+          />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -154,10 +217,11 @@ const Product = () => {
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className={`relative cursor-pointer group ${currentImage === idx
-                    ? "ring-2 ring-orange-500 rounded-lg"
-                    : ""
-                    }`}
+                  className={`relative cursor-pointer group ${
+                    currentImage === idx
+                      ? "ring-2 ring-orange-500 rounded-lg"
+                      : ""
+                  }`}
                   onClick={() => setCurrentImage(idx)}
                 >
                   <img
@@ -169,10 +233,11 @@ const Product = () => {
                   />
                   <div
                     className={`absolute inset-0 border-2 rounded-lg transition
-                    ${currentImage === idx
+                    ${
+                      currentImage === idx
                         ? "border-orange-500"
                         : "border-transparent"
-                      }
+                    }
                     group-hover:border-orange-500`}
                   />
                 </div>
@@ -190,10 +255,11 @@ const Product = () => {
                 {product.name}
               </h1>
               <Heart
-                className={`cursor-pointer transition-colors ${isInWishlist
-                  ? "text-red-500"
-                  : "text-gray-400 hover:text-red-500"
-                  }`}
+                className={`cursor-pointer transition-colors ${
+                  isInWishlist
+                    ? "text-red-500"
+                    : "text-gray-400 hover:text-red-500"
+                }`}
                 onClick={handleWishlistClick}
               />
             </div>
@@ -230,10 +296,11 @@ const Product = () => {
                   <button
                     key={storage}
                     onClick={() => setSelectedStorage(storage)}
-                    className={`px-3 lg:px-4 py-2 rounded border ${selectedStorage === storage
-                      ? "border-orange-500 text-orange-500"
-                      : "border-gray-300"
-                      }`}
+                    className={`px-3 lg:px-4 py-2 rounded border ${
+                      selectedStorage === storage
+                        ? "border-orange-500 text-orange-500"
+                        : "border-gray-300"
+                    }`}
                   >
                     {storage}
                   </button>
@@ -284,10 +351,11 @@ const Product = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className={`flex-1 ${isInComparison
-                  ? "bg-orange-500 text-white hover:bg-orange-600"
-                  : "bg-orange-100 text-orange-500 hover:bg-orange-200"
-                  }`}
+                className={`flex-1 ${
+                  isInComparison
+                    ? "bg-orange-500 text-white hover:bg-orange-600"
+                    : "bg-orange-100 text-orange-500 hover:bg-orange-200"
+                }`}
                 onClick={handleComparisonClick}
                 label={isInComparison ? "إزالة من المقارنة" : "إضافة للمقارنة"}
               />
