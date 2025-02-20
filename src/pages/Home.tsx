@@ -16,13 +16,14 @@ import { IconType } from "react-icons";
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { Heart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 
 import ban1 from "@/assets/images/banners/1.webp";
 import ban2 from "@/assets/images/banners/2.webp";
 import ban3 from "@/assets/images/banners/3.webp";
 import ban4 from "@/assets/images/banners/4.webp";
 import ban5 from "@/assets/images/banners/5.webp";
+import { useCartStore } from "@/store/useCartStore";
 
 function Home() {
   const [oldSlide, setOldSlide] = useState(0);
@@ -374,18 +375,115 @@ function Home() {
         </div>
       </div>
 
-      {/* Products Cards */}
-      <div className="mb-20 bg-white p-4">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="font-tajawal-medium text-lg border-b-2 border-orange-400 w-fit">
+      {/* Best Sellers Section */}
+      <div className="mb-20">
+        {/* Section Header */}
+        <div className="flex justify-between items-center mb-8 px-4">
+          <h2 className="font-tajawal-medium text-xl relative after:absolute after:bottom-0 after:right-0 after:w-full after:h-0.5 after:bg-gradient-to-l after:from-orange-500 after:to-orange-300 pb-2">
             الاكثر مبيعاً
           </h2>
-          <Button label="عرض المزيد" />
+          <button className="bg-gradient-to-r from-orange-400 to-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:shadow-md transition-all duration-300 flex items-center gap-2">
+            عرض المزيد
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="rtl:rotate-180"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} size="lg" />
-          ))}
+
+        {/* Products Container */}
+        <div className="relative bg-white p-6 rounded-2xl shadow-md bg-gradient-to-b from-white to-gray-50">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 relative z-10">
+            {featuredProducts.map((product) => (
+              <Link
+                key={product.id}
+                to={`/product/${product.id}`}
+                className="group relative bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col h-full"
+              >
+                {/* Wishlist Button */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    useWishlistStore.getState().isWishlisted(product.id)
+                      ? useWishlistStore
+                          .getState()
+                          .removeFromWishlist(product.id)
+                      : useWishlistStore.getState().addToWishlist(product);
+                  }}
+                  className="absolute top-2 right-2 z-10 p-2 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-white"
+                  aria-label="إضافة للمفضلة"
+                >
+                  <Heart
+                    className={`w-4 h-4 transition-colors ${
+                      useWishlistStore.getState().isWishlisted(product.id)
+                        ? "text-red-500 fill-red-500"
+                        : "text-gray-400 group-hover:text-gray-600"
+                    }`}
+                  />
+                </button>
+
+                {/* Product Image */}
+                <div className="aspect-square p-4 bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-4/5 h-4/5 object-contain group-hover:scale-110 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+
+                {/* Product Info */}
+                <div className="p-4 flex flex-col flex-grow">
+                  <h3 className="text-sm font-medium text-gray-800 line-clamp-2 mb-2 group-hover:text-orange-600 transition-colors">
+                    {product.name}
+                  </h3>
+
+                  <div className="mt-auto flex items-center justify-between pt-2">
+                    <p className="text-sm font-bold text-orange-600">
+                      {product.price.toLocaleString()} د.ع
+                    </p>
+
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        useCartStore.getState().addToCart({
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          image: product.image,
+                          quantity: 1,
+                          storage: product.storage,
+                        });
+                      }}
+                      className="p-2 rounded-lg bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors duration-200 relative overflow-hidden group-hover:shadow-sm"
+                      aria-label="إضافة للسلة"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      <span className="absolute inset-0 bg-orange-500 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 opacity-0 group-hover:opacity-10"></span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Bottom shine effect on hover */}
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Decorative background elements */}
+          <div className="absolute top-0 left-0 w-32 h-32 bg-orange-50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30 blur-2xl"></div>
+          <div className="absolute bottom-0 right-0 w-40 h-40 bg-orange-50 rounded-full translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl"></div>
         </div>
       </div>
 
@@ -404,7 +502,24 @@ function Home() {
             </h2>
             <span className="absolute -bottom-1 right-0 w-1/3 h-[2px] bg-gray-100" />
           </div>
-          <Button label="عرض جميع الماركات" />
+          {/* <Button label="عرض جميع الماركات" /> */}
+          <button className="bg-gradient-to-r from-orange-400 to-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:shadow-md transition-all duration-300 flex items-center gap-2">
+            عرض جميع الماركات
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="rtl:rotate-180"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
         </div>
 
         {/* Brands Grid */}

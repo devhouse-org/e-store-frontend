@@ -9,6 +9,8 @@ import {
   Plus,
   Minus,
   Menu,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
@@ -16,6 +18,24 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
+
+interface Category {
+  id: number;
+  name: string;
+  parent_id: false | [number, string];
+  child_id: number[];
+  children: Category[];
+}
+
+interface ProductsResponse {
+  products: Array<{
+    id: number;
+    name: string;
+    image_1920: string;
+    list_price: number;
+    // add other product properties as needed
+  }>;
+}
 
 const Products = () => {
   const navigate = useNavigate();
@@ -29,9 +49,14 @@ const Products = () => {
   } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const [prods, setProds] = useState<any[]>([]);
+  const [prods, setProds] = useState<ProductsResponse>({ products: [] });
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(
+    null
+  );
 
   const fetchProducts = async (
     currentUid: number,
@@ -58,13 +83,18 @@ const Products = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosInstance.post("/categories");
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   useEffect(() => {
-    // const currentUid = localStorage.getItem("session_id");
+    fetchCategories();
     fetchProducts(0, 0, []);
-    // if (currentUid) {
-    // } else {
-    //   // navigate("/login");
-    // }
   }, []);
 
   const filteredProducts =
@@ -108,6 +138,25 @@ const Products = () => {
     }
   };
 
+  const scrollCategories = (
+    direction: "left" | "right",
+    elementClass: string
+  ) => {
+    const container = document.querySelector(`.${elementClass}`);
+    if (container) {
+      const scrollAmount = 200; // Adjust this value to control scroll distance
+      container.scrollLeft +=
+        direction === "left" ? -scrollAmount : scrollAmount;
+    }
+  };
+
+  // Get subcategories for selected category
+  const getSubcategories = () => {
+    if (!selectedCategory) return [];
+    const category = categories.find((cat) => cat.id === selectedCategory);
+    return category?.children || [];
+  };
+
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
@@ -121,7 +170,7 @@ const Products = () => {
     );
   }
 
-  if (prods.length === 0 && !loading) {
+  if (prods.products.length === 0 && !loading) {
     return (
       <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
         <div className="text-center">
@@ -178,202 +227,85 @@ const Products = () => {
 
       {/* Main content */}
       <div className="flex-1 px-4 md:px-8 lg:px-12 pb-20 pt-4">
-        {/* Title and filter section */}
-        <div className="title_and_filter pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-10">
-          {/* Title */}
-          <div className="title">
-            <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
-              المنتجات
-            </h1>
+        {/* Categories section */}
+        <div className="mb-8">
+          <h1 className="font-tajawal-bold text-2xl mb-6">الفئات</h1>
+
+          {/* Categories */}
+          <div className="relative">
+            <button
+              onClick={() => scrollCategories("left", "categories-scroll")}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+            >
+              <ArrowLeft className="text-gray-600" size={20} />
+            </button>
+
+            <div className="categories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`
+                    px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
+                    ${
+                      selectedCategory === category.id
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    }
+                  `}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => scrollCategories("right", "categories-scroll")}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+            >
+              <ArrowRight className="text-gray-600" size={20} />
+            </button>
           </div>
 
-          {/* Filter */}
-          <div className="filter flex items-center gap-x-4 ">
-            <div className="brand ">
-              <div className="relative flex items-center gap-x-2">
-                <p className="font-tajawal-regular">العلامة التجارية</p>
-                <div className="inline-flex items-center overflow-hidden rounded-md border bg-white">
-                  <a
-                    href="#"
-                    className="px-4 py-2 text-sm/none text-gray-600 hover:bg-gray-50 hover:text-gray-700"
+          {/* Subcategories */}
+          {selectedCategory && getSubcategories().length > 0 && (
+            <div className="mt-4 relative">
+              <button
+                onClick={() => scrollCategories("left", "subcategories-scroll")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+              >
+                <ArrowLeft className="text-gray-600" size={20} />
+              </button>
+
+              <div className="subcategories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
+                {getSubcategories().map((subcategory) => (
+                  <button
+                    key={subcategory.id}
+                    onClick={() => setSelectedSubcategory(subcategory.id)}
+                    className={`
+                      px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
+                      ${
+                        selectedSubcategory === subcategory.id
+                          ? "bg-orange-500 text-white shadow-md"
+                          : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }
+                    `}
                   >
-                    الكل
-                  </a>
-
-                  <button className="h-full p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-700">
-                    <span className="sr-only">Menu</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="size-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    {subcategory.name}
                   </button>
-                </div>
-
-                <div
-                  className="hidden absolute end-0 z-10 mt-2 w-56 rounded-md border border-gray-100 bg-white shadow-lg"
-                  role="menu"
-                >
-                  <div className="p-2">
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      View on Storefront
-                    </a>
-
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      View Warehouse Info
-                    </a>
-
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      Duplicate Product
-                    </a>
-
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      Unpublish Product
-                    </a>
-
-                    <form method="POST" action="#">
-                      <button
-                        type="submit"
-                        className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-700 hover:bg-red-50"
-                        role="menuitem"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="size-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                        Delete Product
-                      </button>
-                    </form>
-                  </div>
-                </div>
+                ))}
               </div>
+
+              <button
+                onClick={() =>
+                  scrollCategories("right", "subcategories-scroll")
+                }
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+              >
+                <ArrowRight className="text-gray-600" size={20} />
+              </button>
             </div>
-            <div className="date">
-              <div className="relative flex items-center gap-x-2">
-                <p className="font-tajawal-regular">فرز حسب</p>
-                <div className="inline-flex items-center overflow-hidden rounded-md border bg-white">
-                  <a
-                    href="#"
-                    className="px-4 py-2 text-sm/none text-gray-600 hover:bg-gray-50 hover:text-gray-700"
-                  >
-                    الاحدث
-                  </a>
-
-                  <button className="h-full p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-700">
-                    <span className="sr-only">Menu</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="size-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <div
-                  className="hidden absolute end-0 z-10 mt-2 w-56 rounded-md border border-gray-100 bg-white shadow-lg"
-                  role="menu"
-                >
-                  <div className="p-2">
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      View on Storefront
-                    </a>
-
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      View Warehouse Info
-                    </a>
-
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      Duplicate Product
-                    </a>
-
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                      role="menuitem"
-                    >
-                      Unpublish Product
-                    </a>
-
-                    <form method="POST" action="#">
-                      <button
-                        type="submit"
-                        className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-700 hover:bg-red-50"
-                        role="menuitem"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="size-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                        Delete Product
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Products grid */}
@@ -471,10 +403,11 @@ const Products = () => {
                             handleComparisonClick(product);
                           }}
                           className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${isCompared(product.id)
+                          ${
+                            isCompared(product.id)
                               ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
                               : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                            }`}
+                          }`}
                         >
                           <LucideCircleDashed />
                         </button>
