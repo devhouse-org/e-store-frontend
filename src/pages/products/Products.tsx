@@ -378,7 +378,7 @@ const Products = () => {
 
         {/* Products grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {prods.map((product) => {
+          {prods.products.map((product: any) => {
             const cartItem = cartProducts.find(
               (item) => item.id === product.id
             );
@@ -471,11 +471,10 @@ const Products = () => {
                             handleComparisonClick(product);
                           }}
                           className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${
-                            isCompared(product.id)
+                          ${isCompared(product.id)
                               ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
                               : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                          }`}
+                            }`}
                         >
                           <LucideCircleDashed />
                         </button>
