@@ -28,16 +28,41 @@ import { useWishlistStore } from "@/store/useWishlistStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
 import axiosInstance from "@/utils/axiosInstance";
 
+// Add type definitions for the API response
+interface ProductAttribute {
+  id: number;
+  name: string;
+  display_type: string;
+  values: {
+    id: number;
+    name: string;
+    price_extra: number;
+  }[];
+}
+
+interface ProductDetails {
+  id: number;
+  name: string;
+  list_price: number;
+  description: string;
+  description_sale: string;
+  image_1920: string;
+  attributes: ProductAttribute[];
+}
+
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
   const navigate = useNavigate();
   const { id } = useParams();
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<ProductDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStorage, setSelectedStorage] = useState("256 GB");
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
+  const [selectedAttributes, setSelectedAttributes] = useState<
+    Record<string, string>
+  >({});
 
   const images = [
     "https://imgs.search.brave.com/Iu8pnU8UWn5aXg7p7t92b0hRJn_Qe4Lfey2zmgQEtd4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NDEzbGk5dllnc0wu/anBn",
@@ -88,19 +113,19 @@ const Product = () => {
 
   const { addToWishlist, removeFromWishlist, isWishlisted } =
     useWishlistStore();
-  const isInWishlist = product ? isWishlisted(product.id) : false;
+  const isInWishlist = product ? isWishlisted(product.id.toString()) : false;
 
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const isInComparison = product ? isCompared(product.id) : false;
+  const isInComparison = product ? isCompared(product.id.toString()) : false;
 
   const handleAddToCart = () => {
     if (product) {
       addToCart({
-        id: product.id,
+        id: product.id.toString(),
         name: product.name,
-        price: product.price,
-        image: product.image,
+        price: product.list_price,
+        image: product.image_1920,
         quantity: quantity,
         storage: selectedStorage,
       });
@@ -115,9 +140,17 @@ const Product = () => {
   const handleWishlistClick = () => {
     if (product) {
       if (isInWishlist) {
-        removeFromWishlist(product.id);
+        removeFromWishlist(product.id.toString());
       } else {
-        addToWishlist(product);
+        const productForWishlist = {
+          id: product.id.toString(),
+          name: product.name,
+          price: product.list_price,
+          image: product.image_1920,
+          category: "",
+          brand: "",
+        };
+        addToWishlist(productForWishlist);
       }
     }
   };
@@ -125,9 +158,17 @@ const Product = () => {
   const handleComparisonClick = () => {
     if (product) {
       if (isInComparison) {
-        removeFromComparison(product.id);
+        removeFromComparison(product.id.toString());
       } else {
-        addToComparison(product);
+        const productForComparison = {
+          id: product.id.toString(),
+          name: product.name,
+          price: product.list_price,
+          image: product.image_1920,
+          category: "",
+          brand: "",
+        };
+        addToComparison(productForComparison);
       }
     }
   };
@@ -151,14 +192,18 @@ const Product = () => {
           }
         );
 
-        if (!response.data.error) {
-          throw new Error("Failed to fetch product details");
+        // Add validation for the response data
+        if (!response.data || typeof response.data !== "object") {
+          throw new Error("Invalid response data");
         }
 
-        const data = await response.data();
-        setProduct(data);
+        // Add logging to debug the response
+        console.log("API Response:", response.data);
+
+        setProduct(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
+        setProduct(null); // Reset product on error
       } finally {
         setLoading(false);
       }
@@ -168,6 +213,19 @@ const Product = () => {
       fetchProductDetails();
     }
   }, [id]);
+
+  // Add handler for attribute selection
+  const handleAttributeChange = (attributeId: number, valueId: string) => {
+    setSelectedAttributes((prev) => ({
+      ...prev,
+      [attributeId]: valueId,
+    }));
+  };
+
+  // Add null checks when using product data
+  const productName = product?.name ?? "";
+  const productPrice = product?.list_price ?? 0;
+  const productImage = product?.image_1920 ?? "";
 
   if (loading) {
     return (
@@ -208,7 +266,7 @@ const Product = () => {
           <div className="lg:col-span-4 space-y-4">
             <div className="bg-gray-100 rounded-xl p-4 flex justify-center">
               <img
-                src={product.image}
+                src={`data:image/jpeg;base64,${product.image_1920}`}
                 alt={product.name}
                 className="w-full max-w-xs lg:w-80 object-contain transition-opacity duration-300"
               />
@@ -274,61 +332,36 @@ const Product = () => {
             </div>
             <Separator className="bg-gray-200 p-[.5px]" />
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-tajawal-medium text-right">
-                ابرز الخصائص
-              </h3>
-              <ul className="space-y-2 font-tajawal-regular text-right text-blue-600 list-disc pr-4">
-                <li>{product.description}</li>
-              </ul>
-            </div>
-            <Separator className="bg-gray-200 p-[.5px]" />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-tajawal-medium text-right">
-                سعة الذاكرة
-              </h3>
-              <div
-                dir="ltr"
-                className="flex flex-wrap font-tajawal-medium justify-end gap-2 lg:gap-4"
-              >
-                {storageOptions.map((storage) => (
-                  <button
-                    key={storage}
-                    onClick={() => setSelectedStorage(storage)}
-                    className={`px-3 lg:px-4 py-2 rounded border ${
-                      selectedStorage === storage
-                        ? "border-orange-500 text-orange-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {storage}
-                  </button>
-                ))}
+            {/* Product Attributes */}
+            {product.attributes?.map((attribute) => (
+              <div key={attribute.id} className="space-y-4">
+                <h3 className="text-lg font-tajawal-medium text-right">
+                  {attribute.name}
+                </h3>
+                <div className="flex flex-wrap font-tajawal-medium justify-end gap-2 lg:gap-4">
+                  {attribute.values.map((value) => (
+                    <button
+                      key={value.id}
+                      onClick={() =>
+                        handleAttributeChange(attribute.id, value.name)
+                      }
+                      className={`px-3 lg:px-4 py-2 rounded border ${
+                        selectedAttributes[attribute.id] === value.name
+                          ? "border-orange-500 text-orange-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {value.name}
+                      {value.price_extra > 0 && ` (+${value.price_extra})`}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-
-            <div className="flex font-tajawal-medium justify-end items-center gap-4 border w-fit p-0.5 rounded">
-              <Button
-                variant="arrows"
-                size="sm"
-                className="text-red-600"
-                Icon={Minus as IconType}
-                onClick={() => setQuantity(Math.max(quantity - 1, 1))}
-              />
-              <span className="px-2">{quantity}</span>
-              <Button
-                variant="arrows"
-                size="sm"
-                className="text-red-600"
-                Icon={Plus as IconType}
-                onClick={() => setQuantity(quantity + 1)}
-              />
-            </div>
+            ))}
 
             <div className="text-right">
               <div className="text-2xl lg:text-3xl font-tajawal-medium text-orange-500">
-                {product.price.toLocaleString()} د.ع
+                {product.list_price.toLocaleString()} د.ع
               </div>
             </div>
 
@@ -412,7 +445,7 @@ const Product = () => {
               </div>
               <div className="pt-4">
                 <p className="text-right text-sm md:text-base leading-relaxed">
-                  {product.description}
+                  {product.description_sale}
                 </p>
               </div>
             </div>
