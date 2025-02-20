@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* ... */
 @font-face {
   font-family: "tajawal-light";
@@ -141,4 +140,14 @@
 
 .animate-light-effect {
   animation: lightEffect 4s linear infinite;
+}
+
+/* Add these utility classes */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

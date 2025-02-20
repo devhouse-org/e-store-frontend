@@ -27,6 +27,16 @@ interface Category {
   children: Category[];
 }
 
+interface ProductsResponse {
+  products: Array<{
+    id: number;
+    name: string;
+    image_1920: string;
+    list_price: number;
+    // add other product properties as needed
+  }>;
+}
+
 const Products = () => {
   const navigate = useNavigate();
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
@@ -39,11 +49,14 @@ const Products = () => {
   } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const [prods, setProds] = useState<any[]>([]);
+  const [prods, setProds] = useState<ProductsResponse>({ products: [] });
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(
+    null
+  );
 
   const fetchProducts = async (
     currentUid: number,
@@ -125,18 +138,22 @@ const Products = () => {
     }
   };
 
-  const scrollCategories = (direction: 'left' | 'right', elementClass: string) => {
+  const scrollCategories = (
+    direction: "left" | "right",
+    elementClass: string
+  ) => {
     const container = document.querySelector(`.${elementClass}`);
     if (container) {
       const scrollAmount = 200; // Adjust this value to control scroll distance
-      container.scrollLeft += direction === 'left' ? -scrollAmount : scrollAmount;
+      container.scrollLeft +=
+        direction === "left" ? -scrollAmount : scrollAmount;
     }
   };
 
   // Get subcategories for selected category
   const getSubcategories = () => {
     if (!selectedCategory) return [];
-    const category = categories.find(cat => cat.id === selectedCategory);
+    const category = categories.find((cat) => cat.id === selectedCategory);
     return category?.children || [];
   };
 
@@ -153,7 +170,7 @@ const Products = () => {
     );
   }
 
-  if (prods.length === 0 && !loading) {
+  if (prods.products.length === 0 && !loading) {
     return (
       <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
         <div className="text-center">
@@ -210,71 +227,85 @@ const Products = () => {
 
       {/* Main content */}
       <div className="flex-1 px-4 md:px-8 lg:px-12 pb-20 pt-4">
-        {/* Title and Categories section */}
-        <div className="title_and_filter pb-4 flex flex-col gap-4 mt-10">
-          <div className="title w-full">
-            <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px] mb-4">
-              الفئات
-            </h1>
+        {/* Categories section */}
+        <div className="mb-8">
+          <h1 className="font-tajawal-bold text-2xl mb-6">الفئات</h1>
 
-            {/* Categories Carousel */}
-            <div className="relative">
-              <button
-                onClick={() => scrollCategories('left', 'categories-scroll')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
-              >
-                <ArrowLeft className="text-gray-600" size={20} />
-              </button>
+          {/* Categories */}
+          <div className="relative">
+            <button
+              onClick={() => scrollCategories("left", "categories-scroll")}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+            >
+              <ArrowLeft className="text-gray-600" size={20} />
+            </button>
 
-              <div className="categories-scroll flex gap-x-2 overflow-x-hidden scroll-smooth relative px-12">
-                {categories.map((category) => (
-                  <div
-                    key={category.id}
-                    className={`bg-white p-2 rounded-md text-black text-nowrap flex-shrink-0 cursor-pointer transition-colors
-                      ${selectedCategory === category.id ? 'bg-orange-500 text-white' : 'hover:bg-gray-50'}`}
-                    onClick={() => setSelectedCategory(category.id)}
-                  >
-                    {category.name}
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={() => scrollCategories('right', 'categories-scroll')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
-              >
-                <ArrowRight className="text-gray-600" size={20} />
-              </button>
+            <div className="categories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`
+                    px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
+                    ${
+                      selectedCategory === category.id
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    }
+                  `}
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
 
-            {/* Subcategories Carousel */}
-            <div className="relative mt-2">
+            <button
+              onClick={() => scrollCategories("right", "categories-scroll")}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+            >
+              <ArrowRight className="text-gray-600" size={20} />
+            </button>
+          </div>
+
+          {/* Subcategories */}
+          {selectedCategory && getSubcategories().length > 0 && (
+            <div className="mt-4 relative">
               <button
-                onClick={() => scrollCategories('left', 'subcategories-scroll')}
+                onClick={() => scrollCategories("left", "subcategories-scroll")}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
               >
                 <ArrowLeft className="text-gray-600" size={20} />
               </button>
 
-              <div className="subcategories-scroll flex gap-x-2 overflow-x-hidden scroll-smooth relative px-12">
+              <div className="subcategories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
                 {getSubcategories().map((subcategory) => (
-                  <div
+                  <button
                     key={subcategory.id}
-                    className="bg-white p-2 rounded-md text-black text-nowrap flex-shrink-0 cursor-pointer hover:bg-gray-50"
+                    onClick={() => setSelectedSubcategory(subcategory.id)}
+                    className={`
+                      px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
+                      ${
+                        selectedSubcategory === subcategory.id
+                          ? "bg-orange-500 text-white shadow-md"
+                          : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }
+                    `}
                   >
                     {subcategory.name}
-                  </div>
+                  </button>
                 ))}
               </div>
 
               <button
-                onClick={() => scrollCategories('right', 'subcategories-scroll')}
+                onClick={() =>
+                  scrollCategories("right", "subcategories-scroll")
+                }
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
               >
                 <ArrowRight className="text-gray-600" size={20} />
               </button>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Products grid */}
@@ -372,10 +403,11 @@ const Products = () => {
                             handleComparisonClick(product);
                           }}
                           className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${isCompared(product.id)
+                          ${
+                            isCompared(product.id)
                               ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
                               : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                            }`}
+                          }`}
                         >
                           <LucideCircleDashed />
                         </button>
