@@ -61,6 +61,11 @@ const Products = () => {
   );
   const [selectedVariants, setSelectedVariants] = useState<{ attribute_id: number; value_id: number }[]>([]);
 
+  // Function to check if URL has any filter parameters
+  const hasUrlFilters = () => {
+    return searchParams.has('category');
+  };
+
   // Function to update URL with current filters
   const updateUrlParams = () => {
     const params = new URLSearchParams();
@@ -72,11 +77,6 @@ const Products = () => {
         : `${selectedCategory}`;
       params.set('category', categoryParam);
     }
-
-    // Add variants
-    selectedVariants.forEach(variant => {
-      params.append(`variant`, `${variant.attribute_id}-${variant.value_id}`);
-    });
 
     setSearchParams(params);
   };
@@ -92,18 +92,6 @@ const Products = () => {
     } else {
       setSelectedCategory(null);
       setSelectedSubcategory(null);
-    }
-
-    // Parse variant parameters
-    const variantParams = searchParams.getAll('variant');
-    if (variantParams.length > 0) {
-      const variants = variantParams.map(param => {
-        const [attribute_id, value_id] = param.split('-').map(Number);
-        return { attribute_id, value_id };
-      });
-      setSelectedVariants(variants);
-    } else {
-      setSelectedVariants([]);
     }
   };
 
@@ -148,11 +136,6 @@ const Products = () => {
     }
   };
 
-  // Function to check if URL has any filter parameters
-  const hasUrlFilters = () => {
-    return searchParams.has('category') || searchParams.has('variant');
-  };
-
   // Initial load - fetch categories and handle URL params
   useEffect(() => {
     const initializeData = async () => {
@@ -171,17 +154,17 @@ const Products = () => {
     }
   }, [selectedCategory, selectedSubcategory, selectedVariants, categoriesLoading]);
 
-  // Effect to update URL when filters change (but not during initial load)
+  // Effect to update URL when category filters change
   useEffect(() => {
     if (!categoriesLoading) {  // Only update URL after initial load
-      if (selectedCategory === null && selectedVariants.length === 0) {
-        // Clear URL if no filters are active
+      if (selectedCategory === null) {
+        // Clear URL if no category is active
         setSearchParams(new URLSearchParams());
       } else {
         updateUrlParams();
       }
     }
-  }, [selectedCategory, selectedSubcategory, selectedVariants]);
+  }, [selectedCategory, selectedSubcategory]);
 
   // Effect to handle URL parameter changes
   useEffect(() => {
