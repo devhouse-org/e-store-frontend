@@ -58,6 +58,7 @@ const Products = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(
     null
   );
+  const [selectedVariants, setSelectedVariants] = useState<{ attribute_id: number; value_id: number }[]>([]);
 
   const fetchProducts = async (
     currentUid: number,
@@ -71,6 +72,7 @@ const Products = () => {
         currentOffset,
         domain,
         category_id: selectedSubcategory ? selectedSubcategory : selectedCategory,
+        variants: selectedVariants,
       });
 
       const data = response.data;
@@ -106,19 +108,21 @@ const Products = () => {
 
   // Add effect to handle category/subcategory changes
   useEffect(() => {
-    // Reset subcategory when category changes
-    if (selectedCategory !== null) {
-      setSelectedSubcategory(null);
-      fetchProducts(0, 0, []);
-    }
+    // Reset subcategory when category changes or is deselected
+    setSelectedSubcategory(null);
+    setSelectedVariants([]);
+    fetchProducts(0, 0, []);
   }, [selectedCategory]);
 
   useEffect(() => {
-    // Fetch products when subcategory changes
-    if (selectedSubcategory !== null) {
-      fetchProducts(0, 0, []);
-    }
+    // Fetch products when subcategory changes or is deselected
+    fetchProducts(0, 0, []);
   }, [selectedSubcategory]);
+
+  useEffect(() => {
+    // Fetch products when variants change (both selection and deselection)
+    fetchProducts(0, 0, []);
+  }, [selectedVariants]);
 
   const filteredProducts =
     selectedBrand === "all"
@@ -203,7 +207,10 @@ const Products = () => {
         `}
       >
         <div className="h-full">
-          <Filter />
+          <Filter
+            selectedCategory={selectedCategory}
+            onFilterChange={(variants) => setSelectedVariants(variants)}
+          />
         </div>
       </div>
 
