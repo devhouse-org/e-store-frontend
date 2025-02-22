@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
@@ -39,6 +39,7 @@ interface ProductsResponse {
 
 const Products = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
   const brands = getBrands();
   const {
@@ -59,6 +60,40 @@ const Products = () => {
     null
   );
   const [selectedVariants, setSelectedVariants] = useState<{ attribute_id: number; value_id: number }[]>([]);
+
+  // Function to check if URL has any filter parameters
+  const hasUrlFilters = () => {
+    return searchParams.has('category');
+  };
+
+  // Function to update URL with current filters
+  const updateUrlParams = () => {
+    const params = new URLSearchParams();
+
+    // Add category and subcategory
+    if (selectedCategory !== null) {
+      const categoryParam = selectedSubcategory !== null
+        ? `${selectedCategory}-${selectedSubcategory}`
+        : `${selectedCategory}`;
+      params.set('category', categoryParam);
+    }
+
+    setSearchParams(params);
+  };
+
+  // Function to parse URL params and set initial state
+  const parseUrlParams = () => {
+    // Parse category parameter
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      const [catId, subCatId] = categoryParam.split('-').map(Number);
+      setSelectedCategory(catId || null);
+      setSelectedSubcategory(subCatId || null);
+    } else {
+      setSelectedCategory(null);
+      setSelectedSubcategory(null);
+    }
+  };
 
   const fetchProducts = async (
     currentUid: number,
@@ -101,28 +136,42 @@ const Products = () => {
     }
   };
 
+  // Initial load - fetch categories and handle URL params
   useEffect(() => {
-    fetchCategories();
-    fetchProducts(0, 0, []);
-  }, []);
+    const initializeData = async () => {
+      await fetchCategories();
+      if (hasUrlFilters()) {
+        parseUrlParams();
+      }
+    };
+    initializeData();
+  }, []); // Only run once on mount
 
-  // Add effect to handle category/subcategory changes
+  // Effect to fetch products when filters change
   useEffect(() => {
-    // Reset subcategory when category changes or is deselected
-    setSelectedSubcategory(null);
-    setSelectedVariants([]);
-    fetchProducts(0, 0, []);
-  }, [selectedCategory]);
+    if (!categoriesLoading) {
+      fetchProducts(0, 0, []);
+    }
+  }, [selectedCategory, selectedSubcategory, selectedVariants, categoriesLoading]);
 
+  // Effect to update URL when category filters change
   useEffect(() => {
-    // Fetch products when subcategory changes or is deselected
-    fetchProducts(0, 0, []);
-  }, [selectedSubcategory]);
+    if (!categoriesLoading) {  // Only update URL after initial load
+      if (selectedCategory === null) {
+        // Clear URL if no category is active
+        setSearchParams(new URLSearchParams());
+      } else {
+        updateUrlParams();
+      }
+    }
+  }, [selectedCategory, selectedSubcategory]);
 
+  // Effect to handle URL parameter changes
   useEffect(() => {
-    // Fetch products when variants change (both selection and deselection)
-    fetchProducts(0, 0, []);
-  }, [selectedVariants]);
+    if (!categoriesLoading && hasUrlFilters()) {
+      parseUrlParams();
+    }
+  }, [searchParams]);
 
   const filteredProducts =
     selectedBrand === "all"
@@ -184,6 +233,19 @@ const Products = () => {
     return category?.children || [];
   };
 
+  // Update category click handler
+  const handleCategoryClick = (categoryId: number) => {
+    setSelectedCategory(categoryId === selectedCategory ? null : categoryId);
+    setSelectedSubcategory(null);
+    setSelectedVariants([]);
+  };
+
+  // Update subcategory click handler
+  const handleSubcategoryClick = (subcategoryId: number) => {
+    setSelectedSubcategory(subcategoryId === selectedSubcategory ? null : subcategoryId);
+    setSelectedVariants([]);
+  };
+
   return (
     <div className="relative flex flex-col lg:flex-row">
       {/* Mobile Filter Toggle Button */}
@@ -210,6 +272,7 @@ const Products = () => {
           <Filter
             selectedCategory={selectedCategory}
             onFilterChange={(variants) => setSelectedVariants(variants)}
+            initialVariants={selectedVariants}
           />
         </div>
       </div>
@@ -246,9 +309,7 @@ const Products = () => {
                 {categories.map((category) => (
                   <button
                     key={category.id}
-                    onClick={() => {
-                      setSelectedCategory(category.id === selectedCategory ? null : category.id);
-                    }}
+                    onClick={() => handleCategoryClick(category.id)}
                     className={`
                       px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
                       ${selectedCategory === category.id
@@ -285,9 +346,7 @@ const Products = () => {
                 {getSubcategories().map((subcategory) => (
                   <button
                     key={subcategory.id}
-                    onClick={() => {
-                      setSelectedSubcategory(subcategory.id === selectedSubcategory ? null : subcategory.id);
-                    }}
+                    onClick={() => handleSubcategoryClick(subcategory.id)}
                     className={`
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
                       ${selectedSubcategory === subcategory.id
