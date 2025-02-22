@@ -16,6 +16,7 @@ import axiosInstance from "@/utils/axiosInstance";
 interface FilterProps {
   selectedCategory: number | null;
   onFilterChange: (variants: { attribute_id: number; value_id: number }[]) => void;
+  initialVariants?: { attribute_id: number; value_id: number }[];
 }
 
 interface Variant {
@@ -31,18 +32,34 @@ interface Variant {
   }[];
 }
 
-const Filter = ({ selectedCategory, onFilterChange }: FilterProps) => {
+const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: FilterProps) => {
   const [variantsOpen, setVariantsOpen] = useState<{ [key: number]: boolean }>({});
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedValues, setSelectedValues] = useState<{ [key: number]: number[] }>({});
   const [variantsLoading, setVariantsLoading] = useState(false);
   const [priceRange, setPriceRange] = useState([110]);
 
+  // Initialize selected values from initialVariants
+  useEffect(() => {
+    if (initialVariants.length > 0) {
+      const newSelectedValues: { [key: number]: number[] } = {};
+      initialVariants.forEach(variant => {
+        if (!newSelectedValues[variant.attribute_id]) {
+          newSelectedValues[variant.attribute_id] = [];
+        }
+        newSelectedValues[variant.attribute_id].push(variant.value_id);
+      });
+      setSelectedValues(newSelectedValues);
+    }
+  }, [initialVariants]);
+
   useEffect(() => {
     const fetchVariants = async () => {
       if (!selectedCategory) {
         setVariants([]);
-        setSelectedValues({});
+        if (!initialVariants.length) {
+          setSelectedValues({});
+        }
         return;
       }
 
@@ -58,8 +75,10 @@ const Filter = ({ selectedCategory, onFilterChange }: FilterProps) => {
           return acc;
         }, {});
         setVariantsOpen(newOpenState);
-        // Reset selected values when category changes
-        setSelectedValues({});
+        // Only reset selected values if no initial variants
+        if (!initialVariants.length) {
+          setSelectedValues({});
+        }
       } catch (error) {
         console.error("Error fetching variants:", error);
         setVariants([]);
