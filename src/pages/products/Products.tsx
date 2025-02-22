@@ -50,9 +50,10 @@ const Products = () => {
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
   const [prods, setProds] = useState<ProductsResponse>({ products: [] });
-  const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(
     null
@@ -64,11 +65,12 @@ const Products = () => {
     domain: any[] = []
   ) => {
     try {
-      setLoading(true);
+      setProductsLoading(true);
       const response = await axiosInstance.post("/products", {
         currentUid,
         currentOffset,
         domain,
+        category_id: selectedSubcategory ? selectedSubcategory : selectedCategory,
       });
 
       const data = response.data;
@@ -77,18 +79,23 @@ const Products = () => {
       return data;
     } catch (error) {
       console.error("Error fetching products:", error);
+      setProds({ products: [] });
       return [];
     } finally {
-      setLoading(false);
+      setProductsLoading(false);
     }
   };
 
   const fetchCategories = async () => {
     try {
+      setCategoriesLoading(true);
       const response = await axiosInstance.post("/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setCategories([]);
+    } finally {
+      setCategoriesLoading(false);
     }
   };
 
@@ -96,6 +103,22 @@ const Products = () => {
     fetchCategories();
     fetchProducts(0, 0, []);
   }, []);
+
+  // Add effect to handle category/subcategory changes
+  useEffect(() => {
+    // Reset subcategory when category changes
+    if (selectedCategory !== null) {
+      setSelectedSubcategory(null);
+      fetchProducts(0, 0, []);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    // Fetch products when subcategory changes
+    if (selectedSubcategory !== null) {
+      fetchProducts(0, 0, []);
+    }
+  }, [selectedSubcategory]);
 
   const filteredProducts =
     selectedBrand === "all"
@@ -157,39 +180,6 @@ const Products = () => {
     return category?.children || [];
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-          <p className="text-gray-500 font-tajawal-medium">
-            جاري تحميل المنتجات...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (prods.products.length === 0 && !loading) {
-    return (
-      <div className="min-h-[calc(100vh-72px)] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 font-tajawal-medium text-lg">
-            لا توجد منتجات متوفرة
-          </p>
-          <Button
-            onClick={() =>
-              fetchProducts(Number(localStorage.getItem("session_id")), 0, [])
-            }
-            className="mt-4"
-            variant="outline"
-            label="إعادة المحاولة"
-          />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="relative flex flex-col lg:flex-row">
       {/* Mobile Filter Toggle Button */}
@@ -232,43 +222,50 @@ const Products = () => {
           <h1 className="font-tajawal-bold text-2xl mb-6">الفئات</h1>
 
           {/* Categories */}
-          <div className="relative">
-            <button
-              onClick={() => scrollCategories("left", "categories-scroll")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
-            >
-              <ArrowLeft className="text-gray-600" size={20} />
-            </button>
+          {categoriesLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+            </div>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => scrollCategories("left", "categories-scroll")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+              >
+                <ArrowLeft className="text-gray-600" size={20} />
+              </button>
 
-            <div className="categories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`
-                    px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
-                    ${
-                      selectedCategory === category.id
+              <div className="categories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setSelectedCategory(category.id === selectedCategory ? null : category.id);
+                    }}
+                    className={`
+                      px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
+                      ${selectedCategory === category.id
                         ? "bg-orange-500 text-white shadow-md"
                         : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    }
-                  `}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
+                      }
+                    `}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
 
-            <button
-              onClick={() => scrollCategories("right", "categories-scroll")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
-            >
-              <ArrowRight className="text-gray-600" size={20} />
-            </button>
-          </div>
+              <button
+                onClick={() => scrollCategories("right", "categories-scroll")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+              >
+                <ArrowRight className="text-gray-600" size={20} />
+              </button>
+            </div>
+          )}
 
           {/* Subcategories */}
-          {selectedCategory && getSubcategories().length > 0 && (
+          {!categoriesLoading && selectedCategory && getSubcategories().length > 0 && (
             <div className="mt-4 relative">
               <button
                 onClick={() => scrollCategories("left", "subcategories-scroll")}
@@ -281,13 +278,14 @@ const Products = () => {
                 {getSubcategories().map((subcategory) => (
                   <button
                     key={subcategory.id}
-                    onClick={() => setSelectedSubcategory(subcategory.id)}
+                    onClick={() => {
+                      setSelectedSubcategory(subcategory.id === selectedSubcategory ? null : subcategory.id);
+                    }}
                     className={`
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${
-                        selectedSubcategory === subcategory.id
-                          ? "bg-orange-500 text-white shadow-md"
-                          : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ${selectedSubcategory === subcategory.id
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "border border-gray-200 text-gray-600 hover:bg-gray-50"
                       }
                     `}
                   >
@@ -309,116 +307,149 @@ const Products = () => {
         </div>
 
         {/* Products grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {prods.products.map((product: any) => {
-            const cartItem = cartProducts.find(
-              (item) => item.id === product.id
-            );
+        {productsLoading ? (
+          <div className="min-h-[400px] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+              <p className="text-gray-500 font-tajawal-medium">
+                جاري تحميل المنتجات...
+              </p>
+            </div>
+          </div>
+        ) : prods.products.length === 0 ? (
+          <div className="min-h-[400px] flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-gray-500 font-tajawal-medium text-lg mb-2">
+                {selectedCategory ? "لا توجد منتجات في هذه الفئة" : "لا توجد منتجات متوفرة"}
+              </p>
+              {selectedCategory && (
+                <p className="text-gray-400 font-tajawal-regular">
+                  يرجى اختيار فئة أخرى لعرض منتجاتها
+                </p>
+              )}
+              <Button
+                onClick={() => {
+                  setSelectedCategory(null);
+                  setSelectedSubcategory(null);
+                  fetchProducts(Number(localStorage.getItem("session_id")), 0, []);
+                }}
+                className="mt-4"
+                variant="outline"
+                label="عرض كل المنتجات"
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {prods.products.map((product: any) => {
+              const cartItem = cartProducts.find(
+                (item) => item.id === product.id
+              );
 
-            return (
-              <div
-                key={product.id}
-                className="relative flex flex-col rounded-xl bg-white bg-clip-border shadow-md h-full"
-              >
-                {/* Product image */}
-                <div className="relative mx-4 p-1 mt-4 h-48 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
-                  <img
-                    src={`data:image/png;base64,${product.image_1920}`}
-                    alt={product.name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+              return (
+                <div
+                  key={product.id}
+                  className="relative flex flex-col rounded-xl bg-white bg-clip-border shadow-md h-full"
+                >
+                  {/* Product image */}
+                  <div className="relative mx-4 p-1 mt-4 h-48 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
+                    <img
+                      src={`data:image/png;base64,${product.image_1920}`}
+                      alt={product.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
 
-                {/* Product content */}
-                <div className="p-6 flex flex-col h-full">
-                  <h5 className="mb-2 block text-lg font-tajawal-medium leading-snug tracking-normal antialiased">
-                    {product.name}
-                  </h5>
+                  {/* Product content */}
+                  <div className="p-6 flex flex-col h-full">
+                    <h5 className="mb-2 block text-lg font-tajawal-medium leading-snug tracking-normal antialiased">
+                      {product.name}
+                    </h5>
 
-                  {/* Price and buttons */}
-                  <div className="mt-auto pt-4">
-                    <p className="mb-4 font-tajawal-bold text-orange-500 text-xl">
-                      د.ع {product.list_price.toLocaleString()}
-                    </p>
+                    {/* Price and buttons */}
+                    <div className="mt-auto pt-4">
+                      <p className="mb-4 font-tajawal-bold text-orange-500 text-xl">
+                        د.ع {product.list_price.toLocaleString()}
+                      </p>
 
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      {/* Cart controls */}
-                      {cartItem ? (
-                        <div className="flex items-center justify-center gap-2 px-2 bg-orange-100/25 rounded-md py-1 flex-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="w-8 h-8 text-black"
-                            onClick={() =>
-                              handleUpdateQuantity(
-                                product,
-                                cartItem.quantity + 1
-                              )
-                            }
-                            Icon={Plus as IconType}
-                          />
-                          <span className="w-6 text-center font-tajawal-medium">
-                            {cartItem.quantity}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="w-8 h-8 text-orange-500"
-                            onClick={() =>
-                              handleUpdateQuantity(
-                                product,
-                                cartItem.quantity - 1
-                              )
-                            }
-                            Icon={Minus as IconType}
-                          />
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        {/* Cart controls */}
+                        {cartItem ? (
+                          <div className="flex items-center justify-center gap-2 px-2 bg-orange-100/25 rounded-md py-1 flex-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-8 h-8 text-black"
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  product,
+                                  cartItem.quantity + 1
+                                )
+                              }
+                              Icon={Plus as IconType}
+                            />
+                            <span className="w-6 text-center font-tajawal-medium">
+                              {cartItem.quantity}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-8 h-8 text-orange-500"
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  product,
+                                  cartItem.quantity - 1
+                                )
+                              }
+                              Icon={Minus as IconType}
+                            />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleAddToCart(product);
+                            }}
+                            className="flex-1 select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          >
+                            <LucideShoppingCart className="mx-auto" />
+                          </button>
+                        )}
+
+                        {/* Action buttons */}
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleBuyNow(product);
+                            }}
+                            className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          >
+                            <LucideCreditCard />
+                          </button>
+
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleComparisonClick(product);
+                            }}
+                            className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
+                          ${isCompared(product.id)
+                                ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
+                                : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
+                              }`}
+                          >
+                            <LucideCircleDashed />
+                          </button>
                         </div>
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleAddToCart(product);
-                          }}
-                          className="flex-1 select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                        >
-                          <LucideShoppingCart className="mx-auto" />
-                        </button>
-                      )}
-
-                      {/* Action buttons */}
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleBuyNow(product);
-                          }}
-                          className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                        >
-                          <LucideCreditCard />
-                        </button>
-
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleComparisonClick(product);
-                          }}
-                          className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${
-                            isCompared(product.id)
-                              ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
-                              : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                          }`}
-                        >
-                          <LucideCircleDashed />
-                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="pagination mt-20 mb-14">
           <Pagination />
