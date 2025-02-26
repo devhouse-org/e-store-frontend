@@ -126,7 +126,7 @@ const Products = () => {
   const fetchCategories = async () => {
     try {
       setCategoriesLoading(true);
-      const response = await axiosInstance.post("/categories");
+      const response = await axiosInstance.post("/products/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);

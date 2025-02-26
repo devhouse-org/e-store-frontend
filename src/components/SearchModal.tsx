@@ -52,7 +52,7 @@ const SearchModal = ({ isOpen, onClose }: Props) => {
     const handleSearch = async (query: string, offset = 0) => {
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<SearchResponse>("/search-products", {
+            const response = await axiosInstance.post<SearchResponse>("/products/search-products", {
                 searchTerm: query,
                 currentOffset: offset,
                 limit: 10

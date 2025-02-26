@@ -65,7 +65,7 @@ const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: Filt
 
       try {
         setVariantsLoading(true);
-        const response = await axiosInstance.post("/variants", {
+        const response = await axiosInstance.post("/products/variants", {
           category_id: selectedCategory,
         });
         setVariants(response.data);
