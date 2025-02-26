@@ -31,12 +31,12 @@ const Brands = () => {
         const fetchBrands = async () => {
             try {
                 setLoading(true);
-                const response = await axiosInstance.post("/brands");
+                const response = await axiosInstance.post("/products/brands");
                 setBrands(response.data.values);
                 setError(null);
             } catch (error) {
                 console.error("Error fetching brands:", error);
-                setError("Failed to load brands. Please try again later.");
+                setError("فشل في تحميل العلامات التجارية");
                 setBrands([]);
             } finally {
                 setLoading(false);
