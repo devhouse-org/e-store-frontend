@@ -432,6 +432,11 @@ const Products = () => {
                       {product.name}
                     </h5>
 
+                    <div
+                      className="text-sm text-gray-600 mb-2 line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: product?.description || '' }}
+                    />
+
                     {/* Price and buttons */}
                     <div className="mt-auto pt-4">
                       <p className="mb-4 font-tajawal-bold text-orange-500 text-xl">
@@ -517,9 +522,11 @@ const Products = () => {
           </div>
         )}
 
-        <div className="pagination mt-20 mb-14">
-          <Pagination />
-        </div>
+        {!productsLoading && prods.products.length > 0 && (
+          <div className="pagination mt-20 mb-14">
+            <Pagination />
+          </div>
+        )}
       </div>
     </div>
   );
