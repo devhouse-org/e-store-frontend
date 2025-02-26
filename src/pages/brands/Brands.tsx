@@ -1,25 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
+import axiosInstance from "@/utils/axiosInstance";
+import estoreLogo from "@/assets/images/Logo.png";
 
-// Import all brand images
-const brandImages = import.meta.glob('/src/assets/images/brands/all/*.{png,jpg,jpeg,webp}', {
-    eager: true,
-    as: 'url'
-});
+interface BrandValue {
+    id: number;
+    name: string;
+    sequence: number;
+    html_color?: string;
+    display_name: string;
+    image: string | null;
+}
+
+interface BrandResponse {
+    id: number;
+    name: string;
+    display_type: string;
+    create_variant: boolean;
+    values: BrandValue[];
+}
 
 const Brands = () => {
     const [searchQuery, setSearchQuery] = useState("");
+    const [brands, setBrands] = useState<BrandValue[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Convert the imported images object to an array
-    const brands = Object.entries(brandImages).map(([path, url]) => ({
-        name: path.split('/').pop()?.split('.')[0] || '',
-        image: url
-    }));
+    useEffect(() => {
+        const fetchBrands = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosInstance.post("/products/brands");
+                setBrands(response.data.values);
+                setError(null);
+            } catch (error) {
+                console.error("Error fetching brands:", error);
+                setError("فشل في تحميل العلامات التجارية");
+                setBrands([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBrands();
+    }, []);
 
     // Filter brands based on search query
     const filteredBrands = brands.filter(brand =>
-        brand.name.toLowerCase().replace(/-/g, ' ').includes(searchQuery.toLowerCase())
+        brand.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -45,27 +74,62 @@ const Brands = () => {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 </div>
 
-                {/* Brands Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
-                    {filteredBrands.map((brand) => (
-                        <Link
-                            key={brand.name}
-                            to={`/products?brand=${brand.name}`}
-                            className="group"
+                {/* Loading State */}
+                {loading && (
+                    <div className="flex justify-center items-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+                    </div>
+                )}
+
+                {/* Error State */}
+                {error && (
+                    <div className="text-center py-12">
+                        <p className="text-red-500 font-tajawal-medium">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
                         >
-                            <div className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-center">
-                                <img
-                                    src={brand.image}
-                                    alt={brand.name}
-                                    className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                                />
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+                            إعادة المحاولة
+                        </button>
+                    </div>
+                )}
+
+                {/* Brands Grid */}
+                {!loading && !error && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
+                        {filteredBrands.map((brand) => (
+                            <Link
+                                key={brand.id}
+                                to={`/products?brand=${brand.name}`}
+                                className="group"
+                            >
+                                <div className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 flex items-center justify-center">
+                                    {brand.image ? (
+                                        <img
+                                            src={brand.image}
+                                            alt={brand.name}
+                                            className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-500 font-tajawal-medium">
+                                            <img
+                                                src={estoreLogo}
+                                                alt={brand.name}
+                                                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="mt-2 text-center text-sm font-tajawal-medium text-gray-700">
+                                    {brand.name}
+                                </p>
+                            </Link>
+                        ))}
+                    </div>
+                )}
 
                 {/* No Results */}
-                {filteredBrands.length === 0 && (
+                {!loading && !error && filteredBrands.length === 0 && (
                     <div className="text-center py-12">
                         <p className="text-gray-500 font-tajawal-medium">
                             لم يتم العثور على نتائج للبحث: {searchQuery}

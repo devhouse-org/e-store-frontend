@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -24,20 +25,14 @@ const Signup = () => {
 
   const signup = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/signup", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-        }),
+      const response = await axiosInstance.post("/auth/signup", {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
       });
 
-      const result = await response.json();
+      const result = response.data;
       if (result.error) {
         if (result.data && result.data.arguments && result.data.arguments[0] === 'You can not have two users with the same login!') {
           setError("البريد الإلكتروني مستخدم من قبل");

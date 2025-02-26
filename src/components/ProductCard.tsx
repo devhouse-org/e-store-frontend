@@ -8,7 +8,7 @@ import {
   HeartCrack,
   Plus,
   Minus,
-  X
+  X,
 } from "lucide-react";
 import { Product } from "@/utils/data/products";
 import { useWishlistStore } from "@/store/useWishlistStore";
@@ -29,21 +29,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   size = "lg",
   activeCard,
-  showBtns = false
+  showBtns = false,
 }) => {
   const navigate = useNavigate();
-  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
+  const { addToWishlist, removeFromWishlist, isWishlisted } =
+    useWishlistStore();
   const {
     addToCart,
     products: cartProducts,
     updateQuantity,
-    removeFromCart
+    removeFromCart,
   } = useCartStore();
-  const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+  const { addToComparison, removeFromComparison, isCompared } =
+    useComparisonStore();
 
   const isInWishlist = isWishlisted(product.id);
   const isInComparison = isCompared(product.id);
-  const cartItem = cartProducts.find(item => item.id === product.id);
+  const cartItem = cartProducts.find((item) => item.id === product.id);
 
   const handleAddToCart = () => {
     if (!cartItem) {
@@ -53,7 +55,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         price: product.price,
         image: product.image,
         quantity: 1,
-        storage: product.storage
+        storage: product.storage,
       });
     }
   };
@@ -99,9 +101,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         className={`
           relative group cursor-pointer transition-all duration-300 ease-in-out
           ${size === "lg" ? "w-72 p-4" : "w-40 p-2"}
-          ${activeCard
-            ? "border-orange-400 shadow-md"
-            : "bordertransparent hover:shadow-md"
+          ${
+            activeCard
+              ? "border-orange-400 shadow-md"
+              : "bordertransparent hover:shadow-md"
           }
           border bg-white rounded-xl overflow-hidden textcenter
         `}
@@ -125,7 +128,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-50"
           >
             <Heart
-              className={`w-5 h-5 ${isInWishlist ? "text-red-500 fill-red-500" : "text-gray-400"}`}
+              className={`w-5 h-5 ${
+                isInWishlist ? "text-red-500 fill-red-500" : "text-gray-400"
+              }`}
             />
           </button>
         </div>
@@ -169,9 +174,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <Button
                   variant="outline"
                   size="icon"
-                  className={isInComparison
-                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                    : "bg-orange-100 hover:bg-orange-200 text-orange-500"
+                  className={
+                    isInComparison
+                      ? "bg-orange-500 text-white hover:bg-orange-600"
+                      : "bg-orange-100 hover:bg-orange-200 text-orange-500"
                   }
                   onClick={(e) => {
                     e.preventDefault();

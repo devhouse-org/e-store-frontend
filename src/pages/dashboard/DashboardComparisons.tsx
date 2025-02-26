@@ -53,19 +53,20 @@ const DashboardComparisons = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-tajawal-bold">المقارنات المحفوظة</h2>
-        <Button
-          variant="destructive"
-          onClick={handleClearAll}
-          className="flex items-center gap-2"
-          label="حذف الكل"
-          Icon={Trash2 as IconType}
-        >
-          {/* <Trash2 className="w-4 h-4" />
-          <span>حذف الكل</span> */}
-        </Button>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-xl text-gray-500 font-tajawal-bold ">المقارنات</h1>
+        <div className="flex justify-between items-center">
+          <Button
+            variant="destructive"
+            onClick={handleClearAll}
+            className="flex items-center gap-2"
+            label="حذف الكل"
+            Icon={Trash2 as IconType}
+          >
+            <span>حذف الكل</span>
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {savedComparisons.map((comparison) => (

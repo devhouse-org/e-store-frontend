@@ -17,7 +17,7 @@ const Profile = () => {
     }, []);
 
     return (
-        <div className="p4 space-y-4">
+        <div className="p-4 space-y-4">
             {/* Header */}
             <h1 className="text-xl text-gray-500 font-tajawal-bold">الملف الشخصي</h1>
             {/* Profile Form */}

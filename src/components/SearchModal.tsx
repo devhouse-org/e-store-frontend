@@ -1,4 +1,4 @@
-import { products } from "@/utils/data/products";
+import axiosInstance from "@/utils/axiosInstance";
 import { Search, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
@@ -9,26 +9,28 @@ type Props = {
 };
 
 type Product = {
-    id: string;
+    id: number;
     name: string;
-    price: number;
-    image: string;
-    category: string;
-    brand: string;
-    description: string;
+    list_price: number;
+    image_1920: string;
+    description_sale: string;
+    public_categ_ids: number[];
 };
 
-const categories = [
-    { id: 1, name: "لابتوب", link: "/products?category=electronics" },
-    { id: 2, name: "موبايل", link: "/products?category=clothing" },
-    { id: 3, name: "تابلت", link: "/products?category=furniture" },
-    { id: 4, name: "كاميرا", link: "/products?category=cosmetics" },
-    { id: 5, name: "العاب", link: "/products?category=books" },
-];
+type SearchResponse = {
+    products: Product[];
+    total: number;
+    offset: number;
+    limit: number;
+};
 
 const SearchModal = ({ isOpen, onClose }: Props) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentOffset, setCurrentOffset] = useState(0);
+    const [totalResults, setTotalResults] = useState(0);
+    const [hasSearched, setHasSearched] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -47,17 +49,29 @@ const SearchModal = ({ isOpen, onClose }: Props) => {
         }
     }, [isOpen, onClose]);
 
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        if (query.trim()) {
-            const filteredResults = products.filter(product =>
-                product.name.toLowerCase().includes(query.toLowerCase()) ||
-                product.brand.toLowerCase().includes(query.toLowerCase()) ||
-                product.description.toLowerCase().includes(query.toLowerCase())
-            );
-            setSearchResults(filteredResults);
-        } else {
-            setSearchResults([]);
+    const handleSearch = async (query: string, offset = 0) => {
+        try {
+            setIsLoading(true);
+            const response = await axiosInstance.post<SearchResponse>("/products/search-products", {
+                searchTerm: query,
+                currentOffset: offset,
+                limit: 10
+            });
+
+            setSearchResults(response.data.products);
+            setTotalResults(response.data.total);
+            setCurrentOffset(response.data.offset);
+            setHasSearched(true);
+        } catch (error) {
+            console.error("Error searching products:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch(searchQuery);
         }
     };
 
@@ -79,23 +93,33 @@ const SearchModal = ({ isOpen, onClose }: Props) => {
                     </button>
                 </div>
 
-                <div className="relative mb-6">
+                <div className="relative mb-6 flex gap-2">
                     <input
                         type="text"
                         value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={handleKeyPress}
                         placeholder="اكتب ما تريد البحث عنه..."
                         className="w-full p-3 border rounded-lg pl-10 font-tajawal-regular"
                         autoFocus
                     />
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <button
+                        onClick={() => handleSearch(searchQuery)}
+                        className="rounded-md overflow-hidden px-4 bg-orange-400 hover:bg-orange-500 transition-colors"
+                    >
+                        <Search className="text-white" />
+                    </button>
                 </div>
 
                 <div className="max-h-[60vh] overflow-y-auto">
-                    {searchQuery.trim() ? (
+                    {hasSearched && (
                         <div className="space-y-2">
-                            <h3 className="font-bold mb-3 font-tajawal-regular">نتائج البحث</h3>
-                            {searchResults.length > 0 ? (
+                            <h3 className="font-bold mb-3 font-tajawal-regular">
+                                نتائج البحث {totalResults > 0 && `(${totalResults})`}
+                            </h3>
+                            {isLoading ? (
+                                <p className="text-center py-4">جاري البحث...</p>
+                            ) : searchResults.length > 0 ? (
                                 searchResults.map((product) => (
                                     <Link
                                         key={product.id}
@@ -105,13 +129,15 @@ const SearchModal = ({ isOpen, onClose }: Props) => {
                                     >
                                         <div className="flex items-center gap-4">
                                             <img
-                                                src={product.image}
+                                                src={`data:image/png;base64,${product.image_1920}`}
                                                 alt={product.name}
                                                 className="w-12 h-12 object-cover rounded-md"
                                             />
                                             <div>
                                                 <h4 className="font-semibold">{product.name}</h4>
-                                                <p className="text-sm text-gray-600">{product.price.toLocaleString()} د.ع</p>
+                                                <p className="text-sm text-gray-600">
+                                                    {product.list_price.toLocaleString()} د.ع
+                                                </p>
                                             </div>
                                         </div>
                                     </Link>
@@ -119,20 +145,6 @@ const SearchModal = ({ isOpen, onClose }: Props) => {
                             ) : (
                                 <p className="text-gray-500 text-center py-4">لا توجد نتائج للبحث</p>
                             )}
-                        </div>
-                    ) : (
-                        <div className="space-y-2">
-                            <h3 className="font-bold mb-3 font-tajawal-regular">التصنيفات</h3>
-                            {categories.map((category) => (
-                                <Link
-                                    key={category.id}
-                                    to={category.link}
-                                    className="block p-2 hover:bg-orange-100/25 rounded-md font-tajawal-regular"
-                                    onClick={onClose}
-                                >
-                                    {category.name}
-                                </Link>
-                            ))}
                         </div>
                     )}
                 </div>
