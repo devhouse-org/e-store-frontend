@@ -60,6 +60,7 @@ const Products = () => {
     null
   );
   const [selectedVariants, setSelectedVariants] = useState<{ attribute_id: number; value_id: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
@@ -101,6 +102,7 @@ const Products = () => {
     domain: any[] = []
   ) => {
     try {
+      setError(null);
       setProductsLoading(true);
       const response = await axiosInstance.post("/products", {
         currentUid,
@@ -114,9 +116,16 @@ const Products = () => {
       setProds(data);
       console.log("Fetched Products:", data);
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching products:", error);
       setProds({ products: [] });
+      if (error.code === "ERR_NETWORK") {
+        setError("عذراً، لا يمكن الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت الخاص بك أو المحاولة مرة أخرى لاحقاً.");
+      } else if (error.response) {
+        setError("عذراً، حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة مرة أخرى.");
+      } else {
+        setError("عذراً، حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+      }
       return [];
     } finally {
       setProductsLoading(false);
@@ -149,10 +158,21 @@ const Products = () => {
 
   // Effect to fetch products when filters change
   useEffect(() => {
-    if (!categoriesLoading) {
-      fetchProducts(0, 0, []);
-    }
-  }, [selectedCategory, selectedSubcategory, selectedVariants, categoriesLoading]);
+    let isSubscribed = true;
+
+    const loadProducts = async () => {
+      if (!categoriesLoading) {
+        const currentUid = Number(localStorage.getItem("session_id")) || 0;
+        await fetchProducts(currentUid, 0, []);
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [selectedCategory, selectedSubcategory, selectedVariants]);
 
   // Effect to update URL when category filters change
   useEffect(() => {
@@ -380,6 +400,22 @@ const Products = () => {
               <p className="text-gray-500 font-tajawal-medium">
                 جاري تحميل المنتجات...
               </p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="min-h-[400px] flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-red-500 font-tajawal-medium text-lg mb-4">{error}</p>
+              <Button
+                onClick={() => {
+                  setSelectedCategory(null);
+                  setSelectedSubcategory(null);
+                  setSelectedVariants([]);
+                  fetchProducts(Number(localStorage.getItem("session_id")), 0, []);
+                }}
+                className="bg-orange-500 text-white hover:bg-orange-600"
+                label="إعادة المحاولة"
+              />
             </div>
           </div>
         ) : prods.products.length === 0 ? (
