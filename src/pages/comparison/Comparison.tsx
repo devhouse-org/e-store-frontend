@@ -10,22 +10,26 @@ import { Product } from "@/types";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
 
-// Add interface for product details
+// Update ProductDetails interface to match API response
 interface ProductDetails {
   id: number;
   name: string;
   list_price: number;
+  description?: string;
+  description_sale?: boolean | string;
   image_1920: string;
-  brand: string;
-  categ_id: string;
-  ram: string;
-  cpu: string;
-  screen_size: string;
-  front_camera: string;
-  back_camera: string;
-  storage: string;
-  os: string;
-  [key: string]: any;
+  product_variant_ids?: number[];
+  attribute_line_ids?: number[];
+  attributes?: {
+    id: number;
+    name: string;
+    display_type: string;
+    values: {
+      id: number;
+      name: string;
+      price_extra: number;
+    }[];
+  }[];
 }
 
 const EmptySlot = () => (
@@ -48,6 +52,7 @@ const EmptySlot = () => (
   </div>
 );
 
+// Update ProductColumn component to handle the new data structure
 const ProductColumn = ({
   product,
   onRemove,
@@ -64,7 +69,6 @@ const ProductColumn = ({
       price: product.list_price,
       image: product.image_1920,
       quantity: 1,
-      storage: product.storage,
     });
   };
 
@@ -107,23 +111,36 @@ const ProductColumn = ({
   );
 };
 
+// Update DataRow component to include max width
 const DataRow = ({
   label,
   getValue,
   slots,
+  key,
 }: {
   label: string;
   getValue: (product: ProductDetails | null) => string;
   slots: (ProductDetails | null)[];
+  key: string;
 }) => (
   <tr>
-    <td className="border p-4 bg-gray-50 font-tajawal-regular">{label}</td>
-    {[0, 1, 2, 3].map((index) => (
-      <td
-        key={`cell-${index}`}
-        className="border p-4 text-center font-tajawal-regular"
-      >
-        {slots[index] ? getValue(slots[index]) : "-"}
+    <td className="border p-4 bg-gray-50 font-tajawal-regular w-[200px]">
+      {label}
+    </td>
+    {slots.map((product, index) => (
+      <td key={index} className="border p-4 text-center w-[200px]">
+        {key === "description" ? (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: product?.description || "-",
+            }}
+            className="text-sm text-gray-600 max-h-[150px] overflow-y-auto"
+          />
+        ) : product ? (
+          getValue(product)
+        ) : (
+          "-"
+        )}
       </td>
     ))}
   </tr>
@@ -178,16 +195,12 @@ const Comparison = () => {
     fetchProductDetails();
   }, [comparisonItems]);
 
+  // Update specifications array to match available fields
   const specifications = [
-    { label: "العلامة التجارية", key: "brand" },
-    { label: "الفئة", key: "categ_id" },
-    { label: "الذاكرة العشوائية", key: "ram" },
-    { label: "المعالج", key: "cpu" },
-    { label: "حجم الشاشة", key: "screen_size" },
-    { label: "الكاميرا الأمامية", key: "front_camera" },
-    { label: "الكاميرا الخلفية", key: "back_camera" },
-    { label: "سعة التخزين", key: "storage" },
-    { label: "نظام التشغيل", key: "os" },
+    { key: "name", label: "المنتج" },
+    { key: "list_price", label: "السعر" },
+    { key: "description", label: "الوصف" },
+    // Add any other specifications you want to display based on the API response
   ];
 
   const handleSaveComparison = () => {
@@ -260,7 +273,13 @@ const Comparison = () => {
               <DataRow
                 key={spec.key}
                 label={spec.label}
-                getValue={(product) => product?.[spec.key]?.toString() || "-"}
+                getValue={(product) => {
+                  const value = product?.[spec.key];
+                  if (typeof value === "boolean" && !value) {
+                    return "-";
+                  }
+                  return value?.toString() || "-";
+                }}
                 slots={productDetails}
               />
             ))}
