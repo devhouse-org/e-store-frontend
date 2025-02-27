@@ -32,74 +32,106 @@ interface Variant {
   }[];
 }
 
+// Add useDebounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: FilterProps) => {
   const [variantsOpen, setVariantsOpen] = useState<{ [key: number]: boolean }>({});
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedValues, setSelectedValues] = useState<{ [key: number]: number[] }>({});
   const [variantsLoading, setVariantsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState([110]);
+
+  // Debounce the selected values with a shorter delay
+  const debouncedSelectedValues = useDebounce(selectedValues, 200);
 
   // Initialize selected values from initialVariants
   useEffect(() => {
     if (initialVariants.length > 0) {
-      const newSelectedValues: { [key: number]: number[] } = {};
-      initialVariants.forEach(variant => {
-        if (!newSelectedValues[variant.attribute_id]) {
-          newSelectedValues[variant.attribute_id] = [];
-        }
-        newSelectedValues[variant.attribute_id].push(variant.value_id);
+      setSelectedValues(prev => {
+        const newSelectedValues: { [key: number]: number[] } = {};
+        initialVariants.forEach(variant => {
+          if (!newSelectedValues[variant.attribute_id]) {
+            newSelectedValues[variant.attribute_id] = [];
+          }
+          newSelectedValues[variant.attribute_id].push(variant.value_id);
+        });
+        return JSON.stringify(prev) === JSON.stringify(newSelectedValues) ? prev : newSelectedValues;
       });
-      setSelectedValues(newSelectedValues);
+    } else {
+      setSelectedValues({});
     }
   }, [initialVariants]);
 
+  const fetchVariants = async () => {
+    try {
+      setError(null);
+      setVariantsLoading(true);
+      const response = await axiosInstance.post("/products/variants",
+        selectedCategory ? { category_id: selectedCategory } : {}
+      );
+      // Filter out variants with empty values array
+      const filteredVariants = response.data.filter((variant: Variant) => variant.values.length > 0);
+      setVariants(filteredVariants);
+      // Initialize open state for new variants
+      const newOpenState = filteredVariants.reduce((acc: any, variant: Variant) => {
+        acc[variant.id] = false;
+        return acc;
+      }, {});
+      setVariantsOpen(newOpenState);
+      // Only reset selected values if no initial variants
+      if (!initialVariants.length) {
+        setSelectedValues({});
+      }
+    } catch (error: any) {
+      console.error("Error fetching variants:", error);
+      setVariants([]);
+      if (error.code === "ERR_NETWORK") {
+        setError("عذراً، لا يمكن الاتصال بالخادم");
+      } else if (error.response) {
+        setError("عذراً، حدث خطأ أثناء تحميل الخصائص");
+      } else {
+        setError("عذراً، حدث خطأ غير متوقع");
+      }
+    } finally {
+      setVariantsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchVariants = async () => {
-      if (!selectedCategory) {
-        setVariants([]);
-        if (!initialVariants.length) {
-          setSelectedValues({});
-        }
-        return;
-      }
-
-      try {
-        setVariantsLoading(true);
-        const response = await axiosInstance.post("/products/variants", {
-          category_id: selectedCategory,
-        });
-        setVariants(response.data);
-        // Initialize open state for new variants
-        const newOpenState = response.data.reduce((acc: any, variant: Variant) => {
-          acc[variant.id] = false;
-          return acc;
-        }, {});
-        setVariantsOpen(newOpenState);
-        // Only reset selected values if no initial variants
-        if (!initialVariants.length) {
-          setSelectedValues({});
-        }
-      } catch (error) {
-        console.error("Error fetching variants:", error);
-        setVariants([]);
-      } finally {
-        setVariantsLoading(false);
-      }
-    };
-
     fetchVariants();
   }, [selectedCategory]);
 
+  // Modify the useEffect that calls onFilterChange to use debounced values
   useEffect(() => {
-    // Convert selected values to the format expected by the API
-    const selectedVariants = Object.entries(selectedValues).flatMap(([attributeId, valueIds]) =>
+    const selectedVariants = Object.entries(debouncedSelectedValues).flatMap(([attributeId, valueIds]) =>
       valueIds.map(valueId => ({
         attribute_id: Number(attributeId),
         value_id: valueId
       }))
     );
-    onFilterChange(selectedVariants);
-  }, [selectedValues]);
+
+    // Only call onFilterChange if there are actual changes
+    const hasValues = Object.values(debouncedSelectedValues).some(arr => arr.length > 0);
+    if (hasValues || initialVariants.length > 0) {
+      onFilterChange(selectedVariants);
+    }
+  }, [debouncedSelectedValues]);
 
   const handleValueChange = (attributeId: number, valueId: number) => {
     setSelectedValues(prev => {
@@ -108,15 +140,22 @@ const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: Filt
         ? currentValues.filter(id => id !== valueId)
         : [...currentValues, valueId];
 
-      return {
+      // If the new values array is empty, remove the key entirely
+      const newState = {
         ...prev,
         [attributeId]: newValues
       };
+
+      if (newValues.length === 0) {
+        delete newState[attributeId];
+      }
+
+      return newState;
     });
   };
 
   const clearAllFilters = () => {
-    setPriceRange([0]);
+    setPriceRange([110]);
     setSelectedValues({});
   };
 
@@ -163,6 +202,17 @@ const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: Filt
         {variantsLoading ? (
           <div className="flex items-center justify-center py-4">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-4">
+            <p className="text-red-500 text-sm mb-2">{error}</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              label="إعادة المحاولة"
+              className="text-orange-500 hover:text-orange-600"
+              onClick={() => fetchVariants()}
+            />
           </div>
         ) : variants.map((variant) => (
           <div key={variant.id}>
