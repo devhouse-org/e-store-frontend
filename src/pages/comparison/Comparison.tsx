@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Trash2, Save } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCartStore } from "@/store/useCartStore";
@@ -8,6 +8,29 @@ import { useToast } from "@/hooks/use-toast";
 import { useSavedComparisonsStore } from "@/store/useSavedComparisonsStore";
 import { Product } from "@/types";
 import { IconType } from "react-icons";
+import axiosInstance from "@/utils/axiosInstance";
+
+// Update ProductDetails interface to match API response
+interface ProductDetails {
+  id: number;
+  name: string;
+  list_price: number;
+  description?: string;
+  description_sale?: boolean | string;
+  image_1920: string;
+  product_variant_ids?: number[];
+  attribute_line_ids?: number[];
+  attributes?: {
+    id: number;
+    name: string;
+    display_type: string;
+    values: {
+      id: number;
+      name: string;
+      price_extra: number;
+    }[];
+  }[];
+}
 
 const EmptySlot = () => (
   <div className="flex flex-col items-center justify-center gap-4 py-8">
@@ -29,23 +52,23 @@ const EmptySlot = () => (
   </div>
 );
 
+// Update ProductColumn component to handle the new data structure
 const ProductColumn = ({
   product,
   onRemove,
 }: {
-  product: Product | null;
+  product: ProductDetails | null;
   onRemove: () => void;
 }) => {
   const addToCart = useCartStore((state) => state.addToCart);
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: ProductDetails) => {
     addToCart({
       id: product.id.toString(),
       name: product.name,
       price: product.list_price,
       image: product.image_1920,
       quantity: 1,
-      storage: product.storage,
     });
   };
 
@@ -88,23 +111,36 @@ const ProductColumn = ({
   );
 };
 
+// Update DataRow component to include max width
 const DataRow = ({
   label,
   getValue,
   slots,
+  key,
 }: {
   label: string;
-  getValue: (product: Product | null) => string;
-  slots: (Product | null)[];
+  getValue: (product: ProductDetails | null) => string;
+  slots: (ProductDetails | null)[];
+  key: string;
 }) => (
   <tr>
-    <td className="border p-4 bg-gray-50 font-tajawal-regular">{label}</td>
-    {[0, 1, 2, 3].map((index) => (
-      <td
-        key={`cell-${index}`}
-        className="border p-4 text-center font-tajawal-regular"
-      >
-        {slots[index] ? getValue(slots[index]) : "-"}
+    <td className="border p-4 bg-gray-50 font-tajawal-regular w-[200px]">
+      {label}
+    </td>
+    {slots.map((product, index) => (
+      <td key={index} className="border p-4 text-center w-[200px]">
+        {key === "description" ? (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: product?.description || "-",
+            }}
+            className="text-sm text-gray-600 max-h-[150px] overflow-y-auto"
+          />
+        ) : product ? (
+          getValue(product)
+        ) : (
+          "-"
+        )}
       </td>
     ))}
   </tr>
@@ -116,24 +152,55 @@ const Comparison = () => {
   const saveComparison = useSavedComparisonsStore(
     (state) => state.saveComparison
   );
+  const [productDetails, setProductDetails] = useState<
+    (ProductDetails | null)[]
+  >([null, null, null, null]);
+  const [loading, setLoading] = useState(true);
 
-  const slots = [
-    comparisonItems[0] || null,
-    comparisonItems[1] || null,
-    comparisonItems[2] || null,
-    comparisonItems[3] || null,
-  ];
+  // Fetch product details for each product in comparison
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      setLoading(true);
+      try {
+        const details = await Promise.all(
+          Array(4)
+            .fill(null)
+            .map(async (_, index) => {
+              const product = comparisonItems[index];
+              if (!product) return null;
 
+              const response = await axiosInstance.post(
+                "/products/product-details",
+                {
+                  product_id: product.id,
+                }
+              );
+              return response.data;
+            })
+        );
+
+        setProductDetails(details);
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ أثناء تحميل تفاصيل المنتجات",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductDetails();
+  }, [comparisonItems]);
+
+  // Update specifications array to match available fields
   const specifications = [
-    { label: "العلامة التجارية", key: "brand" },
-    { label: "الفئة", key: "categ_id" },
-    { label: "الذاكرة العشوائية", key: "ram" },
-    { label: "المعالج", key: "cpu" },
-    { label: "حجم الشاشة", key: "screen_size" },
-    { label: "الكاميرا الأمامية", key: "front_camera" },
-    { label: "الكاميرا الخلفية", key: "back_camera" },
-    { label: "سعة التخزين", key: "storage" },
-    { label: "نظام التشغيل", key: "os" },
+    { key: "name", label: "المنتج" },
+    { key: "list_price", label: "السعر" },
+    { key: "description", label: "الوصف" },
+    // Add any other specifications you want to display based on the API response
   ];
 
   const handleSaveComparison = () => {
@@ -147,13 +214,25 @@ const Comparison = () => {
     }
 
     saveComparison(comparisonItems);
-
     toast({
       title: "تم حفظ المقارنة",
       description: "يمكنك العثور على المقارنة المحفوظة في لوحة التحكم",
-      variant: "success", // Added success variant for positive feedback
+      variant: "success",
     });
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+          <p className="text-gray-500 font-tajawal-medium">
+            جاري تحميل المقارنة...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -166,10 +245,7 @@ const Comparison = () => {
           Icon={Save as IconType}
           onClick={handleSaveComparison}
           className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-        >
-          {/* <Save className="w-4 h-4" /> */}
-          {/* <span className="font-tajawal-regular">حفظ المقارنة</span> */}
-        </Button>
+        />
       </div>
 
       <div className="overflow-x-auto">
@@ -182,10 +258,10 @@ const Comparison = () => {
               {[0, 1, 2, 3].map((index) => (
                 <ProductColumn
                   key={`slot-${index}`}
-                  product={slots[index]}
+                  product={productDetails[index]}
                   onRemove={() => {
-                    if (slots[index]) {
-                      removeFromComparison(slots[index]!.id);
+                    if (productDetails[index]) {
+                      removeFromComparison(productDetails[index]!.id);
                     }
                   }}
                 />
@@ -197,10 +273,14 @@ const Comparison = () => {
               <DataRow
                 key={spec.key}
                 label={spec.label}
-                getValue={(product) =>
-                  product?.[spec.key as keyof Product] || "-"
-                }
-                slots={slots}
+                getValue={(product) => {
+                  const value = product?.[spec.key];
+                  if (typeof value === "boolean" && !value) {
+                    return "-";
+                  }
+                  return value?.toString() || "-";
+                }}
+                slots={productDetails}
               />
             ))}
           </tbody>
