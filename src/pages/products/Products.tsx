@@ -113,9 +113,16 @@ const Products = () => {
       });
 
       const data = response.data;
-      setProds(data);
-      console.log("Fetched Products:", data);
-      return data;
+      // Filter out products with no values
+      const filteredProducts = {
+        ...data,
+        products: data.products.filter((product: any) =>
+          product.list_price && product.name && product.image_1920
+        )
+      };
+      setProds(filteredProducts);
+      console.log("Fetched Products:", filteredProducts);
+      return filteredProducts;
     } catch (error: any) {
       console.error("Error fetching products:", error);
       setProds({ products: [] });
@@ -161,10 +168,8 @@ const Products = () => {
     let isSubscribed = true;
 
     const loadProducts = async () => {
-      if (!categoriesLoading) {
-        const currentUid = Number(localStorage.getItem("session_id")) || 0;
-        await fetchProducts(currentUid, 0, []);
-      }
+      const currentUid = Number(localStorage.getItem("session_id")) || 0;
+      await fetchProducts(currentUid, 0, []);
     };
 
     loadProducts();

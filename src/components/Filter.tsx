@@ -79,23 +79,17 @@ const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: Filt
   }, [initialVariants]);
 
   const fetchVariants = async () => {
-    if (!selectedCategory) {
-      setVariants([]);
-      if (!initialVariants.length) {
-        setSelectedValues({});
-      }
-      return;
-    }
-
     try {
       setError(null);
       setVariantsLoading(true);
-      const response = await axiosInstance.post("/products/variants", {
-        category_id: selectedCategory,
-      });
-      setVariants(response.data);
+      const response = await axiosInstance.post("/products/variants",
+        selectedCategory ? { category_id: selectedCategory } : {}
+      );
+      // Filter out variants with empty values array
+      const filteredVariants = response.data.filter((variant: Variant) => variant.values.length > 0);
+      setVariants(filteredVariants);
       // Initialize open state for new variants
-      const newOpenState = response.data.reduce((acc: any, variant: Variant) => {
+      const newOpenState = filteredVariants.reduce((acc: any, variant: Variant) => {
         acc[variant.id] = false;
         return acc;
       }, {});
