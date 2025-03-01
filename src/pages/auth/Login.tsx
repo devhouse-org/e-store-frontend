@@ -19,8 +19,11 @@ const Login = () => {
         password,
       });
 
+
       const data = response.data;
+      console.log(data);
       if (data.session_id) {
+        localStorage.setItem("id", data.id);
         localStorage.setItem("session_id", data.session_id);
         localStorage.setItem("name", data.name);
         localStorage.setItem("email", data.email);

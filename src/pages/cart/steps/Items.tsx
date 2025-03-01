@@ -49,9 +49,9 @@ const Items = ({ setActive }: any) => {
         </div>
       </div>
 
-      <div className="w-full md:w-[380px]">
+      {/* <div className="w-full md:w-[380px]">
         <CartReviewCard cart={cart} />
-      </div>
+      </div> */}
     </div>
   );
 };

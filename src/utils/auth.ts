@@ -4,6 +4,7 @@ export const isAuthenticated = () => {
 };
 
 export const logout = () => {
+    localStorage.removeItem("id");
     localStorage.removeItem("session_id");
     localStorage.removeItem("name");
     localStorage.removeItem("email");
