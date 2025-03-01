@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Heart,
   Share2,
@@ -22,26 +22,83 @@ import ProductCard from "@/components/ProductCard";
 import Slider from "react-slick";
 import { useCartStore } from "@/store/useCartStore";
 import { useNavigate, useParams } from "react-router-dom";
-import { getProductById, products } from "@/utils/data/products";
+import { products } from "@/utils/data/products";
 import { reviews } from "@/utils/data/reviews";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
+import axiosInstance from "@/utils/axiosInstance";
+
+// Update Product interface to match API response
+interface ProductDetails {
+  id: number;
+  name: string;
+  list_price: number;
+  description?: string;
+  description_sale?: string;
+  image_1920: string;
+  product_variant_ids?: number[];
+  attribute_line_ids?: number[];
+  attributes?: {
+    id: number;
+    name: string;
+    display_type: string;
+    values: {
+      id: number;
+      name: string;
+      price_extra: number;
+    }[];
+  }[];
+}
 
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
   const navigate = useNavigate();
   const { id } = useParams();
-  const product = getProductById(id || "");
-  const [selectedStorage, setSelectedStorage] = useState("256 GB");
+
+  const [product, setProduct] = useState<ProductDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<number, number>>({});
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
 
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        const response = await axiosInstance.post("/products/product-details", {
+          product_id: parseInt(id)
+        });
+
+        setProduct(response.data);
+
+        // Initialize selected attributes with first value of each attribute
+        if (response.data.attributes) {
+          const initialAttributes = response.data.attributes.reduce((acc: Record<number, number>, attr: any) => {
+            if (attr.values && attr.values.length > 0) {
+              acc[attr.id] = attr.values[0].id;
+            }
+            return acc;
+          }, {});
+          setSelectedAttributes(initialAttributes);
+        }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+        setError("Failed to load product details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductDetails();
+  }, [id]);
+
   const images = [
-    "https://imgs.search.brave.com/Iu8pnU8UWn5aXg7p7t92b0hRJn_Qe4Lfey2zmgQEtd4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NDEzbGk5dllnc0wu/anBn",
-    "https://imgs.search.brave.com/eE2kKeLp3k12tKnSqo4v-fR4u5xaz_4HFn7LenjQfFE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cHJvZC53ZWJzaXRl/LWZpbGVzLmNvbS81/YjQ0ZWRlZmNhMzIx/YTFlMmQwYzJhYTYv/NjM0YWUzODc5OTAy/MzY2YjQyN2U0MGZi/X0RpbWVuc2lvbnMt/RGlnaXRhbC1BcHBs/ZS1pUGhvbmVzLUFw/cGxlLWlQaG9uZS0x/NC1JY29uLnN2Zw",
-    "https://imgs.search.brave.com/eE2kKeLp3k12tKnSqo4v-fR4u5xaz_4HFn7LenjQfFE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cHJvZC53ZWJzaXRl/LWZpbGVzLmNvbS81/YjQ0ZWRlZmNhMzIx/YTFlMmQwYzJhYTYv/NjM0YWUzODc5OTAy/MzY2YjQyN2U0MGZi/X0RpbWVuc2lvbnMt/RGlnaXRhbC1BcHBs/ZS1pUGhvbmVzLUFw/cGxlLWlQaG9uZS0x/NC1JY29uLnN2Zw",
-    "https://imgs.search.brave.com/qOD6uChP39kxoPmOSSZlF6aDCCMh4Xp5SAVE_CK82wA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cHJvZC53ZWJzaXRl/LWZpbGVzLmNvbS81/YjQ0ZWRlZmNhMzIx/YTFlMmQwYzJhYTYv/NjE0Yjk4ZTNhOTUw/OGE1ZjE0OTI4NWY3/X0RpbWVuc2lvbnMt/RGlnaXRhbC1BcHBs/ZS1pUGhvbmUtMTMt/UHJvLU1heC0zRC5q/cGc",
-  ];
+    product?.image_1920,
+    // Add more images if available from the API
+  ].filter(Boolean);
 
   const settings = {
     dots: true,
@@ -81,24 +138,32 @@ const Product = () => {
     ],
   };
 
-  const storageOptions = ["512 GB", "256 GB", "128 GB"];
-
-  const { addToWishlist, removeFromWishlist, isWishlisted } =
-    useWishlistStore();
-  const isInWishlist = product ? isWishlisted(product.id) : false;
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
+  const isInWishlist = product ? isWishlisted(product.id.toString()) : false;
 
   const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
-  const isInComparison = product ? isCompared(product.id) : false;
+  const isInComparison = product ? isCompared(product.id.toString()) : false;
 
   const handleAddToCart = () => {
     if (product) {
+      const selectedAttributeValues = Object.entries(selectedAttributes).map(([attributeId, valueId]) => {
+        const attribute = product.attributes?.find(attr => attr.id === parseInt(attributeId));
+        const value = attribute?.values.find(val => val.id === valueId);
+        return {
+          attribute_id: parseInt(attributeId),
+          value_id: valueId,
+          attribute_name: attribute?.name,
+          value_name: value?.name
+        };
+      });
+
       addToCart({
-        id: product.id,
+        id: product.id.toString(),
         name: product.name,
-        price: product.price,
-        image: product.image,
+        price: product.list_price,
+        image: product.image_1920,
         quantity: quantity,
-        storage: selectedStorage,
+        selected_attributes: selectedAttributeValues
       });
     }
   };
@@ -111,9 +176,15 @@ const Product = () => {
   const handleWishlistClick = () => {
     if (product) {
       if (isInWishlist) {
-        removeFromWishlist(product.id);
+        removeFromWishlist(product.id.toString());
       } else {
-        addToWishlist(product);
+        addToWishlist({
+          id: product.id.toString(),
+          name: product.name,
+          price: product.list_price,
+          image: product.image_1920,
+          description: product.description || product.description_sale || ""
+        });
       }
     }
   };
@@ -121,20 +192,44 @@ const Product = () => {
   const handleComparisonClick = () => {
     if (product) {
       if (isInComparison) {
-        removeFromComparison(product.id);
+        removeFromComparison(product.id.toString());
       } else {
-        addToComparison(product);
+        addToComparison({
+          id: product.id.toString(),
+          name: product.name,
+          price: product.list_price,
+          image: product.image_1920,
+          description: product.description || product.description_sale || ""
+        });
       }
     }
   };
 
+  const handleAttributeChange = (attributeId: number, valueId: number) => {
+    setSelectedAttributes(prev => ({
+      ...prev,
+      [attributeId]: valueId
+    }));
+  };
+
   // Get 4 related products (excluding current product)
   const relatedProducts = products
-    .filter((p) => p.id !== id && p.category === product?.category)
+    .filter((p) => p.id.toString() !== id)
     .slice(0, 4);
 
-  if (!product) {
-    return <div>Product not found</div>;
+  if (loading) {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <div className="flex items-center justify-center py-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+        </div>
+      </div>
+    )
+    // return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
+  if (error || !product) {
+    return <div className="flex justify-center items-center min-h-screen">Product not found</div>;
   }
 
   return (
@@ -145,54 +240,46 @@ const Product = () => {
           <div className="lg:col-span-4 space-y-4">
             <div className="bg-gray-100 rounded-xl p-4 flex justify-center">
               <img
-                src={product.image}
+                src={`data:image/png;base64,${product.image_1920}`}
                 alt={product.name}
                 className="w-full max-w-xs lg:w-80 object-contain transition-opacity duration-300"
               />
             </div>
-            <div className="grid grid-cols-4 gap-2 lg:gap-4">
-              {images.map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`relative cursor-pointer group ${currentImage === idx
-                    ? "ring-2 ring-orange-500 rounded-lg"
-                    : ""
-                    }`}
-                  onClick={() => setCurrentImage(idx)}
-                >
-                  <img
-                    src={img}
-                    alt={`iPhone view ${idx + 1}`}
-                    className={`w-full rounded-lg border transition
-                    ${currentImage === idx ? "opacity-100" : "opacity-60"}
-                    group-hover:opacity-100`}
-                  />
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2 lg:gap-4">
+                {images.map((img, idx) => (
                   <div
-                    className={`absolute inset-0 border-2 rounded-lg transition
-                    ${currentImage === idx
-                        ? "border-orange-500"
-                        : "border-transparent"
-                      }
-                    group-hover:border-orange-500`}
-                  />
-                </div>
-              ))}
-            </div>
+                    key={idx}
+                    className={`relative cursor-pointer group ${currentImage === idx ? "ring-2 ring-orange-500 rounded-lg" : ""
+                      }`}
+                    onClick={() => setCurrentImage(idx)}
+                  >
+                    <img
+                      src={img}
+                      alt={`Product view ${idx + 1}`}
+                      className={`w-full rounded-lg border transition
+                      ${currentImage === idx ? "opacity-100" : "opacity-60"}
+                      group-hover:opacity-100`}
+                    />
+                    <div
+                      className={`absolute inset-0 border-2 rounded-lg transition
+                      ${currentImage === idx ? "border-orange-500" : "border-transparent"}
+                      group-hover:border-orange-500`}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right Column - Product Info */}
           <div className="lg:col-span-8 space-y-6">
             <div className="flex justify-between items-center">
-              <h1
-                className="text-xl lg:text-2xl font-tajawal-medium text-right"
-                dir="rtl"
-              >
+              <h1 className="text-wrap max-w-[90%] text-xl lg:text-2xl font-tajawal-medium text-right" dir="rtl">
                 {product.name}
               </h1>
               <Heart
-                className={`cursor-pointer transition-colors ${isInWishlist
-                  ? "text-red-500"
-                  : "text-gray-400 hover:text-red-500"
+                className={`cursor-pointer transition-colors ${isInWishlist ? "text-red-500" : "text-gray-400 hover:text-red-500"
                   }`}
                 onClick={handleWishlistClick}
               />
@@ -209,37 +296,39 @@ const Product = () => {
             <Separator className="bg-gray-200 p-[.5px]" />
 
             <div className="space-y-4">
-              <h3 className="text-lg font-tajawal-medium text-right">
-                ابرز الخصائص
-              </h3>
+              <h3 className="text-lg font-tajawal-medium text-right">ابرز الخصائص</h3>
               <ul className="space-y-2 font-tajawal-regular text-right text-blue-600 list-disc pr-4">
-                <li>{product.description}</li>
+                <li>
+                  <div
+                    className="text-sm text-gray-600 mb-2 line-clamp-2"
+                    dangerouslySetInnerHTML={{ __html: product?.description || '' }}
+                  />
+                </li>
               </ul>
             </div>
             <Separator className="bg-gray-200 p-[.5px]" />
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-tajawal-medium text-right">
-                سعة الذاكرة
-              </h3>
-              <div
-                dir="ltr"
-                className="flex flex-wrap font-tajawal-medium justify-end gap-2 lg:gap-4"
-              >
-                {storageOptions.map((storage) => (
-                  <button
-                    key={storage}
-                    onClick={() => setSelectedStorage(storage)}
-                    className={`px-3 lg:px-4 py-2 rounded border ${selectedStorage === storage
-                      ? "border-orange-500 text-orange-500"
-                      : "border-gray-300"
-                      }`}
-                  >
-                    {storage}
-                  </button>
-                ))}
+            {/* Product Attributes */}
+            {product.attributes && product.attributes.map(attribute => (
+              <div key={attribute.id} className="space-y-4">
+                <h3 className="text-lg font-tajawal-medium text-right">{attribute.name}</h3>
+                <div dir="ltr" className="flex flex-wrap font-tajawal-medium justify-end gap-2 lg:gap-4">
+                  {attribute.values.map(value => (
+                    <button
+                      key={value.id}
+                      onClick={() => handleAttributeChange(attribute.id, value.id)}
+                      className={`px-3 lg:px-4 py-2 rounded border ${selectedAttributes[attribute.id] === value.id
+                        ? "border-orange-500 text-orange-500"
+                        : "border-gray-300"
+                        }`}
+                    >
+                      {value.name}
+                      {value.price_extra > 0 && ` (+${value.price_extra})`}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            ))}
 
             <div className="flex font-tajawal-medium justify-end items-center gap-4 border w-fit p-0.5 rounded">
               <Button
@@ -261,7 +350,7 @@ const Product = () => {
 
             <div className="text-right">
               <div className="text-2xl lg:text-3xl font-tajawal-medium text-orange-500">
-                {product.price.toLocaleString()} د.ع
+                {product.list_price.toLocaleString()} د.ع
               </div>
             </div>
 
@@ -331,6 +420,7 @@ const Product = () => {
           </div>
         </div>
       </div>
+
       {/* Description section */}
       <div>
         <div className="bg-white border border-light-100 p-4 shadow-md flex flex-col lg:flex-row gap-4">
@@ -343,9 +433,10 @@ const Product = () => {
                 </h1>
               </div>
               <div className="pt-4">
-                <p className="text-right text-sm md:text-base leading-relaxed">
-                  {product.description}
-                </p>
+                <div
+                  className="text-right text-sm md:text-base leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: product?.description || '' }}
+                />
               </div>
             </div>
           </div>

@@ -7,6 +7,12 @@ export interface CartProduct {
   image: string;
   quantity: number;
   storage?: string;
+  selected_attributes?: {
+    attribute_id: number;
+    value_id: number;
+    attribute_name?: string;
+    value_name?: string;
+  }[];
 }
 
 interface CartStore {
