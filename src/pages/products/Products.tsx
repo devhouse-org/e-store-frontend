@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
@@ -455,7 +455,8 @@ const Products = () => {
               );
 
               return (
-                <div
+                <Link
+                  to={`/product/${product.id}`}
                   key={product.id}
                   className="relative flex flex-col rounded-xl bg-white bg-clip-border shadow-md h-full"
                 >
@@ -558,7 +559,7 @@ const Products = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
