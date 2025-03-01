@@ -17,6 +17,7 @@ import { useCartStore } from "@/store/useCartStore";
 
 const ProductsTable: React.FC = () => {
   const { products, updateQuantity, removeFromCart } = useCartStore();
+  const cartCount = useCartStore((state) => state.cartCount);
 
   const handleUpdateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -51,11 +52,14 @@ const ProductsTable: React.FC = () => {
               <TableRow className="hover:bg-orange-50/15" key={product.id}>
                 <TableCell className="font-medium ">
                   <div className="flex items-center gap-4">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-16 h-16 rounded object-cover"
-                    />
+                    {
+                      product.image && (
+                        <img
+                          src={`data:image/png;base64,${product.image}`}
+                          alt={product.name}
+                          className="w-16 h-16 rounded object-cover"
+                        />
+                      )}
                     <div>
                       <div>{product.name}</div>
                     </div>
@@ -154,10 +158,13 @@ const ProductsTable: React.FC = () => {
       </div>
 
       {/* Total */}
-      <div className="mt-6 text-right" dir="rtl">
-        <div className="text-lg text-orange-500 font-medium">
-          المجموع الكلي: {total.toLocaleString()} د.ع
-        </div>
+      <div className="flex flex-col gap-y-2 mt-6 text-right" dir="rtl">
+        <span className="text-lg font-medium">
+          عدد المنتجات: <strong className="text-orange-500">{cartCount}</strong>
+        </span>
+        <span className="text-lg font-medium">
+          المجموع الكلي: <strong className="text-orange-500">{total.toLocaleString()} د.ع</strong>
+        </span>
       </div>
     </div>
   );

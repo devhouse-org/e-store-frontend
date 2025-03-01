@@ -1,19 +1,54 @@
 import LocationCard from '@/components/LocationCard'
 import { Button } from '@/components/ui/button'
-import { locations } from '@/utils/dummy_data/data'
 import { LucidePlusCircle } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { IconType } from 'react-icons'
+import axios from 'axios';
+import axiosInstance from '@/utils/axiosInstance'
+
+interface Location {
+    id: number;
+    name: string;
+    street: string;
+    street2: string | false;
+    city: string;
+    state_id: [number, string];
+    country_id: [number, string];
+    phone: string | false;
+    type: string;
+    is_main: boolean;
+    address_type: string;
+}
 
 const Profile = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [locations, setLocations] = useState<Location[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchLocations = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const userId = localStorage.getItem("id");
+            console.log(userId)
+            const response = await axiosInstance.post("/user/addresses", { user_id: userId });
+            setLocations(response.data);
+        } catch (err) {
+            setError("Failed to fetch locations");
+            console.error("Error fetching locations:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         setName(localStorage.getItem("name") || "");
         setEmail(localStorage.getItem("email") || "");
         setPhoneNumber(localStorage.getItem("phone") || "");
+        fetchLocations();
     }, []);
 
     return (
@@ -88,19 +123,25 @@ const Profile = () => {
                         Icon={LucidePlusCircle as IconType}
                     />
                 </div>
-                <div className="flex flex-wrap gap-4">
-                    {locations.map((location) => (
-                        <LocationCard
-                            key={location.id}
-                            location={location.location}
-                            phoneNumber={location.phoneNumber}
-                            phoneNumber2={location.phoneNumber2}
-                            province={location.province}
-                            city={location.city}
-                            country={location.country}
-                        />
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="text-center py-4">جاري التحميل...</div>
+                ) : error ? (
+                    <div className="text-red-500 text-center py-4">{error}</div>
+                ) : (
+                    <div className="flex flex-wrap gap-4">
+                        {locations.map((location) => (
+                            <LocationCard
+                                key={location.id}
+                                location={`${location.street}${location.street2 ? `, ${location.street2}` : ''}`}
+                                phoneNumber={location.phone || ''}
+                                phoneNumber2=""
+                                province={location.state_id[1]}
+                                city={location.city}
+                                country={location.country_id[1]}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )

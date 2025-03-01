@@ -1,6 +1,7 @@
 import CartReviewCard from '@/components/CartReviewCard'
 import LocationCard from '@/components/LocationCard'
 import { Button } from '@/components/ui/button'
+import { useCartStore } from '@/store/useCartStore'
 import { cart, locations } from '@/utils/dummy_data/data'
 import React from 'react'
 
@@ -30,6 +31,9 @@ const steps = [
 ]
 
 const Address = ({ setActive }: any) => {
+
+    const { products, updateQuantity, removeFromCart } = useCartStore();
+
     return (
         <div className="flex flex-col md:flex-row gap-8">
             <div className="flex-1">
@@ -61,7 +65,7 @@ const Address = ({ setActive }: any) => {
             </div>
 
             <div className="w-full md:w-[380px]">
-                <CartReviewCard cart={cart} />
+                <CartReviewCard cart={products} />
             </div>
         </div>
     )

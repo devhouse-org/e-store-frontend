@@ -205,12 +205,13 @@ const Products = () => {
 
   const handleAddToCart = (product: any) => {
     const cartItem = cartProducts.find((item) => item.id === product.id);
+    console.log(product)
     if (!cartItem) {
       addToCart({
         id: product.id,
         name: product.name,
-        price: product.price,
-        image: product.image,
+        price: product.list_price,
+        image: product.image_1920,
         quantity: 1,
         storage: product.storage,
       });
