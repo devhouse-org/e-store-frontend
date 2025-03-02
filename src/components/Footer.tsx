@@ -19,6 +19,7 @@ import huawei from "../assets/images/app_store_logo/huawei.png";
 import zainLogo from "../assets/images/payments/zain cash.png";
 import cash from "../assets/images/payments/cash.png";
 import mcLogo from "../assets/images/payments/master.png";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
@@ -31,6 +32,47 @@ const Footer = (props: Props) => {
         </h1>
         <div className="top flex flex-col gap-y-4 md:flex-row md:gap-y-0 justify-between ">
           <div className="flex flex-col md:flex-row gap-y-8 md:gap-y-0 gap-x-12">
+
+            <div className="flex-1">
+              <div className="">
+                <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
+                  روابط سريعة
+                </h1>
+                <div className="flex gap-4 py-4 justify-center md:justify-normal">
+                  <ul className="text-white font-tajawal-medium">
+                    <li><Link to="/">الرئيسية</Link></li>
+                    <li><Link to="/auctions">المزاد</Link></li>
+                    <li><Link to="/blog">التدوينات</Link></li>
+                    <li><Link to="/brands">الماركات التجارية</Link></li>
+                    <li><Link to="/products">تسوق</Link></li>
+                  </ul>
+                  {/* <div className="gap-y-4 flex max-w-[450px] md:max-w-auto flex-row w-full md:w-auto justify-between md:flex-col items-center">
+                    <div className="bg-black flex justify-center md:justify-normal p- rounded-md">
+                      <img
+                        className="w-[140px] h-[60px] object-contain"
+                        src={zainLogo}
+                        alt=""
+                      />
+                    </div>
+                    <div className="bg-black flex justify-center p4 rounded-md">
+                      <img
+                        className="w-[140px] h-[60px] object-contain"
+                        src={mcLogo}
+                        alt=""
+                      />
+                    </div>
+                    <div className="bg-black flex justify-center p4 rounded-md">
+                      <img
+                        className="w-[140px] h-[60px] object-contain"
+                        src={cash}
+                        alt=""
+                      />
+                    </div>
+                  </div> */}
+                </div>
+              </div>
+            </div>
+
             <div className="flex-1">
               <div className="">
                 <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
@@ -92,6 +134,7 @@ const Footer = (props: Props) => {
                 </div>
               </div>
             </div>
+
           </div>
 
           <div>

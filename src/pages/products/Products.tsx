@@ -494,12 +494,14 @@ const Products = () => {
                               variant="ghost"
                               size="icon"
                               className="w-8 h-8 text-black"
-                              onClick={() =>
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 handleUpdateQuantity(
                                   product,
                                   cartItem.quantity + 1
                                 )
-                              }
+                              }}
                               Icon={Plus as IconType}
                             />
                             <span className="w-6 text-center font-tajawal-medium">
@@ -509,12 +511,14 @@ const Products = () => {
                               variant="ghost"
                               size="icon"
                               className="w-8 h-8 text-orange-500"
-                              onClick={() =>
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 handleUpdateQuantity(
                                   product,
                                   cartItem.quantity - 1
                                 )
-                              }
+                              }}
                               Icon={Minus as IconType}
                             />
                           </div>

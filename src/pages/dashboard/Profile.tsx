@@ -51,6 +51,16 @@ const Profile = () => {
         fetchLocations();
     }, []);
 
+    const handleDelete = async (id: number) => {
+        try {
+            await axiosInstance.delete(`/user/address/${id}`);
+            fetchLocations();
+        } catch (err) {
+            setError("Failed to delete location");
+            console.error("Error deleting location:", err);
+        }
+    };
+
     return (
         <div className="p-4 space-y-4">
             {/* Header */}
@@ -132,12 +142,16 @@ const Profile = () => {
                         {locations.map((location) => (
                             <LocationCard
                                 key={location.id}
-                                location={`${location.street}${location.street2 ? `, ${location.street2}` : ''}`}
+                                location={location.street}
                                 phoneNumber={location.phone || ''}
-                                phoneNumber2=""
+                                phoneNumber2={location.street2 || ''}
                                 province={location.state_id[1]}
                                 city={location.city}
                                 country={location.country_id[1]}
+                                id={location.id}
+                                onUpdate={fetchLocations}
+                                deletable
+                                handleDelete={() => handleDelete(location.id)}
                             />
                         ))}
                     </div>
