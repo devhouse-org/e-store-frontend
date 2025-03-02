@@ -1,4 +1,5 @@
 import LocationDialog from "./LocationDialog";
+import { Button } from "./ui/button";
 
 type Props = {
   location?: string;
@@ -7,6 +8,9 @@ type Props = {
   city?: string;
   province?: string;
   country?: string;
+  selectable?: boolean;
+  isSelected?: boolean;
+  handleSelect?: () => void;
 };
 
 const LocationCard = ({
@@ -16,9 +20,12 @@ const LocationCard = ({
   city,
   province,
   country,
+  selectable = false,
+  isSelected = false,
+  handleSelect
 }: Props) => {
   return (
-    <div className="bg-white border border-light-200 shadow-sm p-6 rounded-md">
+    <div onClick={handleSelect} className={`bg-white border cursor-pointer ${isSelected ? 'border-orange-500' : 'border-light-200'} shadow-sm p-6 rounded-md`}>
       <div className="flex flex-col gap-y-2">
         <p className="flex justify-between gap-x-8 font-tajawal-regular">
           <strong>العنوان: </strong>
@@ -45,7 +52,8 @@ const LocationCard = ({
           {country}
         </p>
 
-        <div className="mt-2">
+
+        <div className="flex items-center gap-x-2 mt-2">
           <LocationDialog
             location={location}
             phoneNumber={phoneNumber}
@@ -54,6 +62,11 @@ const LocationCard = ({
             city={city}
             country={country}
           />
+          {selectable && (
+            <div className="">
+              <Button label="اختيار" onClick={handleSelect} variant="secondary" />
+            </div>
+          )}
         </div>
       </div>
     </div>

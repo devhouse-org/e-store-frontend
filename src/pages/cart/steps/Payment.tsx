@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { CreditCard, Wallet, Truck, CheckCircle, LucideArrowRight } from "lucide-react";
 import CreditCardForm from "@/components/CreditCardForm";
 import { useNavigate } from "react-router-dom";
+import { useCartStore } from "@/store/useCartStore";
 
 type Props = {};
 enum StepsEnum {
@@ -57,6 +58,8 @@ const Payment = ({ setActive }: any) => {
   const [selected, setSelected] = useState(payments[0]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showCreditCardForm, setShowCreditCardForm] = useState(false);
+
+  const { products } = useCartStore();
 
   const handlePaymentSubmit = () => {
     switch (selected.id) {
@@ -162,7 +165,7 @@ const Payment = ({ setActive }: any) => {
       </div>
 
       <div className="w-full md:w-[380px]">
-        <CartReviewCard cart={cart} />
+        <CartReviewCard cart={products} />
       </div>
     </div>
   );
