@@ -240,12 +240,14 @@ const Comparison = () => {
         <h1 className="text-2xl font-bold font-tajawal-regular">
           مقارنة المنتجات
         </h1>
-        <Button
-          label="حفظ المقارنة"
-          Icon={Save as IconType}
-          onClick={handleSaveComparison}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-        />
+        {productDetails.some(item => item !== null) && (
+          <Button
+            label="حفظ المقارنة"
+            Icon={Save as IconType}
+            onClick={handleSaveComparison}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          />
+        )}
       </div>
 
       <div className="overflow-x-auto">
