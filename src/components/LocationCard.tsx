@@ -2,6 +2,7 @@ import LocationDialog from "./LocationDialog";
 import { Button } from "./ui/button";
 
 type Props = {
+  id?: number;
   location?: string;
   phoneNumber?: string;
   phoneNumber2?: string;
@@ -9,11 +10,15 @@ type Props = {
   province?: string;
   country?: string;
   selectable?: boolean;
+  deletable?: boolean;
   isSelected?: boolean;
+  onUpdate?: () => void;
   handleSelect?: () => void;
+  handleDelete?: () => void;
 };
 
 const LocationCard = ({
+  id,
   location,
   phoneNumber2,
   phoneNumber,
@@ -22,7 +27,10 @@ const LocationCard = ({
   country,
   selectable = false,
   isSelected = false,
-  handleSelect
+  deletable = false,
+  onUpdate,
+  handleSelect,
+  handleDelete,
 }: Props) => {
   return (
     <div onClick={handleSelect} className={`bg-white border cursor-pointer ${isSelected ? 'border-orange-500' : 'border-light-200'} shadow-sm p-6 rounded-md`}>
@@ -34,10 +42,6 @@ const LocationCard = ({
         <p className="flex justify-between gap-x-8 font-tajawal-regular">
           <strong>رقم الهاتف: </strong>
           {phoneNumber}
-        </p>
-        <p className="flex justify-between gap-x-8 font-tajawal-regular">
-          <strong>رقم الهاتف الإضافي: </strong>
-          {phoneNumber2}
         </p>
         <p className="flex justify-between gap-x-8 font-tajawal-regular">
           <strong>المحافظة: </strong>
@@ -54,18 +58,23 @@ const LocationCard = ({
 
 
         <div className="flex items-center gap-x-2 mt-2">
-          <LocationDialog
-            location={location}
-            phoneNumber={phoneNumber}
-            phoneNumber2={phoneNumber2}
-            province={province}
-            city={city}
-            country={country}
-          />
+          {id && (
+            <LocationDialog
+              id={id}
+              location={location}
+              phoneNumber={phoneNumber}
+              phoneNumber2={phoneNumber2}
+              province={province}
+              city={city}
+              country={country}
+              onUpdate={onUpdate}
+            />
+          )}
           {selectable && (
-            <div className="">
-              <Button label="اختيار" onClick={handleSelect} variant="secondary" />
-            </div>
+            <Button label="اختيار" onClick={handleSelect} variant="secondary" />
+          )}
+          {deletable && (
+            <Button label="حذف" onClick={handleDelete} variant="destructive" />
           )}
         </div>
       </div>
