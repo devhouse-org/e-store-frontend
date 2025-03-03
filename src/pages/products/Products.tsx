@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { products, getBrands } from "@/utils/data/products";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
 import {
@@ -72,7 +71,6 @@ const Products = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
-  const brands = getBrands();
   const {
     addToCart,
     products: cartProducts,
@@ -172,10 +170,7 @@ const Products = () => {
     }
   }, [searchParams]);
 
-  const filteredProducts =
-    selectedBrand === "all"
-      ? products
-      : products.filter((product) => product.brand === selectedBrand);
+
 
   const handleAddToCart = (product: any) => {
     const cartItem = cartProducts.find((item) => item.id === product.id);
@@ -556,7 +551,7 @@ const Products = () => {
           </div>
         )}
 
-        {!productsLoading && productsData.products.length > 0 && (
+        {!productsLoading && productsData?.products.length > 0 && (
           <div className="pagination mt-20 mb-14">
             <Pagination />
           </div>
