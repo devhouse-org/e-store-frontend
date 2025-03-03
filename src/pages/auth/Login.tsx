@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,15 +13,34 @@ const Login = () => {
     password: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      localStorage.setItem("email", formData.email);
-      localStorage.setItem("session_id", "temp-session");
-      navigate("/dashboard");
-    } catch (error) {
+  const loginMutation = useMutation({
+    mutationFn: async ({ email, password }: typeof formData) => {
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.session_id) {
+        localStorage.setItem("id", data.id);
+        localStorage.setItem("session_id", data.session_id);
+        localStorage.setItem("name", data.name);
+        localStorage.setItem("email", data.email);
+        navigate("/dashboard");
+      } else {
+        console.error("Login failed:", data.error);
+      }
+    },
+    onError: (error) => {
       console.error("Login error:", error);
-    }
+      // Handle network or other errors
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    loginMutation.mutate(formData);
   };
 
   return (
@@ -63,7 +84,7 @@ const Login = () => {
                         البريد الإلكتروني
                       </label>
                       <Input
-                        type="tel"
+                        type="email"
                         required
                         className="w-full text-right font-tajawal-regular"
                         placeholder="أدخل البريد الإلكتروني"
@@ -111,8 +132,13 @@ const Login = () => {
                   <Button
                     type="submit"
                     label="تسجيل الدخول"
+                    disabled={loginMutation.isPending}
                     className="w-full bg-[#D35A3B] hover:bg-[#bf4f33] h-11 mt-6 font-tajawal-medium"
-                  />
+                  >
+                    {loginMutation.isPending
+                      ? "جاري التحميل..."
+                      : "تسجيل الدخول"}
+                  </Button>
 
                   <p className="text-center text-sm text-gray-600 mt-4 font-tajawal-regular">
                     ليس لديك حساب؟{" "}

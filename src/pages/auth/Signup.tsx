@@ -3,8 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,18 +18,33 @@ const Signup = () => {
 
   const [error, setError] = useState<string | null>(null);
 
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      localStorage.setItem("name", formData.name);
-      localStorage.setItem("email", formData.email);
+  const signupMutation = useMutation({
+    mutationFn: async (data: Omit<typeof formData, "confirmPassword">) => {
+      const response = await axiosInstance.post("/auth/signup", data);
+      return response.data;
+    },
+    onSuccess: (result) => {
+      localStorage.setItem("name", result.name);
+      localStorage.setItem("email", result.email);
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Signup error:", error);
-      setError("حدث خطأ أثناء إنشاء الحساب");
-    }
+    },
+    onError: (error: any) => {
+      if (
+        error.response?.data?.arguments?.[0] ===
+        "You can not have two users with the same login!"
+      ) {
+        setError("البريد الإلكتروني مستخدم من قبل");
+      } else {
+        console.error("Error creating account:", error);
+        setError("حدث خطأ أثناء إنشاء الحساب");
+      }
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const { confirmPassword, ...signupData } = formData;
+    signupMutation.mutate(signupData);
   };
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { products, getBrands } from "@/utils/data/products";
+import { products } from "@/utils/data/products";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
 import {
