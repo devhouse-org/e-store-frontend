@@ -3,8 +3,9 @@ import {
   LucidePackageCheck,
   LucideShoppingCart,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import axiosInstance from "../../utils/axiosInstance";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axiosInstance";
 
 // Define TypeScript interfaces for the data
 interface OrderLine {
@@ -34,46 +35,23 @@ interface OrdersResponse {
   };
 }
 
+// Create the query hook within the same file
+const usePartnerOrders = (partnerId: number) => {
+  return useQuery<OrdersResponse, Error>({
+    queryKey: ["partner-orders", partnerId],
+    queryFn: async () => {
+      const response = await axiosInstance.post<OrdersResponse>(
+        "/products/partner-orders",
+        { partner_id: partnerId }
+      );
+      return response.data;
+    },
+  });
+};
+
 const Dashboard = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axiosInstance.post<OrdersResponse>(
-          "/products/partner-orders",
-          { partner_id: 67 } // Add empty object as request body since it's a POST request
-        );
-
-        if (response.data.success) {
-          setOrders(response.data.orders);
-        } else {
-          setError(
-            "Failed to fetch orders: Server returned unsuccessful response"
-          );
-          console.error("Server response indicated failure:", response.data);
-        }
-      } catch (err: any) {
-        const errorMessage =
-          err.response?.data?.message ||
-          err.message ||
-          "Unknown error occurred";
-        setError(`Failed to load orders: ${errorMessage}`);
-        console.error("Error details:", {
-          message: err.message,
-          response: err.response?.data,
-          status: err.response?.status,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+  const { data, isLoading, error } = usePartnerOrders(67);
+  const orders = data?.orders || [];
 
   // Format date to local string
   const formatDate = (dateString: string) => {
@@ -154,7 +132,7 @@ const Dashboard = () => {
           {isLoading ? (
             <p className="text-center py-4">جاري التحميل...</p>
           ) : error ? (
-            <p className="text-center text-red-500 py-4">{error}</p>
+            <p className="text-center text-red-500 py-4">{error.message}</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {orders.map((order, index) => (

@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import axiosInstance from "@/utils/axiosInstance";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,34 +11,15 @@ const Login = () => {
     password: "",
   });
 
-  const login = async (email: string, password: string) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const response = await axiosInstance.post("/auth/login", {
-        email,
-        password,
-      });
-
-
-      const data = response.data;
-      console.log(data);
-      if (data.session_id) {
-        localStorage.setItem("id", data.id);
-        localStorage.setItem("session_id", data.session_id);
-        localStorage.setItem("name", data.name);
-        localStorage.setItem("email", data.email);
-        navigate("/dashboard");
-      } else {
-        console.error("Login failed:", data.error);
-      }
+      localStorage.setItem("email", formData.email);
+      localStorage.setItem("session_id", "temp-session");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      // Handle network or other errors
     }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    login(formData.email, formData.password);
   };
 
   return (
@@ -116,7 +96,9 @@ const Login = () => {
                         type="checkbox"
                         className="h-4 w-4 text-primary border-gray-300 rounded"
                       />
-                      <label className="text-gray-600 font-tajawal-regular">تذكرني</label>
+                      <label className="text-gray-600 font-tajawal-regular">
+                        تذكرني
+                      </label>
                     </div>
                     <Link
                       to="/forgot-password"

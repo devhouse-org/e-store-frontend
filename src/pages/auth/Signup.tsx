@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import axiosInstance from "@/utils/axiosInstance";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -16,40 +15,19 @@ const Signup = () => {
 
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    signup();
-  };
-
   const navigate = useNavigate();
 
-  const signup = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const response = await axiosInstance.post("/auth/signup", {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-      });
-
-      const result = response.data;
-      if (result.error) {
-        if (result.data && result.data.arguments && result.data.arguments[0] === 'You can not have two users with the same login!') {
-          setError("البريد الإلكتروني مستخدم من قبل");
-        } else {
-          setError("You can not have two users with the same login!");
-          console.log(result.error.data.message)
-          // console.error('Error creating contact:', result.error);
-        }
-      } else {
-        localStorage.setItem("name", result.name);
-        localStorage.setItem("email", result.email);
-        navigate("/dashboard");
-      }
+      localStorage.setItem("name", formData.name);
+      localStorage.setItem("email", formData.email);
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.error("Signup error:", error);
+      setError("حدث خطأ أثناء إنشاء الحساب");
     }
-  }
+  };
 
   return (
     <div className="h-screen p6 pt-14 mx-4 md:mx-0">
@@ -116,7 +94,9 @@ const Signup = () => {
                         }}
                       />
                       {error && (
-                        <p className="text-red-500 text-sm mt-1">البريد الإلكتروني مستخدم من قبل</p>
+                        <p className="text-red-500 text-sm mt-1">
+                          البريد الإلكتروني مستخدم من قبل
+                        </p>
                       )}
                     </div>
                     <div>
