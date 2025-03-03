@@ -172,6 +172,7 @@ const Product = () => {
           price: product.list_price,
           image: product.image_1920,
           description: product.description || product.description_sale || "",
+          
         });
       }
     }
