@@ -170,8 +170,6 @@ const Products = () => {
     }
   }, [searchParams]);
 
-
-
   const handleAddToCart = (product: any) => {
     const cartItem = cartProducts.find((item) => item.id === product.id);
     console.log(product);

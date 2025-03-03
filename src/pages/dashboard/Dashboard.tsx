@@ -50,7 +50,7 @@ const usePartnerOrders = (partnerId: number) => {
 };
 
 const Dashboard = () => {
-  const { data, isLoading, error } = usePartnerOrders(67);
+  const { data, isLoading, error } = usePartnerOrders(8);
   const orders = data?.orders || [];
 
   // Format date to local string
