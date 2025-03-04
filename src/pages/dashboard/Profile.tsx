@@ -6,6 +6,7 @@ import { IconType } from "react-icons";
 import axios from "axios";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import AddLocationDialog from "@/components/AddLocationDialog";
 
 interface Location {
   id: number;
@@ -166,7 +167,7 @@ const Profile = () => {
       <div className="bg-white p-6 rounded shadow">
         <div className="flex justify-between items-center mb-4 pb-1 border-b border-light-200">
           <h2 className="text-lg font-tajawal-medium">عناوين التوصيل</h2>
-          <Button label="إضافة عنوان" Icon={LucidePlusCircle as IconType} />
+          <AddLocationDialog onSuccess={refetch} />
         </div>
         {loading ? (
           <div className="text-center py-4">جاري التحميل...</div>
