@@ -59,18 +59,18 @@ const LocationCard = ({
           <strong>العنوان: </strong>
           {location}
         </p>
-        {phoneNumber && (
+        {/* {phoneNumber && (
           <p className="flex justify-between gap-x-8 font-tajawal-regular">
             <strong>رقم الهاتف: </strong>
             {phoneNumber}
           </p>
-        )}
-        {phoneNumber2 && (
+        )} */}
+        {/* {phoneNumber2 && (
           <p className="flex justify-between gap-x-8 font-tajawal-regular">
             <strong>رقم الهاتف الإضافي: </strong>
             {phoneNumber2}
           </p>
-        )}
+        )} */}
         <p className="flex justify-between gap-x-8 font-tajawal-regular">
           <strong>المحافظة: </strong>
           {province}
@@ -89,7 +89,7 @@ const LocationCard = ({
             <LocationDialog
               id={id}
               location={location}
-              phoneNumber={phoneNumber}
+              // phoneNumber={phoneNumber}
               phoneNumber2={phoneNumber2}
               province={province}
               city={city}
