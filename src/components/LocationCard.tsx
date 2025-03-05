@@ -10,6 +10,8 @@ type Props = {
   city?: string;
   province?: string;
   country?: string;
+  country_id?: [number, string];
+  state_id?: [number, string];
   selectable?: boolean;
   deletable?: boolean;
   isSelected?: boolean;
@@ -26,6 +28,8 @@ const LocationCard = ({
   city,
   province,
   country,
+  country_id,
+  state_id,
   selectable = false,
   isSelected = false,
   deletable = false,
@@ -90,6 +94,8 @@ const LocationCard = ({
               province={province}
               city={city}
               country={country}
+              country_id={country_id}
+              state_id={state_id}
               onUpdate={onUpdate}
             />
           )}

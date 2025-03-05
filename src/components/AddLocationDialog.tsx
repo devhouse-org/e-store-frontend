@@ -12,6 +12,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useToast } from "@/hooks/use-toast";
 import { LucidePlusCircle } from "lucide-react";
 import { IconType } from "react-icons";
+import LocationDropdowns from "./LocationDropdowns";
 
 type Props = {
     onSuccess?: () => void;
@@ -27,9 +28,7 @@ const AddLocationDialog = ({ onSuccess }: Props) => {
         street2: "",
         city: "",
         state_id: "",
-        // zip: "",
         country_id: "",
-        // phone: "",
         type: "delivery"
     });
     const [loading, setLoading] = useState(false);
@@ -111,20 +110,6 @@ const AddLocationDialog = ({ onSuccess }: Props) => {
                             onChange={(e) => handleInputChange('street2', e.target.value)}
                         />
                     </div>
-                    {/* <div className="mt-4">
-                        <CustomInput
-                            label="رقم الهاتف"
-                            value={formData.phone}
-                            onChange={(e) => handleInputChange('phone', e.target.value)}
-                        />
-                    </div> */}
-                    <div className="mt-4">
-                        <CustomInput
-                            label="المحافظة"
-                            value={formData.state_id}
-                            onChange={(e) => handleInputChange('state_id', e.target.value)}
-                        />
-                    </div>
                     <div className="mt-4">
                         <CustomInput
                             label="المدينة"
@@ -132,18 +117,12 @@ const AddLocationDialog = ({ onSuccess }: Props) => {
                             onChange={(e) => handleInputChange('city', e.target.value)}
                         />
                     </div>
-                    {/* <div className="mt-4">
-                        <CustomInput
-                            label="الرمز البريدي"
-                            value={formData.zip}
-                            onChange={(e) => handleInputChange('zip', e.target.value)}
-                        />
-                    </div> */}
                     <div className="mt-4">
-                        <CustomInput
-                            label="الدولة"
-                            value={formData.country_id}
-                            onChange={(e) => handleInputChange('country_id', e.target.value)}
+                        <LocationDropdowns
+                            selectedCountryId={formData.country_id}
+                            selectedStateId={formData.state_id}
+                            onCountryChange={(value) => handleInputChange('country_id', value)}
+                            onStateChange={(value) => handleInputChange('state_id', value)}
                         />
                     </div>
                 </div>
