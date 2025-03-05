@@ -381,8 +381,8 @@ const Profile = () => {
                 province={typeof location.state_id === 'object' ? location.state_id[1] : ""}
                 city={location.city}
                 country={typeof location.country_id === 'object' ? location.country_id[1] : ""}
-                country_id={typeof location.country_id === 'object' ? location.country_id : undefined}
-                state_id={typeof location.state_id === 'object' ? location.state_id : undefined}
+                country_id={typeof location.country_id === 'object' ? location.country_id[0] : undefined}
+                state_id={typeof location.state_id === 'object' ? location.state_id[0] : undefined}
                 id={location.id}
                 onUpdate={refetch}
                 deletable

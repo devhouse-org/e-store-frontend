@@ -5,8 +5,8 @@ import { useState } from "react";
 type Props = {
   id?: number;
   location?: string;
-  phoneNumber?: string;
-  phoneNumber2?: string;
+  // phoneNumber?: string;
+  // phoneNumber2?: string;
   city?: string;
   province?: string;
   country?: string;
@@ -23,8 +23,8 @@ type Props = {
 const LocationCard = ({
   id,
   location,
-  phoneNumber2,
-  phoneNumber,
+  // phoneNumber2,
+  // phoneNumber,
   city,
   province,
   country,
@@ -59,7 +59,7 @@ const LocationCard = ({
           <strong>العنوان: </strong>
           {location}
         </p>
-        {phoneNumber && (
+        {/* {phoneNumber && (
           <p className="flex justify-between gap-x-8 font-tajawal-regular">
             <strong>رقم الهاتف: </strong>
             {phoneNumber}
@@ -70,7 +70,7 @@ const LocationCard = ({
             <strong>رقم الهاتف الإضافي: </strong>
             {phoneNumber2}
           </p>
-        )}
+        )} */}
         <p className="flex justify-between gap-x-8 font-tajawal-regular">
           <strong>المحافظة: </strong>
           {province}
@@ -89,8 +89,8 @@ const LocationCard = ({
             <LocationDialog
               id={id}
               location={location}
-              phoneNumber={phoneNumber}
-              phoneNumber2={phoneNumber2}
+              // phoneNumber={phoneNumber}
+              // phoneNumber2={phoneNumber2}
               province={province}
               city={city}
               country={country}
