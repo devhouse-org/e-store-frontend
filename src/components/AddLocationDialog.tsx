@@ -7,7 +7,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import CustomInput from "./CustomInput";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { useToast } from "@/hooks/use-toast";
 import { LucidePlusCircle } from "lucide-react";
@@ -19,6 +19,7 @@ type Props = {
 
 const AddLocationDialog = ({ onSuccess }: Props) => {
     const { toast } = useToast();
+    const closeRef = useRef<HTMLButtonElement>(null);
     const [formData, setFormData] = useState({
         partner_id: localStorage.getItem("id") || "",
         name: "",
@@ -28,7 +29,7 @@ const AddLocationDialog = ({ onSuccess }: Props) => {
         state_id: "",
         // zip: "",
         country_id: "",
-        phone: "",
+        // phone: "",
         type: "delivery"
     });
     const [loading, setLoading] = useState(false);
@@ -59,9 +60,12 @@ const AddLocationDialog = ({ onSuccess }: Props) => {
                 variant: "success",
             });
 
-            if (onSuccess) {
-                onSuccess();
-            }
+            // Close the dialog
+            closeRef.current?.click();
+
+            // Refresh the page
+            window.location.reload();
+
         } catch (error) {
             toast({
                 title: "خطأ",
@@ -107,13 +111,13 @@ const AddLocationDialog = ({ onSuccess }: Props) => {
                             onChange={(e) => handleInputChange('street2', e.target.value)}
                         />
                     </div>
-                    <div className="mt-4">
+                    {/* <div className="mt-4">
                         <CustomInput
                             label="رقم الهاتف"
                             value={formData.phone}
                             onChange={(e) => handleInputChange('phone', e.target.value)}
                         />
-                    </div>
+                    </div> */}
                     <div className="mt-4">
                         <CustomInput
                             label="المحافظة"
@@ -144,7 +148,7 @@ const AddLocationDialog = ({ onSuccess }: Props) => {
                     </div>
                 </div>
                 <DialogFooter className="sm:justify-between">
-                    <DialogClose asChild>
+                    <DialogClose ref={closeRef} asChild>
                         <Button label="إلغاء" variant={"outline"} />
                     </DialogClose>
                     <Button

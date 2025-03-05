@@ -7,6 +7,7 @@ import axios from "axios";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AddLocationDialog from "@/components/AddLocationDialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface Location {
   id: number;
@@ -53,9 +54,16 @@ const Profile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [originalValues, setOriginalValues] = useState({
+    name: "",
+    email: "",
+    phoneNumber: ""
+  });
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const userId = localStorage.getItem("id");
   const {
@@ -83,9 +91,20 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    setName(localStorage.getItem("name") || "");
-    setEmail(localStorage.getItem("email") || "");
-    setPhoneNumber(localStorage.getItem("phone") || "");
+    const nameFromStorage = localStorage.getItem("name") || "";
+    const emailFromStorage = localStorage.getItem("email") || "";
+    const phoneFromStorage = localStorage.getItem("phone") || "";
+
+    setName(nameFromStorage);
+    setEmail(emailFromStorage);
+    setPhoneNumber(phoneFromStorage);
+
+    setOriginalValues({
+      name: nameFromStorage,
+      email: emailFromStorage,
+      phoneNumber: phoneFromStorage
+    });
+
     fetchLocations();
   }, []);
 
@@ -98,13 +117,68 @@ const Profile = () => {
     }
   };
 
+  const hasChanges = () => {
+    return name !== originalValues.name ||
+      email !== originalValues.email ||
+      phoneNumber !== originalValues.phoneNumber;
+  };
+
+  const handleDiscard = () => {
+    setName(originalValues.name);
+    setEmail(originalValues.email);
+    setPhoneNumber(originalValues.phoneNumber);
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      setIsUpdating(true);
+      const userId = localStorage.getItem("id");
+
+      await axiosInstance.put('/user/update-data', {
+        user_id: parseInt(userId || "0"),
+        name,
+        email,
+        phone: phoneNumber
+      });
+
+      // Update localStorage with new values
+      localStorage.setItem("name", name);
+      localStorage.setItem("email", email);
+      localStorage.setItem("phone", phoneNumber);
+
+      // Update original values
+      setOriginalValues({
+        name,
+        email,
+        phoneNumber
+      });
+
+      toast({
+        title: "تم التحديث",
+        description: "تم تحديث الملف الشخصي بنجاح",
+        variant: "success",
+      });
+
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء تحديث الملف الشخصي",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="p-4 space-y-4">
       {/* Header */}
       <h1 className="text-xl text-gray-500 font-tajawal-bold">الملف الشخصي</h1>
       {/* Profile Form */}
       <div className="bg-white p-6 rounded shadow">
-        <form className="space-y-4">
+        <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div className="flex flex-col gap-4">
             <div className="flex-1 flex items-center gap-x-2">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
@@ -143,22 +217,40 @@ const Profile = () => {
               />
             </div>
             {/* <div className="flex-1 flex items-center gap-x-2">
-                            <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">الصورة شخصية</label>
-                            <input
-                                type="text"
-                                className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
-                                placeholder="الصورة شخصية"
-                            />
-                        </div> */}
+              <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">الصورة شخصية</label>
+              <input
+                type="text"
+                className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
+                placeholder="الصورة شخصية"
+              />
+            </div> */}
           </div>
 
           <div className="flex pt-8 justify-between">
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md shadow-md transition duration-300">
+            <button
+              type="button"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md shadow-md transition duration-300"
+            >
               تغيير كلمة المرور
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md shadow-md transition duration-300">
-              تحديث الملف الشخصي
-            </button>
+            <div className="flex gap-x-2">
+              {hasChanges() && (
+                <button
+                  type="button"
+                  onClick={handleDiscard}
+                  className="bg-orange-100 hover:bg-orange-200 text-black px-6 py-2 rounded-md shadow-md transition duration-300"
+                >
+                  الغاء
+                </button>
+              )}
+              <button
+                type="submit"
+                disabled={isUpdating || !hasChanges()}
+                className={`bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md shadow-md transition duration-300 ${(isUpdating || !hasChanges()) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isUpdating ? "جاري التحديث..." : "تحديث الملف الشخصي"}
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -177,12 +269,12 @@ const Profile = () => {
           </div>
         ) : (
           <div className="flex flex-wrap gap-4">
-            {locations.map((location) => (
+            {locations.length > 0 ? locations.map((location) => (
               <LocationCard
                 key={location.id}
                 location={location.street}
-                phoneNumber={location.phone || ""}
-                phoneNumber2={location.street2 || ""}
+                // phoneNumber={location.phone || ""}
+                // phoneNumber2={location.street2 || ""}
                 province={location.state_id[1]}
                 city={location.city}
                 country={location.country_id[1]}
@@ -191,7 +283,11 @@ const Profile = () => {
                 deletable
                 handleDelete={() => handleDelete(location.id)}
               />
-            ))}
+            )) : (
+              <div className="text-center py-4 w-full">
+                <p className="text-gray-500 font-tajawal-medium">لا توجد عناوين</p>
+              </div>
+            )}
           </div>
         )}
       </div>

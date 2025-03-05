@@ -19,6 +19,7 @@ const Login = () => {
         email,
         password,
       });
+      console.log(response.data)
       return response.data;
     },
     onSuccess: (data) => {
@@ -27,6 +28,7 @@ const Login = () => {
         localStorage.setItem("session_id", data.session_id);
         localStorage.setItem("name", data.name);
         localStorage.setItem("email", data.email);
+        localStorage.setItem("phone", data.phone);
         navigate("/dashboard");
       } else {
         console.error("Login failed:", data.error);
