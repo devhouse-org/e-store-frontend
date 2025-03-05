@@ -30,6 +30,7 @@ import PurchaseHistory from "./pages/dashboard/PurchaseHistory";
 import DashboardComparisons from "./pages/dashboard/DashboardComparisons";
 import Profile from "./pages/dashboard/Profile";
 import DashboardWishlist from "./pages/dashboard/DashboardWishlist";
+import OrderDetails from "./pages/dashboard/OrderDetails";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,7 @@ function App() {
                   </ProtectedRoute>
                 }
               >
+                <Route path="orders/:id" element={<OrderDetails />} />
                 <Route index element={<Dashboard />} />
                 <Route path="history" element={<PurchaseHistory />} />
                 <Route path="wishlist" element={<DashboardWishlist />} />
