@@ -15,12 +15,16 @@ interface Location {
   street: string;
   street2: string | false;
   city: string;
-  state_id: [number, string];
-  country_id: [number, string];
-  phone: string | false;
+  state_id: boolean | [number, string];
+  zip: boolean | string;
+  country_id: boolean | [number, string];
+  phone: boolean | string;
   type: string;
-  is_main: boolean;
-  address_type: string;
+}
+
+interface AddressesResponse {
+  success: boolean;
+  addresses: Location[];
 }
 
 interface UserData {
@@ -31,21 +35,23 @@ interface UserData {
 }
 
 interface PartnerData {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  // Add any additional partner-specific fields here
+  success: boolean;
+  partner: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string | false;
+  };
 }
 
 const useUserAddresses = (userId: string | null) => {
   return useQuery({
     queryKey: ["user-addresses", userId],
     queryFn: async () => {
-      const response = await axiosInstance.post<Location[]>("/user/addresses", {
-        user_id: userId,
+      const response = await axiosInstance.post<AddressesResponse>("/user/addresses", {
+        partner_id: Number(userId),
       });
-      return response.data;
+      return response.data.addresses;
     },
     enabled: !!userId,
   });
@@ -70,6 +76,8 @@ const usePartnerData = (userId: string | null) => {
       return response.data;
     },
     enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep data in cache for 30 minutes
   });
 };
 
@@ -102,6 +110,7 @@ const Profile = () => {
   const { toast } = useToast();
 
   const userId = localStorage.getItem("id");
+  console.log("userId: ", userId);
   const {
     data: userData,
     isLoading: isLoadingUser,
@@ -111,7 +120,8 @@ const Profile = () => {
   const {
     data: partnerData,
     isLoading: isLoadingPartner,
-    error: partnerError
+    error: partnerError,
+    refetch: refetchPartner
   } = usePartnerData(userId);
 
   const {
@@ -123,16 +133,15 @@ const Profile = () => {
   const deleteAddress = useDeleteAddress();
 
   useEffect(() => {
-    // Prioritize partner data over user data if available
-    if (partnerData) {
-      setName(partnerData.name);
-      setEmail(partnerData.email);
-      setPhoneNumber(partnerData.phone || "");
+    if (partnerData?.partner) {
+      setName(partnerData.partner.name);
+      setEmail(partnerData.partner.email);
+      setPhoneNumber(partnerData.partner.phone || "");
 
       setOriginalValues({
-        name: partnerData.name,
-        email: partnerData.email,
-        phoneNumber: partnerData.phone || ""
+        name: partnerData.partner.name,
+        email: partnerData.partner.email,
+        phoneNumber: partnerData.partner.phone || ""
       });
     } else if (userData) {
       setName(userData.name);
@@ -151,10 +160,10 @@ const Profile = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosInstance.post("/user/addresses", {
-        user_id: userId,
+      const response = await axiosInstance.post<AddressesResponse>("/user/addresses", {
+        partner_id: Number(userId),
       });
-      setLocations(response.data);
+      setLocations(response.data.addresses);
     } catch (err) {
       setError("Failed to fetch locations");
       console.error("Error fetching locations:", err);
@@ -213,6 +222,9 @@ const Profile = () => {
         email,
         phoneNumber
       });
+
+      // Refetch partner data to ensure we have the latest data
+      await refetchPartner();
 
       toast({
         title: "تم التحديث",
@@ -332,11 +344,11 @@ const Profile = () => {
               <LocationCard
                 key={location.id}
                 location={location.street}
-                // phoneNumber={location.phone || ""}
-                // phoneNumber2={location.street2 || ""}
-                province={location.state_id[1]}
+                phoneNumber={location.phone || ""}
+                phoneNumber2={location.street2 || ""}
+                province={typeof location.state_id === 'object' ? location.state_id[1] : ""}
                 city={location.city}
-                country={location.country_id[1]}
+                country={typeof location.country_id === 'object' ? location.country_id[1] : ""}
                 id={location.id}
                 onUpdate={refetch}
                 deletable
