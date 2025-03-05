@@ -30,63 +30,68 @@ import PurchaseHistory from "./pages/dashboard/PurchaseHistory";
 import DashboardComparisons from "./pages/dashboard/DashboardComparisons";
 import Profile from "./pages/dashboard/Profile";
 import DashboardWishlist from "./pages/dashboard/DashboardWishlist";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <CartProvider>
-      <div dir="rtl" className="pt-[92px] bg-blue-100/10">
-        <ScrollToTop />
-        {/* <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" /> */}
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="components" element={<Components />} />
-            {/* Auction */}
-            <Route path="/auctions" element={<Auctions />} />
-            <Route path="/auction/:id" element={<Auction />} />
-            {/* Product */}
-            <Route path="/products" element={<Products />} />
-            <Route path="/product/:id" element={<Product />} />
+    <QueryClientProvider client={queryClient}>
+      <CartProvider>
+        <div dir="rtl" className="pt-[92px] bg-blue-100/10">
+          <ScrollToTop />
+          {/* <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" /> */}
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="components" element={<Components />} />
+              {/* Auction */}
+              <Route path="/auctions" element={<Auctions />} />
+              <Route path="/auction/:id" element={<Auction />} />
+              {/* Product */}
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<Product />} />
 
-            <Route path="/cart" element={<Cart />} />
-            {/* <Route path="/product/:id" element={<Product />} /> */}
+              <Route path="/cart" element={<Cart />} />
+              {/* <Route path="/product/:id" element={<Product />} /> */}
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="history" element={<PurchaseHistory />} />
-              <Route path="wishlist" element={<DashboardWishlist />} />
-              <Route path="comparisons" element={<DashboardComparisons />} />
-              <Route path="profile" element={<Profile />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Dashboard />} />
+                <Route path="history" element={<PurchaseHistory />} />
+                <Route path="wishlist" element={<DashboardWishlist />} />
+                <Route path="comparisons" element={<DashboardComparisons />} />
+                <Route path="profile" element={<Profile />} />
+              </Route>
+              <Route path="/wishlist" element={<Wishlist />} />
+              {/* Auth routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+
+              {/* Comparison Route */}
+              <Route path="/comparison" element={<Comparison />} />
+
+              {/* Blog Routes */}
+              <Route path="/blog" element={<Blogs />} />
+              <Route path="/blog/:id" element={<Blog />} />
+
+              {/* Brands Route */}
+              <Route path="/brands" element={<Brands />} />
+
+              {/* 404 Route - Add this at the end */}
+              <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="/wishlist" element={<Wishlist />} />
-            {/* Auth routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-
-            {/* Comparison Route */}
-            <Route path="/comparison" element={<Comparison />} />
-
-            {/* Blog Routes */}
-            <Route path="/blog" element={<Blogs />} />
-            <Route path="/blog/:id" element={<Blog />} />
-
-            {/* Brands Route */}
-            <Route path="/brands" element={<Brands />} />
-
-            {/* 404 Route - Add this at the end */}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-        {/* <Footer /> */}
-      </div>
-    </CartProvider>
+          </Routes>
+          {/* <Footer /> */}
+        </div>
+      </CartProvider>
+    </QueryClientProvider>
   );
 }
 

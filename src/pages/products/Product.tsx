@@ -27,6 +27,7 @@ import { reviews } from "@/utils/data/reviews";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
 import axiosInstance from "@/utils/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
 
 // Update Product interface to match API response
 interface ProductDetails {
@@ -50,50 +51,31 @@ interface ProductDetails {
   }[];
 }
 
+const useProductDetails = (productId: string | undefined) => {
+  return useQuery<ProductDetails, Error>({
+    queryKey: ["product", productId],
+    queryFn: async () => {
+      const response = await axiosInstance.post<ProductDetails>(
+        "/products/product-details",
+        { product_id: parseInt(productId || "0") }
+      );
+      return response.data;
+    },
+    enabled: !!productId,
+  });
+};
+
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [product, setProduct] = useState<ProductDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedAttributes, setSelectedAttributes] = useState<Record<number, number>>({});
+  const { data: product, isLoading, error } = useProductDetails(id);
+  const [selectedAttributes, setSelectedAttributes] = useState<
+    Record<number, number>
+  >({});
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
-
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      if (!id) return;
-
-      try {
-        setLoading(true);
-        const response = await axiosInstance.post("/products/product-details", {
-          product_id: parseInt(id)
-        });
-
-        setProduct(response.data);
-
-        // Initialize selected attributes with first value of each attribute
-        if (response.data.attributes) {
-          const initialAttributes = response.data.attributes.reduce((acc: Record<number, number>, attr: any) => {
-            if (attr.values && attr.values.length > 0) {
-              acc[attr.id] = attr.values[0].id;
-            }
-            return acc;
-          }, {});
-          setSelectedAttributes(initialAttributes);
-        }
-      } catch (error) {
-        console.error("Error fetching product details:", error);
-        setError("Failed to load product details");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProductDetails();
-  }, [id]);
 
   const images = [
     product?.image_1920,
@@ -138,24 +120,30 @@ const Product = () => {
     ],
   };
 
-  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
+  const { addToWishlist, removeFromWishlist, isWishlisted } =
+    useWishlistStore();
   const isInWishlist = product ? isWishlisted(product.id.toString()) : false;
 
-  const { addToComparison, removeFromComparison, isCompared } = useComparisonStore();
+  const { addToComparison, removeFromComparison, isCompared } =
+    useComparisonStore();
   const isInComparison = product ? isCompared(product.id.toString()) : false;
 
   const handleAddToCart = () => {
     if (product) {
-      const selectedAttributeValues = Object.entries(selectedAttributes).map(([attributeId, valueId]) => {
-        const attribute = product.attributes?.find(attr => attr.id === parseInt(attributeId));
-        const value = attribute?.values.find(val => val.id === valueId);
-        return {
-          attribute_id: parseInt(attributeId),
-          value_id: valueId,
-          attribute_name: attribute?.name,
-          value_name: value?.name
-        };
-      });
+      const selectedAttributeValues = Object.entries(selectedAttributes).map(
+        ([attributeId, valueId]) => {
+          const attribute = product.attributes?.find(
+            (attr) => attr.id === parseInt(attributeId)
+          );
+          const value = attribute?.values.find((val) => val.id === valueId);
+          return {
+            attribute_id: parseInt(attributeId),
+            value_id: valueId,
+            attribute_name: attribute?.name,
+            value_name: value?.name,
+          };
+        }
+      );
 
       addToCart({
         id: product.id.toString(),
@@ -163,7 +151,7 @@ const Product = () => {
         price: product.list_price,
         image: product.image_1920,
         quantity: quantity,
-        selected_attributes: selectedAttributeValues
+        selected_attributes: selectedAttributeValues,
       });
     }
   };
@@ -183,7 +171,8 @@ const Product = () => {
           name: product.name,
           price: product.list_price,
           image: product.image_1920,
-          description: product.description || product.description_sale || ""
+          description: product.description || product.description_sale || "",
+          
         });
       }
     }
@@ -199,16 +188,16 @@ const Product = () => {
           name: product.name,
           price: product.list_price,
           image: product.image_1920,
-          description: product.description || product.description_sale || ""
+          description: product.description || product.description_sale || "",
         });
       }
     }
   };
 
   const handleAttributeChange = (attributeId: number, valueId: number) => {
-    setSelectedAttributes(prev => ({
+    setSelectedAttributes((prev) => ({
       ...prev,
-      [attributeId]: valueId
+      [attributeId]: valueId,
     }));
   };
 
@@ -217,19 +206,20 @@ const Product = () => {
     .filter((p) => p.id.toString() !== id)
     .slice(0, 4);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="h-screen flex justify-center items-center">
-        <div className="flex items-center justify-center py-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-        </div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
       </div>
-    )
-    // return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    );
   }
 
   if (error || !product) {
-    return <div className="flex justify-center items-center min-h-screen">Product not found</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Product not found
+      </div>
+    );
   }
 
   return (
@@ -250,8 +240,11 @@ const Product = () => {
                 {images.map((img, idx) => (
                   <div
                     key={idx}
-                    className={`relative cursor-pointer group ${currentImage === idx ? "ring-2 ring-orange-500 rounded-lg" : ""
-                      }`}
+                    className={`relative cursor-pointer group ${
+                      currentImage === idx
+                        ? "ring-2 ring-orange-500 rounded-lg"
+                        : ""
+                    }`}
                     onClick={() => setCurrentImage(idx)}
                   >
                     <img
@@ -263,7 +256,11 @@ const Product = () => {
                     />
                     <div
                       className={`absolute inset-0 border-2 rounded-lg transition
-                      ${currentImage === idx ? "border-orange-500" : "border-transparent"}
+                      ${
+                        currentImage === idx
+                          ? "border-orange-500"
+                          : "border-transparent"
+                      }
                       group-hover:border-orange-500`}
                     />
                   </div>
@@ -275,12 +272,18 @@ const Product = () => {
           {/* Right Column - Product Info */}
           <div className="lg:col-span-8 space-y-6">
             <div className="flex justify-between items-center">
-              <h1 className="text-wrap max-w-[90%] text-xl lg:text-2xl font-tajawal-medium text-right" dir="rtl">
+              <h1
+                className="text-wrap max-w-[90%] text-xl lg:text-2xl font-tajawal-medium text-right"
+                dir="rtl"
+              >
                 {product.name}
               </h1>
               <Heart
-                className={`cursor-pointer transition-colors ${isInWishlist ? "text-red-500" : "text-gray-400 hover:text-red-500"
-                  }`}
+                className={`cursor-pointer transition-colors ${
+                  isInWishlist
+                    ? "text-red-500"
+                    : "text-gray-400 hover:text-red-500"
+                }`}
                 onClick={handleWishlistClick}
               />
             </div>
@@ -296,12 +299,16 @@ const Product = () => {
             <Separator className="bg-gray-200 p-[.5px]" />
 
             <div className="space-y-4">
-              <h3 className="text-lg font-tajawal-medium text-right">ابرز الخصائص</h3>
+              <h3 className="text-lg font-tajawal-medium text-right">
+                ابرز الخصائص
+              </h3>
               <ul className="space-y-2 font-tajawal-regular text-right text-blue-600 list-disc pr-4">
                 <li>
                   <div
                     className="text-sm text-gray-600 mb-2 line-clamp-2"
-                    dangerouslySetInnerHTML={{ __html: product?.description || '' }}
+                    dangerouslySetInnerHTML={{
+                      __html: product?.description || "",
+                    }}
                   />
                 </li>
               </ul>
@@ -309,26 +316,35 @@ const Product = () => {
             <Separator className="bg-gray-200 p-[.5px]" />
 
             {/* Product Attributes */}
-            {product.attributes && product.attributes.map(attribute => (
-              <div key={attribute.id} className="space-y-4">
-                <h3 className="text-lg font-tajawal-medium text-right">{attribute.name}</h3>
-                <div dir="ltr" className="flex flex-wrap font-tajawal-medium justify-end gap-2 lg:gap-4">
-                  {attribute.values.map(value => (
-                    <button
-                      key={value.id}
-                      onClick={() => handleAttributeChange(attribute.id, value.id)}
-                      className={`px-3 lg:px-4 py-2 rounded border ${selectedAttributes[attribute.id] === value.id
-                        ? "border-orange-500 text-orange-500"
-                        : "border-gray-300"
+            {product.attributes &&
+              product.attributes.map((attribute) => (
+                <div key={attribute.id} className="space-y-4">
+                  <h3 className="text-lg font-tajawal-medium text-right">
+                    {attribute.name}
+                  </h3>
+                  <div
+                    dir="ltr"
+                    className="flex flex-wrap font-tajawal-medium justify-end gap-2 lg:gap-4"
+                  >
+                    {attribute.values.map((value) => (
+                      <button
+                        key={value.id}
+                        onClick={() =>
+                          handleAttributeChange(attribute.id, value.id)
+                        }
+                        className={`px-3 lg:px-4 py-2 rounded border ${
+                          selectedAttributes[attribute.id] === value.id
+                            ? "border-orange-500 text-orange-500"
+                            : "border-gray-300"
                         }`}
-                    >
-                      {value.name}
-                      {value.price_extra > 0 && ` (+${value.price_extra})`}
-                    </button>
-                  ))}
+                      >
+                        {value.name}
+                        {value.price_extra > 0 && ` (+${value.price_extra})`}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
             <div className="flex font-tajawal-medium justify-end items-center gap-4 border w-fit p-0.5 rounded">
               <Button
@@ -373,10 +389,11 @@ const Product = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className={`flex-1 ${isInComparison
-                  ? "bg-orange-500 text-white hover:bg-orange-600"
-                  : "bg-orange-100 text-orange-500 hover:bg-orange-200"
-                  }`}
+                className={`flex-1 ${
+                  isInComparison
+                    ? "bg-orange-500 text-white hover:bg-orange-600"
+                    : "bg-orange-100 text-orange-500 hover:bg-orange-200"
+                }`}
                 onClick={handleComparisonClick}
                 label={isInComparison ? "إزالة من المقارنة" : "إضافة للمقارنة"}
               />
@@ -435,7 +452,9 @@ const Product = () => {
               <div className="pt-4">
                 <div
                   className="text-right text-sm md:text-base leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: product?.description || '' }}
+                  dangerouslySetInnerHTML={{
+                    __html: product?.description || "",
+                  }}
                 />
               </div>
             </div>
