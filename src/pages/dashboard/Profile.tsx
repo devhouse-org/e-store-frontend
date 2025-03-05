@@ -18,7 +18,7 @@ interface Location {
   state_id: boolean | [number, string];
   zip: boolean | string;
   country_id: boolean | [number, string];
-  phone: boolean | string;
+  phone: string | false;
   type: string;
 }
 
@@ -42,6 +42,15 @@ interface PartnerData {
     email: string;
     phone: string | false;
   };
+}
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
 }
 
 const useUserAddresses = (userId: string | null) => {
@@ -204,38 +213,61 @@ const Profile = () => {
       setIsUpdating(true);
       const userId = localStorage.getItem("id");
 
-      await axiosInstance.put('/user/update-data', {
-        user_id: parseInt(userId || "0"),
-        name,
-        email,
-        phone: phoneNumber
-      });
+      // Create an object with only the changed fields
+      const updatedFields: Record<string, string> = {};
 
-      // Update localStorage with new values
-      localStorage.setItem("name", name);
-      localStorage.setItem("email", email);
-      localStorage.setItem("phone", phoneNumber);
+      if (name !== originalValues.name) {
+        updatedFields.name = name;
+      }
+      if (email !== originalValues.email) {
+        updatedFields.email = email;
+      }
+      if (phoneNumber !== originalValues.phoneNumber) {
+        updatedFields.phone = phoneNumber;
+      }
 
-      // Update original values
-      setOriginalValues({
-        name,
-        email,
-        phoneNumber
-      });
+      // Only proceed if there are changes
+      if (Object.keys(updatedFields).length === 0) {
+        toast({
+          title: "تنبيه",
+          description: "لم يتم إجراء أي تغييرات",
+          variant: "default",
+        });
+        return;
+      }
 
-      // Refetch partner data to ensure we have the latest data
-      await refetchPartner();
+      const response = await axiosInstance.put(`/user/partner/${userId}`, updatedFields);
 
-      toast({
-        title: "تم التحديث",
-        description: "تم تحديث الملف الشخصي بنجاح",
-        variant: "success",
-      });
+      if (response.data.success) {
+        // Update localStorage only for changed values
+        if (updatedFields.name) localStorage.setItem("name", name);
+        if (updatedFields.email) localStorage.setItem("email", email);
+        if (updatedFields.phone) localStorage.setItem("phone", phoneNumber);
 
+        // Update original values with current values
+        setOriginalValues({
+          name,
+          email,
+          phoneNumber
+        });
+
+        // Refetch partner data to ensure we have the latest data
+        await refetchPartner();
+
+        toast({
+          title: "تم التحديث",
+          description: "تم تحديث الملف الشخصي بنجاح",
+          variant: "success",
+        });
+      } else {
+        throw new Error("Failed to update profile");
+      }
     } catch (error) {
+      const apiError = error as ApiError;
+      console.error("Error updating profile:", apiError);
       toast({
         title: "خطأ",
-        description: "حدث خطأ أثناء تحديث الملف الشخصي",
+        description: apiError.response?.data?.message || apiError.message || "حدث خطأ أثناء تحديث الملف الشخصي",
         variant: "destructive",
       });
     } finally {
@@ -344,8 +376,8 @@ const Profile = () => {
               <LocationCard
                 key={location.id}
                 location={location.street}
-                phoneNumber={location.phone || ""}
-                phoneNumber2={location.street2 || ""}
+                phoneNumber={typeof location.phone === 'string' ? location.phone : ""}
+                phoneNumber2={typeof location.street2 === 'string' ? location.street2 : ""}
                 province={typeof location.state_id === 'object' ? location.state_id[1] : ""}
                 city={location.city}
                 country={typeof location.country_id === 'object' ? location.country_id[1] : ""}
