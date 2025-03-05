@@ -15,36 +15,89 @@ interface Location {
   street: string;
   street2: string | false;
   city: string;
-  state_id: [number, string];
-  country_id: [number, string];
+  state_id: boolean | [number, string];
+  zip: boolean | string;
+  country_id: boolean | [number, string];
   phone: string | false;
   type: string;
-  is_main: boolean;
-  address_type: string;
+}
+
+interface AddressesResponse {
+  success: boolean;
+  addresses: Location[];
+}
+
+interface UserData {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface PartnerData {
+  success: boolean;
+  partner: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string | false;
+  };
+}
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
 }
 
 const useUserAddresses = (userId: string | null) => {
-  return useQuery<Location[], Error>({
+  return useQuery({
     queryKey: ["user-addresses", userId],
     queryFn: async () => {
-      const response = await axiosInstance.post<Location[]>("/user/addresses", {
-        user_id: userId,
+      const response = await axiosInstance.post<AddressesResponse>("/user/addresses", {
+        partner_id: Number(userId),
       });
+      return response.data.addresses;
+    },
+    enabled: !!userId,
+  });
+};
+
+const useUserData = (userId: string | null) => {
+  return useQuery({
+    queryKey: ["user-data", userId],
+    queryFn: async () => {
+      const response = await axiosInstance.get<UserData>(`/user/partner/${userId}`);
       return response.data;
     },
     enabled: !!userId,
   });
 };
 
+const usePartnerData = (userId: string | null) => {
+  return useQuery({
+    queryKey: ["partner-data", userId],
+    queryFn: async () => {
+      const response = await axiosInstance.get<PartnerData>(`/user/partner/${userId}`);
+      return response.data;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep data in cache for 30 minutes
+  });
+};
+
 const useDeleteAddress = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, number>({
+  return useMutation({
     mutationFn: async (addressId: number) => {
       await axiosInstance.delete(`/user/address/${addressId}`);
     },
     onSuccess: () => {
-      // Invalidate and refetch addresses after deletion
       queryClient.invalidateQueries({ queryKey: ["user-addresses"] });
     },
   });
@@ -66,6 +119,20 @@ const Profile = () => {
   const { toast } = useToast();
 
   const userId = localStorage.getItem("id");
+  console.log("userId: ", userId);
+  const {
+    data: userData,
+    isLoading: isLoadingUser,
+    error: userError
+  } = useUserData(userId);
+
+  const {
+    data: partnerData,
+    isLoading: isLoadingPartner,
+    error: partnerError,
+    refetch: refetchPartner
+  } = usePartnerData(userId);
+
   const {
     data: locationsData,
     isLoading,
@@ -74,14 +141,38 @@ const Profile = () => {
   } = useUserAddresses(userId);
   const deleteAddress = useDeleteAddress();
 
+  useEffect(() => {
+    if (partnerData?.partner) {
+      setName(partnerData.partner.name);
+      setEmail(partnerData.partner.email);
+      setPhoneNumber(partnerData.partner.phone || "");
+
+      setOriginalValues({
+        name: partnerData.partner.name,
+        email: partnerData.partner.email,
+        phoneNumber: partnerData.partner.phone || ""
+      });
+    } else if (userData) {
+      setName(userData.name);
+      setEmail(userData.email);
+      setPhoneNumber(userData.phone || "");
+
+      setOriginalValues({
+        name: userData.name,
+        email: userData.email,
+        phoneNumber: userData.phone || ""
+      });
+    }
+  }, [userData, partnerData]);
+
   const fetchLocations = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosInstance.post("/user/addresses", {
-        user_id: userId,
+      const response = await axiosInstance.post<AddressesResponse>("/user/addresses", {
+        partner_id: Number(userId),
       });
-      setLocations(response.data);
+      setLocations(response.data.addresses);
     } catch (err) {
       setError("Failed to fetch locations");
       console.error("Error fetching locations:", err);
@@ -91,20 +182,6 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const nameFromStorage = localStorage.getItem("name") || "";
-    const emailFromStorage = localStorage.getItem("email") || "";
-    const phoneFromStorage = localStorage.getItem("phone") || "";
-
-    setName(nameFromStorage);
-    setEmail(emailFromStorage);
-    setPhoneNumber(phoneFromStorage);
-
-    setOriginalValues({
-      name: nameFromStorage,
-      email: emailFromStorage,
-      phoneNumber: phoneFromStorage
-    });
-
     fetchLocations();
   }, []);
 
@@ -136,35 +213,61 @@ const Profile = () => {
       setIsUpdating(true);
       const userId = localStorage.getItem("id");
 
-      await axiosInstance.put('/user/update-data', {
-        user_id: parseInt(userId || "0"),
-        name,
-        email,
-        phone: phoneNumber
-      });
+      // Create an object with only the changed fields
+      const updatedFields: Record<string, string> = {};
 
-      // Update localStorage with new values
-      localStorage.setItem("name", name);
-      localStorage.setItem("email", email);
-      localStorage.setItem("phone", phoneNumber);
+      if (name !== originalValues.name) {
+        updatedFields.name = name;
+      }
+      if (email !== originalValues.email) {
+        updatedFields.email = email;
+      }
+      if (phoneNumber !== originalValues.phoneNumber) {
+        updatedFields.phone = phoneNumber;
+      }
 
-      // Update original values
-      setOriginalValues({
-        name,
-        email,
-        phoneNumber
-      });
+      // Only proceed if there are changes
+      if (Object.keys(updatedFields).length === 0) {
+        toast({
+          title: "تنبيه",
+          description: "لم يتم إجراء أي تغييرات",
+          variant: "default",
+        });
+        return;
+      }
 
-      toast({
-        title: "تم التحديث",
-        description: "تم تحديث الملف الشخصي بنجاح",
-        variant: "success",
-      });
+      const response = await axiosInstance.put(`/user/partner/${userId}`, updatedFields);
 
+      if (response.data.success) {
+        // Update localStorage only for changed values
+        if (updatedFields.name) localStorage.setItem("name", name);
+        if (updatedFields.email) localStorage.setItem("email", email);
+        if (updatedFields.phone) localStorage.setItem("phone", phoneNumber);
+
+        // Update original values with current values
+        setOriginalValues({
+          name,
+          email,
+          phoneNumber
+        });
+
+        // Refetch partner data to ensure we have the latest data
+        await refetchPartner();
+
+        toast({
+          title: "تم التحديث",
+          description: "تم تحديث الملف الشخصي بنجاح",
+          variant: "success",
+        });
+      } else {
+        throw new Error("Failed to update profile");
+      }
     } catch (error) {
+      const apiError = error as ApiError;
+      console.error("Error updating profile:", apiError);
       toast({
         title: "خطأ",
-        description: "حدث خطأ أثناء تحديث الملف الشخصي",
+        description: apiError.response?.data?.message || apiError.message || "حدث خطأ أثناء تحديث الملف الشخصي",
         variant: "destructive",
       });
     } finally {
@@ -273,11 +376,11 @@ const Profile = () => {
               <LocationCard
                 key={location.id}
                 location={location.street}
-                // phoneNumber={location.phone || ""}
-                // phoneNumber2={location.street2 || ""}
-                province={location.state_id[1]}
+                phoneNumber={typeof location.phone === 'string' ? location.phone : ""}
+                phoneNumber2={typeof location.street2 === 'string' ? location.street2 : ""}
+                province={typeof location.state_id === 'object' ? location.state_id[1] : ""}
                 city={location.city}
-                country={location.country_id[1]}
+                country={typeof location.country_id === 'object' ? location.country_id[1] : ""}
                 id={location.id}
                 onUpdate={refetch}
                 deletable
