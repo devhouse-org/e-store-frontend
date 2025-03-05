@@ -23,8 +23,23 @@ interface Location {
   address_type: string;
 }
 
+interface UserData {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface PartnerData {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  // Add any additional partner-specific fields here
+}
+
 const useUserAddresses = (userId: string | null) => {
-  return useQuery<Location[], Error>({
+  return useQuery({
     queryKey: ["user-addresses", userId],
     queryFn: async () => {
       const response = await axiosInstance.post<Location[]>("/user/addresses", {
@@ -36,15 +51,36 @@ const useUserAddresses = (userId: string | null) => {
   });
 };
 
+const useUserData = (userId: string | null) => {
+  return useQuery({
+    queryKey: ["user-data", userId],
+    queryFn: async () => {
+      const response = await axiosInstance.get<UserData>(`/user/partner/${userId}`);
+      return response.data;
+    },
+    enabled: !!userId,
+  });
+};
+
+const usePartnerData = (userId: string | null) => {
+  return useQuery({
+    queryKey: ["partner-data", userId],
+    queryFn: async () => {
+      const response = await axiosInstance.get<PartnerData>(`/user/partner/${userId}`);
+      return response.data;
+    },
+    enabled: !!userId,
+  });
+};
+
 const useDeleteAddress = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, number>({
+  return useMutation({
     mutationFn: async (addressId: number) => {
       await axiosInstance.delete(`/user/address/${addressId}`);
     },
     onSuccess: () => {
-      // Invalidate and refetch addresses after deletion
       queryClient.invalidateQueries({ queryKey: ["user-addresses"] });
     },
   });
@@ -67,12 +103,49 @@ const Profile = () => {
 
   const userId = localStorage.getItem("id");
   const {
+    data: userData,
+    isLoading: isLoadingUser,
+    error: userError
+  } = useUserData(userId);
+
+  const {
+    data: partnerData,
+    isLoading: isLoadingPartner,
+    error: partnerError
+  } = usePartnerData(userId);
+
+  const {
     data: locationsData,
     isLoading,
     error: locationsError,
     refetch,
   } = useUserAddresses(userId);
   const deleteAddress = useDeleteAddress();
+
+  useEffect(() => {
+    // Prioritize partner data over user data if available
+    if (partnerData) {
+      setName(partnerData.name);
+      setEmail(partnerData.email);
+      setPhoneNumber(partnerData.phone || "");
+
+      setOriginalValues({
+        name: partnerData.name,
+        email: partnerData.email,
+        phoneNumber: partnerData.phone || ""
+      });
+    } else if (userData) {
+      setName(userData.name);
+      setEmail(userData.email);
+      setPhoneNumber(userData.phone || "");
+
+      setOriginalValues({
+        name: userData.name,
+        email: userData.email,
+        phoneNumber: userData.phone || ""
+      });
+    }
+  }, [userData, partnerData]);
 
   const fetchLocations = async () => {
     try {
@@ -91,20 +164,6 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const nameFromStorage = localStorage.getItem("name") || "";
-    const emailFromStorage = localStorage.getItem("email") || "";
-    const phoneFromStorage = localStorage.getItem("phone") || "";
-
-    setName(nameFromStorage);
-    setEmail(emailFromStorage);
-    setPhoneNumber(phoneFromStorage);
-
-    setOriginalValues({
-      name: nameFromStorage,
-      email: emailFromStorage,
-      phoneNumber: phoneFromStorage
-    });
-
     fetchLocations();
   }, []);
 
