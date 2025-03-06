@@ -5,8 +5,8 @@ import { useState } from "react";
 type Props = {
   id?: number;
   location?: string;
-  phoneNumber?: string;
-  phoneNumber2?: string;
+  // phoneNumber?: string;
+  // phoneNumber2?: string;
   city?: string;
   province?: string;
   country?: string;
@@ -23,8 +23,8 @@ type Props = {
 const LocationCard = ({
   id,
   location,
-  phoneNumber2,
-  phoneNumber,
+  // phoneNumber2,
+  // phoneNumber,
   city,
   province,
   country,

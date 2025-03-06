@@ -61,8 +61,10 @@ import LocationDropdowns from "./LocationDropdowns";
 type Props = {
   id: number;
   location?: string;
-  // phoneNumber?: string;
   phoneNumber2?: string;
+  street2?: string;
+  // phoneNumber?: string;
+  // phoneNumber2?: string;
   country_id?: [number, string];
   state_id?: [number, string];
   city?: string;
@@ -75,6 +77,8 @@ const LocationDialog = ({
   id,
   location,
   phoneNumber2,
+
+  street2,
   // phoneNumber,
   city,
   province,
@@ -91,6 +95,7 @@ const LocationDialog = ({
     city: city || "",
     state_id: state_id ? Number(state_id[0]) : false,
     country_id: country_id ? Number(country_id[0]) : false
+
   });
   const [loading, setLoading] = useState(false);
 
@@ -99,6 +104,7 @@ const LocationDialog = ({
       ...prev,
       [field]: field === 'country_id' || field === 'state_id'
         ? Number(value) || false
+
         : value
     }));
   };

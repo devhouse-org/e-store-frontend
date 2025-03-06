@@ -6,6 +6,7 @@ import {
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 // Define TypeScript interfaces for the data
 interface OrderLine {
@@ -50,7 +51,8 @@ const usePartnerOrders = (partnerId: number) => {
 };
 
 const Dashboard = () => {
-  const { data, isLoading, error } = usePartnerOrders(8);
+  const navigate = useNavigate();
+  const { data, isLoading, error } = usePartnerOrders(Number(localStorage.getItem("id")));
   const orders = data?.orders || [];
 
   // Format date to local string
@@ -138,7 +140,8 @@ const Dashboard = () => {
               {orders.map((order, index) => (
                 <div
                   key={order.id}
-                  className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => navigate(`/dashboard/orders/${order.id}`)}
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div>
