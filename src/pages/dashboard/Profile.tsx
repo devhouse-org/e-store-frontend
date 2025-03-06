@@ -1,6 +1,6 @@
 import LocationCard from "@/components/LocationCard";
 import { Button } from "@/components/ui/button";
-import { LucidePlusCircle } from "lucide-react";
+import { LucideCamera, LucideKeyRound, LucidePlusCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import axios from "axios";
@@ -283,6 +283,18 @@ const Profile = () => {
       <div className="bg-white p-6 rounded shadow">
         <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div className="flex flex-col gap-4">
+            <div className="flex-1 flex-col gap-y-2 flex border-b pb-4 items-center justify-center gap-x-2">
+              <label htmlFor="image" className="relative cursor-pointer">
+                <div className="overflow-hidden w-[120px] h-[120px] bg-gray-300 rounded-full shadow-sm">
+                  <img className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1569173112611-52a7cd38bea9?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+                </div>
+                <div className="absolute bottom-0 right-0 w-[30px] h-[30px] bg-orange-500 rounded-full flex items-center justify-center">
+                  <LucideCamera size={16} className="text-white" />
+                </div>
+              </label>
+              <input type="file" id="image" className="hidden" />
+              <p className="text-[14px] text-gray-500">اضغط لتغيير الصورة الشخصية</p>
+            </div>
             <div className="flex-1 flex items-center gap-x-2">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
                 الاسم الكامل
@@ -304,7 +316,8 @@ const Profile = () => {
                 className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
                 placeholder="أدخل بريدك الإلكتروني"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                // onChange={(e) => setEmail(e.target.value)}
+                disabled
               />
             </div>
             <div className="flex-1 flex items-center gap-x-2">
@@ -313,10 +326,11 @@ const Profile = () => {
               </label>
               <input
                 type="text"
-                className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
+                className="text-right mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md"
                 placeholder="أدخل رقم هاتفك"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                dir="ltr"
               />
             </div>
             {/* <div className="flex-1 flex items-center gap-x-2">
@@ -330,12 +344,6 @@ const Profile = () => {
           </div>
 
           <div className="flex pt-8 justify-between">
-            <button
-              type="button"
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md shadow-md transition duration-300"
-            >
-              تغيير كلمة المرور
-            </button>
             <div className="flex gap-x-2">
               {hasChanges() && (
                 <button
@@ -354,6 +362,14 @@ const Profile = () => {
                 {isUpdating ? "جاري التحديث..." : "تحديث الملف الشخصي"}
               </button>
             </div>
+
+            <button
+              type="button"
+              className="flex items-center gap-x-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md shadow-md transition duration-300"
+            >
+              <LucideKeyRound size={16} />
+              تغيير كلمة المرور
+            </button>
           </div>
         </form>
       </div>
