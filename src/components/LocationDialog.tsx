@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CustomInput from "./CustomInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { useToast } from "@/hooks/use-toast";
 import LocationDropdowns from "./LocationDropdowns";
@@ -90,9 +90,22 @@ const LocationDialog = ({
     street2: street2 || "",
     // phone: phoneNumber || "",
     city: city || "",
-    state_id: state_id ? state_id[0] : undefined,
-    country_id: country_id ? country_id[0] : undefined
+    state_id: undefined as number | undefined,
+    country_id: undefined as number | undefined
   });
+
+  // Update formData when props change
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      street: location || "",
+      street2: street2 || "",
+      city: city || "",
+      state_id: state_id ? state_id[0] : undefined,
+      country_id: country_id ? country_id[0] : undefined
+    }));
+  }, [location, street2, city, state_id, country_id]);
+
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string | number) => {
@@ -180,8 +193,8 @@ const LocationDialog = ({
           </div>
           <div className="mt-4">
             <LocationDropdowns
-              selectedCountryId={formData.country_id?.toString()}
-              selectedStateId={formData.state_id?.toString()}
+              selectedCountryId={formData.country_id?.toString() || ""}
+              selectedStateId={formData.state_id?.toString() || ""}
               onCountryChange={(value) => handleInputChange('country_id', value)}
               onStateChange={(value) => handleInputChange('state_id', value)}
             />

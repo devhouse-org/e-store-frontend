@@ -376,13 +376,11 @@ const Profile = () => {
               <LocationCard
                 key={location.id}
                 location={location.street}
-                phoneNumber={typeof location.phone === 'string' ? location.phone : ""}
-                phoneNumber2={typeof location.street2 === 'string' ? location.street2 : ""}
                 province={typeof location.state_id === 'object' ? location.state_id[1] : ""}
                 city={location.city}
                 country={typeof location.country_id === 'object' ? location.country_id[1] : ""}
-                country_id={typeof location.country_id === 'object' ? location.country_id[0] : undefined}
-                state_id={typeof location.state_id === 'object' ? location.state_id[0] : undefined}
+                country_id={typeof location.country_id === 'object' ? location.country_id : undefined}
+                state_id={typeof location.state_id === 'object' ? location.state_id : undefined}
                 id={location.id}
                 onUpdate={refetch}
                 deletable

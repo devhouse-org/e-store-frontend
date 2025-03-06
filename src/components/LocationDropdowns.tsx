@@ -76,7 +76,7 @@ const LocationDropdowns = ({
     <div className="space-y-4">
       <div className="space-y-2">
         <label className="text-sm font-medium">الدولة</label>
-        <Select value={selectedCountryId} onValueChange={onCountryChange}>
+        <Select value={selectedCountryId || undefined} onValueChange={onCountryChange}>
           <SelectTrigger>
             <SelectValue placeholder="اختر الدولة" />
           </SelectTrigger>
@@ -92,7 +92,7 @@ const LocationDropdowns = ({
 
       <div className="space-y-2">
         <label className="text-sm font-medium">المحافظة</label>
-        <Select value={selectedStateId} onValueChange={onStateChange}>
+        <Select value={selectedStateId || undefined} onValueChange={onStateChange}>
           <SelectTrigger>
             <SelectValue placeholder="اختر المحافظة" />
           </SelectTrigger>
