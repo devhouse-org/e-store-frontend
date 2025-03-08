@@ -14,7 +14,7 @@ import {
 import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
 import { IconType } from "react-icons";
 import Slider from "react-slick";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -35,6 +35,7 @@ interface Banner {
   x_studio_end_date: string;
   x_studio_publish: boolean;
   x_studio_discount: number;
+  x_studio_product_link: number;
 }
 
 interface BannersResponse {
@@ -48,6 +49,7 @@ function Home() {
   const [activeSlide2, setActiveSlide2] = useState(0);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
 
   const scrollCategories = (direction: "left" | "right") => {
@@ -172,6 +174,7 @@ function Home() {
         currentOffset: 0,
         limit: 10
       });
+      console.log("banners", response.data)
       return response.data;
     }
   });
@@ -189,6 +192,14 @@ function Home() {
     (product) => product.category === selectedCategory
   );
 
+  const handleBannerClick = (banner: Banner) => {
+    if (banner.x_studio_product_link) {
+      navigate(`${banner.x_studio_product_link}`);
+    } else {
+      navigate(`/banner/${banner.id}`);
+    }
+  };
+
   return (
     <div className=" pt-4 px-4 md:px-12 mx-auto">
       <div className="pb-14 pt-8 relative">
@@ -199,9 +210,11 @@ function Home() {
         ) : banners.length > 0 ? (
           <Slider {...settings}>
             {banners.map((item, i) => (
-              <div
+              <Link
                 key={i}
-                className="h-[280px] md:h-[380px] lg:h-[480px] overflow-hidden relative"
+                className="h-[280px] md:h-[380px] lg:h-[480px] overflow-hidden relative cursor-pointer"
+                // onClick={() => handleBannerClick(bannersData!.banners[i])}
+                to={bannersData?.banners[i].x_studio_product_link ? `${bannersData?.banners[i].x_studio_product_link}` : `/banner/${bannersData?.banners[i].id}`}
               >
                 <img
                   src={item}
@@ -213,7 +226,7 @@ function Home() {
                     {bannersData.banners[i].x_studio_discount}% خصم
                   </div>
                 )} */}
-              </div>
+              </Link>
             ))}
           </Slider>
         ) : (
