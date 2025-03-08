@@ -19,6 +19,8 @@ const ProductsTable: React.FC = () => {
   const { products, updateQuantity, removeFromCart } = useCartStore();
   const cartCount = useCartStore((state) => state.cartCount);
 
+  console.log(products)
+
   const handleUpdateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) {
       removeFromCart(productId);
@@ -55,7 +57,8 @@ const ProductsTable: React.FC = () => {
                     {
                       product.image && (
                         <img
-                          src={`data:image/png;base64,${product.image}`}
+                          // src={`data:image/png;base64,${product.image}`}
+                          src={product.image}
                           alt={product.name}
                           className="w-16 h-16 rounded object-cover"
                         />
