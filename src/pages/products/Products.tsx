@@ -42,6 +42,8 @@ interface ProductsResponse {
   limit: number;
 }
 
+const ITEMS_PER_PAGE = 12;
+
 const useCategories = () => {
   return useQuery<Category[], Error>({
     queryKey: ["categories"],
@@ -80,8 +82,6 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12); // Fixed number of items per page
-  const [totalItems, setTotalItems] = useState(0);
   const {
     addToCart,
     products: cartProducts,
@@ -112,20 +112,13 @@ const Products = () => {
     refetch: refetchProducts
   } = useProducts({
     currentUid: Number(localStorage.getItem("session_id")) || 0,
-    currentOffset: (currentPage - 1) * itemsPerPage,
-    limit: itemsPerPage,
+    currentOffset: (currentPage - 1) * ITEMS_PER_PAGE,
+    limit: ITEMS_PER_PAGE,
     category_id: selectedSubcategory || selectedCategory,
     variants: selectedVariants,
     min_price: priceRange?.min,
     max_price: priceRange?.max
   });
-
-  // Update total items when products data changes
-  useEffect(() => {
-    if (productsData) {
-      setTotalItems(productsData.total || 0);
-    }
-  }, [productsData]);
 
   // Handle page change
   const handlePageChange = (page: number) => {
@@ -618,8 +611,7 @@ const Products = () => {
           <div className="pagination mt-20 mb-14">
             <Pagination
               currentPage={currentPage}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
+              totalPages={Math.ceil(productsData.total / ITEMS_PER_PAGE)}
               onPageChange={handlePageChange}
             />
           </div>

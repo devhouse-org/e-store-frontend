@@ -2,14 +2,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
   currentPage: number;
-  totalItems: number;
-  itemsPerPage: number;
+  totalPages: number;
   onPageChange: (page: number) => void;
 }
 
-const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }: PaginationProps) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
   // Generate page numbers to display
   const getPageNumbers = () => {
     const pageNumbers = [];
