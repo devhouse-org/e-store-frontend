@@ -16,7 +16,9 @@ import axiosInstance from "@/utils/axiosInstance";
 interface FilterProps {
   selectedCategory: number | null;
   onFilterChange: (variants: { attribute_id: number; value_id: number }[]) => void;
+  onPriceChange: (minPrice: number, maxPrice: number) => void;
   initialVariants?: { attribute_id: number; value_id: number }[];
+  initialPriceRange?: { min: number; max: number };
 }
 
 interface Variant {
@@ -49,13 +51,21 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: FilterProps) => {
+const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVariants = [], initialPriceRange }: FilterProps) => {
   const [variantsOpen, setVariantsOpen] = useState<{ [key: number]: boolean }>({});
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedValues, setSelectedValues] = useState<{ [key: number]: number[] }>({});
   const [variantsLoading, setVariantsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState([110]);
+  const [priceRange, setPriceRange] = useState<number[]>([initialPriceRange?.max || 3000000]);
+  const [isPriceConfirmNeeded, setIsPriceConfirmNeeded] = useState(false);
+
+  // Initialize price range from URL params if available
+  useEffect(() => {
+    if (initialPriceRange) {
+      setPriceRange([initialPriceRange.max]);
+    }
+  }, [initialPriceRange]);
 
   // Debounce the selected values with a shorter delay
   const debouncedSelectedValues = useDebounce(selectedValues, 200);
@@ -154,9 +164,27 @@ const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: Filt
     });
   };
 
+  const handlePriceChange = (values: number[]) => {
+    setPriceRange(values);
+    setIsPriceConfirmNeeded(true);
+  };
+
+  const confirmPriceRange = () => {
+    onPriceChange(1000, priceRange[0]);
+    setIsPriceConfirmNeeded(false);
+  };
+
   const clearAllFilters = () => {
-    setPriceRange([110]);
+    setPriceRange([3000000]);
     setSelectedValues({});
+    onPriceChange(0, 0);
+    setIsPriceConfirmNeeded(false);
+  };
+
+  const clearPriceFilter = () => {
+    setPriceRange([3000000]);
+    onPriceChange(0, 0);
+    setIsPriceConfirmNeeded(false);
   };
 
   return (
@@ -177,22 +205,39 @@ const Filter = ({ selectedCategory, onFilterChange, initialVariants = [] }: Filt
       <CardContent className="space-y-6">
         {/* Price Range Section */}
         <div>
-          <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold">
-            نطاق السعر
+          <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold flex justify-between items-center">
+            <span>نطاق السعر</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              label="حذف"
+              className="text-white hover:text-white/80 py-0 h-auto"
+              onClick={clearPriceFilter}
+            />
           </div>
           <div className="px-2">
             <Slider
               value={priceRange}
-              max={1440}
-              min={110}
-              step={1}
+              max={3000000}
+              min={1000}
+              step={1000}
               className="w-full"
-              onValueChange={setPriceRange}
+              onValueChange={handlePriceChange}
+              dir="ltr"
             />
             <div className="flex justify-between mt-2 font-tajawal-medium">
-              <span className="text-sm text-gray-600">1440$</span>
-              <span className="text-sm text-gray-600">{priceRange[0]}$</span>
+              <span className="text-sm text-gray-600">3,000,000 د.ع</span>
+              <span className="text-sm text-gray-600">{priceRange[0].toLocaleString()} د.ع</span>
             </div>
+            {isPriceConfirmNeeded && (
+              <Button
+                variant="outline"
+                size="sm"
+                label="تأكيد السعر"
+                className="w-full mt-2 text-orange-500 hover:text-orange-600 border-2 border-orange-500"
+                onClick={confirmPriceRange}
+              />
+            )}
           </div>
         </div>
 
