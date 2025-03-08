@@ -10,6 +10,8 @@ import {
   Menu,
   ArrowLeft,
   ArrowRight,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
@@ -35,6 +37,9 @@ interface ProductsResponse {
     list_price: number;
     description?: string;
   }>;
+  total: number;
+  offset: number;
+  limit: number;
 }
 
 const useCategories = () => {
@@ -52,6 +57,7 @@ const useCategories = () => {
 const useProducts = (params: {
   currentUid: number;
   currentOffset: number;
+  limit: number;
   category_id?: number | null;
   variants?: { attribute_id: number; value_id: number }[];
   min_price?: number;
@@ -73,6 +79,9 @@ const Products = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedBrand, setSelectedBrand] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12); // Fixed number of items per page
+  const [totalItems, setTotalItems] = useState(0);
   const {
     addToCart,
     products: cartProducts,
@@ -81,7 +90,6 @@ const Products = () => {
   } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const [prods, setProds] = useState<ProductsResponse>({ products: [] });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -104,12 +112,31 @@ const Products = () => {
     refetch: refetchProducts
   } = useProducts({
     currentUid: Number(localStorage.getItem("session_id")) || 0,
-    currentOffset: 0,
+    currentOffset: (currentPage - 1) * itemsPerPage,
+    limit: itemsPerPage,
     category_id: selectedSubcategory || selectedCategory,
     variants: selectedVariants,
     min_price: priceRange?.min,
     max_price: priceRange?.max
   });
+
+  // Update total items when products data changes
+  useEffect(() => {
+    if (productsData) {
+      setTotalItems(productsData.total || 0);
+    }
+  }, [productsData]);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange]);
 
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
@@ -321,10 +348,10 @@ const Products = () => {
       )}
 
       {/* Main content */}
-      <div className="flex-1 px-4 md:px-8 lg:px-12 pb-20 pt-4">
+      <div className="flex-1 px-4 md:px-8 lg:px-12 pb-20 pt-8">
         {/* Categories section */}
         <div className="mb-8">
-          <h1 className="font-tajawal-bold text-2xl mb-6">الفئات</h1>
+          <h1 className="font-tajawal-bold text-2xl mb-4">الفئات</h1>
 
           {/* Categories */}
           {categoriesLoading ? (
@@ -405,7 +432,8 @@ const Products = () => {
                   }
                   className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
                 >
-                  <ArrowRight className="text-gray-600" size={20} />
+                  <ChevronRight />
+                  <ChevronRight className="text-gray-600" size={20} />
                 </button>
               </div>
             )}
@@ -588,7 +616,12 @@ const Products = () => {
 
         {!productsLoading && productsData?.products && productsData.products.length > 0 && (
           <div className="pagination mt-20 mb-14">
-            <Pagination />
+            <Pagination
+              currentPage={currentPage}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+            />
           </div>
         )}
       </div>
