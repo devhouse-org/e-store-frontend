@@ -3,9 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,40 +18,34 @@ const Signup = () => {
 
   const [error, setError] = useState<string | null>(null);
 
+  const signupMutation = useMutation({
+    mutationFn: async (data: Omit<typeof formData, "confirmPassword">) => {
+      const response = await axiosInstance.post("/auth/signup", data);
+      return response.data;
+    },
+    onSuccess: (result) => {
+      localStorage.setItem("name", result.name);
+      localStorage.setItem("email", result.email);
+      navigate("/dashboard");
+    },
+    onError: (error: any) => {
+      if (
+        error.response?.data?.arguments?.[0] ===
+        "You can not have two users with the same login!"
+      ) {
+        setError("البريد الإلكتروني مستخدم من قبل");
+      } else {
+        console.error("Error creating account:", error);
+        setError("حدث خطأ أثناء إنشاء الحساب");
+      }
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    signup();
+    const { confirmPassword, ...signupData } = formData;
+    signupMutation.mutate(signupData);
   };
-
-  const navigate = useNavigate();
-
-  const signup = async () => {
-    try {
-      const response = await axiosInstance.post("/auth/signup", {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-      });
-
-      const result = response.data;
-      if (result.error) {
-        if (result.data && result.data.arguments && result.data.arguments[0] === 'You can not have two users with the same login!') {
-          setError("البريد الإلكتروني مستخدم من قبل");
-        } else {
-          setError("You can not have two users with the same login!");
-          console.log(result.error.data.message)
-          // console.error('Error creating contact:', result.error);
-        }
-      } else {
-        localStorage.setItem("name", result.name);
-        localStorage.setItem("email", result.email);
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-    }
-  }
 
   return (
     <div className="h-screen p6 pt-14 mx-4 md:mx-0">
@@ -116,7 +112,9 @@ const Signup = () => {
                         }}
                       />
                       {error && (
-                        <p className="text-red-500 text-sm mt-1">البريد الإلكتروني مستخدم من قبل</p>
+                        <p className="text-red-500 text-sm mt-1">
+                          البريد الإلكتروني مستخدم من قبل
+                        </p>
                       )}
                     </div>
                     <div>

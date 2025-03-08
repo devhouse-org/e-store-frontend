@@ -7,15 +7,65 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CustomInput from "./CustomInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { useToast } from "@/hooks/use-toast";
-
+import LocationDropdowns from "./LocationDropdowns";
+// {
+//   "success": true,
+//   "addresses": [
+//       {
+//           "id": 79,
+//           "name": "sgsrgr",
+//           "street": "gherhgreh",
+//           "street2": "gerherhg",
+//           "city": "rtjtrj",
+//           "state_id": false,
+//           "zip": false,
+//           "country_id": false,
+//           "phone": false,
+//           "type": "delivery"
+//       },
+//       {
+//           "id": 77,
+//           "name": "test",
+//           "street": "bmw",
+//           "street2": "test",
+//           "city": "basra",
+//           "state_id": false,
+//           "zip": false,
+//           "country_id": false,
+//           "phone": "",
+//           "type": "delivery"
+//       },
+//       {
+//           "id": 80,
+//           "name": "wash",
+//           "street": "awash",
+//           "street2": "sahswh",
+//           "city": "shqhhw",
+//           "state_id": [
+//               56,
+//               "Washington (US)"
+//           ],
+//           "zip": false,
+//           "country_id": [
+//               233,
+//               "United States"
+//           ],
+//           "phone": false,
+//           "type": "delivery"
+//       }
+//   ]
+// }
 type Props = {
   id: number;
   location?: string;
-  phoneNumber?: string;
-  phoneNumber2?: string;
+  street2?: string;
+  // phoneNumber?: string;
+  // phoneNumber2?: string;
+  country_id?: [number, string];
+  state_id?: [number, string];
   city?: string;
   province?: string;
   country?: string;
@@ -25,38 +75,60 @@ type Props = {
 const LocationDialog = ({
   id,
   location,
-  phoneNumber2,
-  phoneNumber,
+  street2,
+  // phoneNumber,
   city,
   province,
   country,
+  country_id,
+  state_id,
   onUpdate
 }: Props) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     street: location || "",
-    street2: phoneNumber2 || "",
-    phone: phoneNumber || "",
+    street2: street2 || "",
+    // phone: phoneNumber || "",
     city: city || "",
-    state_id: province || "",
-    country_id: country || ""
+    state_id: undefined as number | undefined,
+    country_id: undefined as number | undefined
   });
-  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => {
+  // Update formData when props change
+  useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      street: location || "",
+      street2: street2 || "",
+      city: city || "",
+      state_id: state_id ? state_id[0] : undefined,
+      country_id: country_id ? country_id[0] : undefined
+    }));
+  }, [location, street2, city, state_id, country_id]);
+
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (field: string, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: field === 'country_id' || field === 'state_id'
+        ? Number(value)
+        : value
     }));
   };
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      await axiosInstance.put(`/user/address/${id}`, {
+
+      const payload = {
         id,
-        ...formData
-      });
+        ...formData,
+        country_id: formData.country_id ? Number(formData.country_id) : undefined,
+        state_id: formData.state_id ? Number(formData.state_id) : undefined
+      };
+
+      await axiosInstance.put(`/user/address/${id}`, payload);
 
       toast({
         title: "تم التحديث",
@@ -105,20 +177,13 @@ const LocationDialog = ({
               onChange={(e) => handleInputChange('street2', e.target.value)}
             />
           </div>
-          <div className="mt-4">
+          {/* <div className="mt-4">
             <CustomInput
               label="رقم الهاتف"
               value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
             />
-          </div>
-          <div className="mt-4">
-            <CustomInput
-              label="المحافظة"
-              value={formData.state_id}
-              onChange={(e) => handleInputChange('state_id', e.target.value)}
-            />
-          </div>
+          </div> */}
           <div className="mt-4">
             <CustomInput
               label="المدينة"
@@ -127,10 +192,11 @@ const LocationDialog = ({
             />
           </div>
           <div className="mt-4">
-            <CustomInput
-              label="الدولة"
-              value={formData.country_id}
-              onChange={(e) => handleInputChange('country_id', e.target.value)}
+            <LocationDropdowns
+              selectedCountryId={formData.country_id?.toString() || ""}
+              selectedStateId={formData.state_id?.toString() || ""}
+              onCountryChange={(value) => handleInputChange('country_id', value)}
+              onStateChange={(value) => handleInputChange('state_id', value)}
             />
           </div>
         </div>
