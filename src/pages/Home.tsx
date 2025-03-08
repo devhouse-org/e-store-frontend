@@ -20,11 +20,7 @@ import { Heart, ShoppingCart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 
-import ban1 from "@/assets/images/banners/1.webp";
-import ban2 from "@/assets/images/banners/2.webp";
-import ban3 from "@/assets/images/banners/3.webp";
-import ban4 from "@/assets/images/banners/4.webp";
-import ban5 from "@/assets/images/banners/5.webp";
+
 import { useCartStore } from "@/store/useCartStore";
 
 interface Banner {
@@ -210,11 +206,10 @@ function Home() {
         ) : banners.length > 0 ? (
           <Slider {...settings}>
             {banners.map((item, i) => (
-              <Link
+              <div
                 key={i}
                 className="h-[280px] md:h-[380px] lg:h-[480px] overflow-hidden relative cursor-pointer"
                 // onClick={() => handleBannerClick(bannersData!.banners[i])}
-                to={bannersData?.banners[i].x_studio_product_link ? `${bannersData?.banners[i].x_studio_product_link}` : `/banner/${bannersData?.banners[i].id}`}
               >
                 <img
                   src={item}
@@ -226,7 +221,13 @@ function Home() {
                     {bannersData.banners[i].x_studio_discount}% خصم
                   </div>
                 )} */}
-              </Link>
+                <Link
+                  className="absolute bottom-10 right-10 w-20 h-14 rounded-sm bg-orange-500 flex items-center justify-center text-white font-tajawal-bold"
+                  to={bannersData?.banners[i].x_studio_product_link ? `${bannersData?.banners[i].x_studio_product_link}` : `/banner/${bannersData?.banners[i].id}`}
+                >
+                  افتح
+                </Link>
+              </div>
             ))}
           </Slider>
         ) : (
