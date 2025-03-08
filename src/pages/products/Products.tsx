@@ -174,11 +174,13 @@ const Products = () => {
     const cartItem = cartProducts.find((item) => item.id === product.id);
     console.log(product);
     if (!cartItem) {
+      console.log(product)
       addToCart({
         id: product.id,
         name: product.name,
         price: product.list_price,
-        image: product.image_1920,
+
+        image: `data:image/png;base64,${product.image_1920}`,
         quantity: 1,
         storage: product.storage,
       });
@@ -307,10 +309,9 @@ const Products = () => {
                     onClick={() => handleCategoryClick(category.id)}
                     className={`
                       px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${
-                        selectedCategory === category.id
-                          ? "bg-orange-500 text-white shadow-md"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      ${selectedCategory === category.id
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                       }
                     `}
                   >
@@ -349,11 +350,10 @@ const Products = () => {
                       onClick={() => handleSubcategoryClick(subcategory.id)}
                       className={`
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${
-                        selectedSubcategory === subcategory.id
+                      ${selectedSubcategory === subcategory.id
                           ? "bg-orange-500 text-white shadow-md"
                           : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                      }
+                        }
                     `}
                     >
                       {subcategory.name}
@@ -531,11 +531,10 @@ const Products = () => {
                               handleComparisonClick(product);
                             }}
                             className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${
-                            isCompared(product.id)
-                              ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
-                              : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                          }`}
+                          ${isCompared(product.id)
+                                ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
+                                : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
+                              }`}
                           >
                             <LucideCircleDashed />
                           </button>
