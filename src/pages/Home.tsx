@@ -65,9 +65,8 @@ function Home() {
     customPaging: (i: any) => (
       <div className="w-8 h-1 px-1 my-2">
         <div
-          className={`w-full h-full ${
-            i === activeSlide ? "bg-orange-500" : "bg-orange-100"
-          } rounded-full`}
+          className={`w-full h-full ${i === activeSlide ? "bg-orange-500" : "bg-orange-100"
+            } rounded-full`}
         />
       </div>
     ),
@@ -139,7 +138,6 @@ function Home() {
 
   return (
     <div className=" pt-4 px-4 md:px-12 mx-auto">
-      {/* Slider */}
       <div className="pb-14 pt-8">
         <Slider {...settings}>
           {banners.map((item, i) => (
@@ -235,20 +233,19 @@ function Home() {
                         e.stopPropagation();
                         useWishlistStore.getState().isWishlisted(product.id)
                           ? useWishlistStore
-                              .getState()
-                              .removeFromWishlist(product.id)
+                            .getState()
+                            .removeFromWishlist(product.id)
                           : useWishlistStore
-                              .getState()
-                              .addToWishlist(product as Product);
+                            .getState()
+                            .addToWishlist(product as Product);
                       }}
                       className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors duration-200"
                     >
                       <Heart
-                        className={`w-5 h-5 ${
-                          useWishlistStore.getState().isWishlisted(product.id)
+                        className={`w-5 h-5 ${useWishlistStore.getState().isWishlisted(product.id)
                             ? "text-red-500 fill-red-500"
                             : "text-gray-400"
-                        }`}
+                          }`}
                       />
                     </button>
                   </div>
@@ -417,19 +414,18 @@ function Home() {
                     e.stopPropagation();
                     useWishlistStore.getState().isWishlisted(product.id)
                       ? useWishlistStore
-                          .getState()
-                          .removeFromWishlist(product.id)
+                        .getState()
+                        .removeFromWishlist(product.id)
                       : useWishlistStore.getState().addToWishlist(product);
                   }}
                   className="absolute top-2 right-2 z-10 p-2 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-white"
                   aria-label="إضافة للمفضلة"
                 >
                   <Heart
-                    className={`w-4 h-4 transition-colors ${
-                      useWishlistStore.getState().isWishlisted(product.id)
+                    className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id)
                         ? "text-red-500 fill-red-500"
                         : "text-gray-400 group-hover:text-gray-600"
-                    }`}
+                      }`}
                   />
                 </button>
 
