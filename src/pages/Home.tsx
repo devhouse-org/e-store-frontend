@@ -17,6 +17,8 @@ import Slider from "react-slick";
 import { Link } from "react-router-dom";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { Heart, ShoppingCart } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axiosInstance";
 
 import ban1 from "@/assets/images/banners/1.webp";
 import ban2 from "@/assets/images/banners/2.webp";
@@ -25,20 +27,28 @@ import ban4 from "@/assets/images/banners/4.webp";
 import ban5 from "@/assets/images/banners/5.webp";
 import { useCartStore } from "@/store/useCartStore";
 
+interface Banner {
+  id: number;
+  x_name: string;
+  x_studio_banner_image: string;
+  x_studio_start_date: string;
+  x_studio_end_date: string;
+  x_studio_publish: boolean;
+  x_studio_discount: number;
+}
+
+interface BannersResponse {
+  success: boolean;
+  banners: Banner[];
+}
+
 function Home() {
   const [oldSlide, setOldSlide] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeSlide2, setActiveSlide2] = useState(0);
 
-  const banners = [ban1, ban2, ban3, ban4, ban5];
-  const [selectedCategory, setSelectedCategory] = useState(
-    carouselCardData[0].label
-  );
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const filteredProducts = productsData.filter(
-    (product) => product.category === selectedCategory
-  );
 
   const scrollCategories = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
@@ -53,6 +63,30 @@ function Home() {
     }
   };
 
+  const CustomNextArrow = (props: any) => {
+    const { onClick } = props;
+    return (
+      <button
+        onClick={onClick}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-2 transition-all duration-200"
+      >
+        <LucideArrowLeft className="w-6 h-6 text-gray-600" />
+      </button>
+    );
+  };
+
+  const CustomPrevArrow = (props: any) => {
+    const { onClick } = props;
+    return (
+      <button
+        onClick={onClick}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-2 transition-all duration-200"
+      >
+        <LucideArrowRight className="w-6 h-6 text-gray-600" />
+      </button>
+    );
+  };
+
   const settings = {
     dots: true,
     infinite: true,
@@ -65,8 +99,7 @@ function Home() {
     customPaging: (i: any) => (
       <div className="w-8 h-1 px-1 my-2">
         <div
-          className={`w-full h-full ${i === activeSlide ? "bg-orange-500" : "bg-orange-100"
-            } rounded-full`}
+          className={`w-full h-full ${i === activeSlide ? "bg-orange-500" : "bg-orange-100"} rounded-full`}
         />
       </div>
     ),
@@ -75,6 +108,9 @@ function Home() {
       setActiveSlide(next);
     },
     afterChange: (current: any) => setActiveSlide2(current),
+    arrows: true,
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />
   };
   const categoryCarouselSettings = {
     autoPlay: true,
@@ -128,31 +164,63 @@ function Home() {
   // Get first 5 products for featured section
   const featuredProducts = products.slice(0, 5);
 
-  // const scrollCategories = (direction: 'left' | 'right') => {
-  //   const container = document.querySelector('.categories-scroll');
-  //   if (container) {
-  //     const scrollAmount = 300; // Adjust this value to control scroll distance
-  //     container.scrollLeft += direction === 'left' ? -scrollAmount : scrollAmount;
-  //   }
-  // };
+  // Add this query to fetch banners
+  const { data: bannersData, isLoading: isBannersLoading } = useQuery<BannersResponse>({
+    queryKey: ['banners'],
+    queryFn: async () => {
+      const response = await axiosInstance.post('/products/banners', {
+        currentOffset: 0,
+        limit: 10
+      });
+      return response.data;
+    }
+  });
+
+  // Replace the banners array with the fetched data
+  const banners = bannersData?.banners.map(banner =>
+    `data:image/png;base64,${banner.x_studio_banner_image}`
+  ) || [];
+
+  const [selectedCategory, setSelectedCategory] = useState(
+    carouselCardData[0].label
+  );
+
+  const filteredProducts = productsData.filter(
+    (product) => product.category === selectedCategory
+  );
 
   return (
     <div className=" pt-4 px-4 md:px-12 mx-auto">
-      <div className="pb-14 pt-8">
-        <Slider {...settings}>
-          {banners.map((item, i) => (
-            <div
-              key={i}
-              className={`h-[280px] md:h-[380px] outline-none border-none lg:h-[480px] roundedxl overflow-hidden`}
-            >
-              <img
-                src={item}
-                alt=""
-                className="focus:outline-none border-none w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </Slider>
+      <div className="pb-14 pt-8 relative">
+        {isBannersLoading ? (
+          <div className="h-[280px] md:h-[380px] lg:h-[480px] flex items-center justify-center bg-gray-100 rounded-xl">
+            <p className="text-gray-500">جاري تحميل البانرات...</p>
+          </div>
+        ) : banners.length > 0 ? (
+          <Slider {...settings}>
+            {banners.map((item, i) => (
+              <div
+                key={i}
+                className="h-[280px] md:h-[380px] lg:h-[480px] overflow-hidden relative"
+              >
+                <img
+                  src={item}
+                  alt={`Banner ${i + 1}`}
+                  className="focus:outline-none border-none w-full h-full object-cover"
+                />
+                {/* {bannersData?.banners[i].x_studio_discount && (
+                  <div className="z-[100] absolute top-4 pt-2 font-tajawal-bold right-4 bg-red-500 text-white px-3 py-1 rounded-full">
+                    {bannersData.banners[i].x_studio_discount}% خصم
+                  </div>
+                )} */}
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <div className="h-[280px] md:h-[380px] lg:h-[480px] flex items-center justify-center bg-gray-100 rounded-xl">
+            <p className="text-gray-500">لا توجد بانرات متاحة</p>
+          </div>
+        )}
       </div>
 
       {/* Category Carousel */}
@@ -243,8 +311,8 @@ function Home() {
                     >
                       <Heart
                         className={`w-5 h-5 ${useWishlistStore.getState().isWishlisted(product.id)
-                            ? "text-red-500 fill-red-500"
-                            : "text-gray-400"
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-400"
                           }`}
                       />
                     </button>
@@ -423,8 +491,8 @@ function Home() {
                 >
                   <Heart
                     className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id)
-                        ? "text-red-500 fill-red-500"
-                        : "text-gray-400 group-hover:text-gray-600"
+                      ? "text-red-500 fill-red-500"
+                      : "text-gray-400 group-hover:text-gray-600"
                       }`}
                   />
                 </button>
