@@ -32,6 +32,7 @@ import Profile from "./pages/dashboard/Profile";
 import DashboardWishlist from "./pages/dashboard/DashboardWishlist";
 import OrderDetails from "./pages/dashboard/OrderDetails";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import BannerDetails from "@/pages/BannerDetails";
 
 const queryClient = new QueryClient();
 
@@ -85,6 +86,9 @@ function App() {
 
               {/* Brands Route */}
               <Route path="/brands" element={<Brands />} />
+
+              {/* Banner Route */}
+              <Route path="/banner/:id" element={<BannerDetails />} />
 
               {/* 404 Route - Add this at the end */}
               <Route path="*" element={<NotFound />} />
