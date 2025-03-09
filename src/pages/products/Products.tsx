@@ -109,6 +109,13 @@ const Products = () => {
   const { data: categoriesData = [], isLoading: categoriesLoading } =
     useCategories();
 
+  // Add this useEffect to set categories when data is loaded
+  useEffect(() => {
+    if (categoriesData && categoriesData.length > 0) {
+      setCategories(categoriesData);
+    }
+  }, [categoriesData]);
+
   const {
     data: productsData,
     isLoading: productsLoading,
