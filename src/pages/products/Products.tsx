@@ -58,16 +58,24 @@ const useProducts = (params: {
   limit: number;
   page: number;
   category_id?: number | null;
-  variants?: { attribute_id: number; value_id: number }[];
+  variants?: Array<{ attribute_id: number; value_id: number }>;
   min_price?: number;
   max_price?: number;
 }) => {
   return useQuery<ProductsResponse, Error>({
     queryKey: ["products", params],
     queryFn: async () => {
+      const requestParams = {
+        ...params,
+        variants:
+          params.variants && params.variants.length > 0
+            ? params.variants
+            : undefined,
+      };
+
       const response = await axiosInstance.post<ProductsResponse>(
         "/products",
-        params
+        requestParams
       );
       return response.data;
     },
@@ -86,11 +94,11 @@ const Products = () => {
   } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const [prods, setProds] = useState<ProductsResponse>({ 
-    products: [], 
-    total: 0, 
-    offset: 0, 
-    limit: 0 
+  const [prods, setProds] = useState<ProductsResponse>({
+    products: [],
+    total: 0,
+    offset: 0,
+    limit: 0,
   });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -101,7 +109,9 @@ const Products = () => {
   const [selectedVariants, setSelectedVariants] = useState<
     { attribute_id: number; value_id: number }[]
   >([]);
-  const [priceRange, setPriceRange] = useState<{ min: number; max: number } | undefined>(undefined);
+  const [priceRange, setPriceRange] = useState<
+    { min: number; max: number } | undefined
+  >(undefined);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Number of products per page
@@ -120,24 +130,30 @@ const Products = () => {
     data: productsData,
     isLoading: productsLoading,
     error: productsError,
-    refetch: refetchProducts
+    refetch: refetchProducts,
   } = useProducts({
     currentUid: Number(localStorage.getItem("session_id")) || 0,
     currentOffset: (currentPage - 1) * itemsPerPage,
     limit: itemsPerPage,
     page: currentPage,
     category_id: selectedSubcategory || selectedCategory,
-    variants: selectedVariants,
+    variants: selectedVariants.length > 0 ? selectedVariants : undefined,
     min_price: priceRange?.min,
-    max_price: priceRange?.max
+    max_price: priceRange?.max,
   });
 
   // Calculate total pages
-  const totalPages = productsData ? Math.ceil(productsData.total / itemsPerPage) : 0;
+  const totalPages = productsData
+    ? Math.ceil(productsData.total / itemsPerPage)
+    : 0;
 
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
-    return searchParams.has("category") || searchParams.has("price") || searchParams.has("page");
+    return (
+      searchParams.has("category") ||
+      searchParams.has("price") ||
+      searchParams.has("page")
+    );
   };
 
   // Function to update URL with current filters
@@ -153,6 +169,16 @@ const Products = () => {
       params.set("category", categoryParam);
     } else {
       params.delete("category");
+    }
+
+    // Add variants to URL
+    if (selectedVariants.length > 0) {
+      const variantsParam = selectedVariants
+        .map((v) => `${v.attribute_id}-${v.value_id}`)
+        .join(",");
+      params.set("variants", variantsParam);
+    } else {
+      params.delete("variants");
     }
 
     // Add price range
@@ -194,6 +220,21 @@ const Products = () => {
       setPriceRange(undefined);
     }
 
+    // Parse variants parameter
+    const variantsParam = searchParams.get("variants");
+    if (variantsParam) {
+      const variants = variantsParam.split(",").map((v) => {
+        const [attributeId, valueId] = v.split("-").map(Number);
+        return {
+          attribute_id: attributeId,
+          value_id: valueId,
+        };
+      });
+      setSelectedVariants(variants);
+    } else {
+      setSelectedVariants([]);
+    }
+
     // Parse page parameter
     const pageParam = searchParams.get("page");
     if (pageParam) {
@@ -232,7 +273,7 @@ const Products = () => {
       setPriceRange(undefined);
       // Remove price parameter from URL if it exists
       const newParams = new URLSearchParams(searchParams);
-      newParams.delete('price');
+      newParams.delete("price");
       setSearchParams(newParams);
       refetchProducts();
     } else {
@@ -248,7 +289,7 @@ const Products = () => {
     const cartItem = cartProducts.find((item) => item.id === product.id);
     console.log(product);
     if (!cartItem) {
-      console.log(product)
+      console.log(product);
       addToCart({
         id: product.id,
         name: product.name,
@@ -320,13 +361,22 @@ const Products = () => {
   // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange]);
+
+  // Update the filter change handler
+  const handleFilterChange = (
+    variants: Array<{ attribute_id: number; value_id: number }>
+  ) => {
+    setSelectedVariants(variants);
+    // Reset to first page when filters change
+    setCurrentPage(1);
+  };
 
   return (
     <div className="relative flex flex-col lg:flex-row">
@@ -353,7 +403,7 @@ const Products = () => {
         <div className="h-full">
           <Filter
             selectedCategory={selectedCategory}
-            onFilterChange={(variants) => setSelectedVariants(variants)}
+            onFilterChange={handleFilterChange}
             onPriceChange={handlePriceChange}
             initialVariants={selectedVariants}
             initialPriceRange={priceRange}
@@ -396,9 +446,10 @@ const Products = () => {
                     onClick={() => handleCategoryClick(category.id)}
                     className={`
                       px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${selectedCategory === category.id
-                        ? "bg-orange-500 text-white shadow-md"
-                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      ${
+                        selectedCategory === category.id
+                          ? "bg-orange-500 text-white shadow-md"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                       }
                     `}
                   >
@@ -437,10 +488,11 @@ const Products = () => {
                       onClick={() => handleSubcategoryClick(subcategory.id)}
                       className={`
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${selectedSubcategory === subcategory.id
+                      ${
+                        selectedSubcategory === subcategory.id
                           ? "bg-orange-500 text-white shadow-md"
                           : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                        }
+                      }
                     `}
                     >
                       {subcategory.name}
@@ -618,10 +670,11 @@ const Products = () => {
                               handleComparisonClick(product);
                             }}
                             className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${isCompared(product.id)
-                                ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
-                                : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                              }`}
+                          ${
+                            isCompared(product.id)
+                              ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
+                              : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
+                          }`}
                           >
                             <LucideCircleDashed />
                           </button>
@@ -635,15 +688,17 @@ const Products = () => {
           </div>
         )}
 
-        {!productsLoading && productsData?.products && productsData.products.length > 0 && (
-          <div className="pagination mt-20 mb-14">
-            <Pagination 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        )}
+        {!productsLoading &&
+          productsData?.products &&
+          productsData.products.length > 0 && (
+            <div className="pagination mt-20 mb-14">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
       </div>
     </div>
   );
