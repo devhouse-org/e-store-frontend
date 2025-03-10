@@ -18,8 +18,57 @@ import { useEffect, useRef, useState } from "react";
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti";
 import { useParams } from "react-router-dom";
 import Slider from "react-slick";
-import { getAuctionById } from "@/utils/data/auctions";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axiosInstance";
 import { products } from "@/utils/data/products";
+
+interface BackendAuction {
+  id: number;
+  x_name: string;
+  x_studio_description: string;
+  x_studio_starting_bid_1: number;
+  x_studio_current_bid: number;
+  x_studio_end_date: string;
+  x_studio_product: [number, string] | false;
+  product?: {
+    name: string;
+    description: string;
+    image_1920: string;
+  };
+}
+
+interface BackendResponse {
+  success: boolean;
+  auction: BackendAuction;
+}
+
+const formatBase64Image = (base64String: string) => {
+  if (!base64String) return "";
+  if (base64String.startsWith('data:')) return base64String;
+  return `data:image/jpeg;base64,${base64String}`;
+};
+
+const useAuction = (id: string) => {
+  return useQuery({
+    queryKey: ["auction", id],
+    queryFn: async () => {
+      const response = await axiosInstance.get<BackendResponse>(`/auctions/${id}`);
+      return {
+        success: response.data.success,
+        auction: {
+          id: response.data.auction.id.toString(),
+          title: response.data.auction.x_name,
+          currentPrice: response.data.auction.x_studio_current_bid || response.data.auction.x_studio_starting_bid_1,
+          startingPrice: response.data.auction.x_studio_starting_bid_1,
+          endTime: response.data.auction.x_studio_end_date,
+          image: formatBase64Image(response.data.auction.product?.image_1920 || ""),
+          description: response.data.auction.x_studio_description,
+        }
+      };
+    },
+    enabled: !!id
+  });
+};
 
 type Props = {};
 
@@ -29,21 +78,22 @@ type timeType = {
   minutes: number;
   days: number;
 };
+
 const Auction = (props: Props) => {
   const { id } = useParams();
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [remainingTime, setRemainingTime] = useState<timeType | null>(null);
 
-  const auction = id ? getAuctionById(id) : null;
+  const { data, isLoading, error } = useAuction(id || "");
 
   useEffect(() => {
-    if (!auction) return;
+    if (!data?.auction) return;
 
     let intervalId: NodeJS.Timeout;
     const updateTime = () => {
       const now = new Date().getTime();
-      const end = new Date(auction.endTime).getTime();
+      const end = new Date(data.auction.endTime).getTime();
       const distance = end - now;
 
       if (distance < 0) {
@@ -76,12 +126,17 @@ const Auction = (props: Props) => {
     intervalId = setInterval(updateTime, 1000);
 
     return () => clearInterval(intervalId);
-  }, [auction]);
+  }, [data?.auction]);
 
-  if (!auction) {
-    return <div>Auction not found</div>;
+  if (isLoading) {
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
   }
 
+  if (error || !data?.auction) {
+    return <div className="container mx-auto px-4 py-8">Auction not found</div>;
+  }
+
+  const auction = data.auction;
   // Get related products (you might want to implement a proper related products logic)
   const relatedProducts = products.slice(0, 4); // Just get first 4 products for example
 
@@ -119,7 +174,7 @@ const Auction = (props: Props) => {
               />
               <div className="other_images flex flex-wrap items-center gap-2 my-2">
                 {[1, 2, 3, 4].slice(0, 12).map((item) => (
-                  <div className="cursor-pointer border-2 bg-green-200 h-24 w-32 object-contain rounded-md" />
+                  <div key={item} className="cursor-pointer border-2 bg-green-200 h-24 w-32 object-contain rounded-md" />
                 ))}
               </div>
             </div>
@@ -136,13 +191,13 @@ const Auction = (props: Props) => {
 
                   <div className="flex items-center">
                     {[1, 2, 3, 4, 5].map((_, index) => (
-                      <>
+                      <span key={index}>
                         {4 >= index + 1 ? (
                           <TiStarFullOutline className="text-orange-400" />
                         ) : (
                           <TiStarOutline className="text-slate-400" />
                         )}
-                      </>
+                      </span>
                     ))}
                     <p className="px-2">(2000)</p>
                   </div>
@@ -258,4 +313,5 @@ const Auction = (props: Props) => {
     </div>
   );
 };
+
 export default Auction;

@@ -35,6 +35,9 @@ interface ProductsResponse {
     list_price: number;
     description?: string;
   }>;
+  total: number;
+  offset: number;
+  limit: number;
 }
 
 const useCategories = () => {
@@ -52,8 +55,12 @@ const useCategories = () => {
 const useProducts = (params: {
   currentUid: number;
   currentOffset: number;
+  limit: number;
+  page: number;
   category_id?: number | null;
   variants?: { attribute_id: number; value_id: number }[];
+  min_price?: number;
+  max_price?: number;
 }) => {
   return useQuery<ProductsResponse, Error>({
     queryKey: ["products", params],
@@ -79,7 +86,12 @@ const Products = () => {
   } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const [prods, setProds] = useState<ProductsResponse>({ products: [] });
+  const [prods, setProds] = useState<ProductsResponse>({ 
+    products: [], 
+    total: 0, 
+    offset: 0, 
+    limit: 0 
+  });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -89,30 +101,48 @@ const Products = () => {
   const [selectedVariants, setSelectedVariants] = useState<
     { attribute_id: number; value_id: number }[]
   >([]);
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number } | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12; // Number of products per page
 
   const { data: categoriesData = [], isLoading: categoriesLoading } =
     useCategories();
+
+  // Add this useEffect to set categories when data is loaded
+  useEffect(() => {
+    if (categoriesData && categoriesData.length > 0) {
+      setCategories(categoriesData);
+    }
+  }, [categoriesData]);
 
   const {
     data: productsData,
     isLoading: productsLoading,
     error: productsError,
+    refetch: refetchProducts
   } = useProducts({
     currentUid: Number(localStorage.getItem("session_id")) || 0,
-    currentOffset: 0,
+    currentOffset: (currentPage - 1) * itemsPerPage,
+    limit: itemsPerPage,
+    page: currentPage,
     category_id: selectedSubcategory || selectedCategory,
     variants: selectedVariants,
+    min_price: priceRange?.min,
+    max_price: priceRange?.max
   });
+
+  // Calculate total pages
+  const totalPages = productsData ? Math.ceil(productsData.total / itemsPerPage) : 0;
 
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
-    return searchParams.has("category");
+    return searchParams.has("category") || searchParams.has("price") || searchParams.has("page");
   };
 
   // Function to update URL with current filters
   const updateUrlParams = () => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams);
 
     // Add category and subcategory
     if (selectedCategory !== null) {
@@ -121,6 +151,22 @@ const Products = () => {
           ? `${selectedCategory}-${selectedSubcategory}`
           : `${selectedCategory}`;
       params.set("category", categoryParam);
+    } else {
+      params.delete("category");
+    }
+
+    // Add price range
+    if (priceRange) {
+      params.set("price", `${priceRange.min}-${priceRange.max}`);
+    } else {
+      params.delete("price");
+    }
+
+    // Add page number (only if it's not page 1)
+    if (currentPage > 1) {
+      params.set("page", currentPage.toString());
+    } else {
+      params.delete("page");
     }
 
     setSearchParams(params);
@@ -138,30 +184,41 @@ const Products = () => {
       setSelectedCategory(null);
       setSelectedSubcategory(null);
     }
+
+    // Parse price parameter
+    const priceParam = searchParams.get("price");
+    if (priceParam) {
+      const [min, max] = priceParam.split("-").map(Number);
+      setPriceRange({ min, max });
+    } else {
+      setPriceRange(undefined);
+    }
+
+    // Parse page parameter
+    const pageParam = searchParams.get("page");
+    if (pageParam) {
+      const page = parseInt(pageParam);
+      if (!isNaN(page) && page > 0) {
+        setCurrentPage(page);
+      }
+    } else {
+      setCurrentPage(1);
+    }
   };
 
   // Initial load - fetch categories and handle URL params
   useEffect(() => {
-    const initializeData = async () => {
-      if (hasUrlFilters()) {
-        parseUrlParams();
-      }
-    };
-    initializeData();
+    if (hasUrlFilters()) {
+      parseUrlParams();
+    }
   }, []); // Only run once on mount
 
-  // Effect to update URL when category filters change
+  // Effect to update URL when filters change
   useEffect(() => {
     if (!categoriesLoading) {
-      // Only update URL after initial load
-      if (selectedCategory === null) {
-        // Clear URL if no category is active
-        setSearchParams(new URLSearchParams());
-      } else {
-        updateUrlParams();
-      }
+      updateUrlParams();
     }
-  }, [selectedCategory, selectedSubcategory]);
+  }, [selectedCategory, selectedSubcategory, priceRange, currentPage]);
 
   // Effect to handle URL parameter changes
   useEffect(() => {
@@ -169,6 +226,23 @@ const Products = () => {
       parseUrlParams();
     }
   }, [searchParams]);
+
+  const handlePriceChange = (min: number, max: number) => {
+    if (min === 0 && max === 0) {
+      setPriceRange(undefined);
+      // Remove price parameter from URL if it exists
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('price');
+      setSearchParams(newParams);
+      refetchProducts();
+    } else {
+      // Ensure the price values are within valid range
+      const validMin = Math.max(1000, min);
+      const validMax = Math.min(3000000, max);
+      setPriceRange({ min: validMin, max: validMax });
+      refetchProducts();
+    }
+  };
 
   const handleAddToCart = (product: any) => {
     const cartItem = cartProducts.find((item) => item.id === product.id);
@@ -243,6 +317,17 @@ const Products = () => {
     setSelectedVariants([]);
   };
 
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange]);
+
   return (
     <div className="relative flex flex-col lg:flex-row">
       {/* Mobile Filter Toggle Button */}
@@ -269,7 +354,9 @@ const Products = () => {
           <Filter
             selectedCategory={selectedCategory}
             onFilterChange={(variants) => setSelectedVariants(variants)}
+            onPriceChange={handlePriceChange}
             initialVariants={selectedVariants}
+            initialPriceRange={priceRange}
           />
         </div>
       </div>
@@ -548,9 +635,13 @@ const Products = () => {
           </div>
         )}
 
-        {!productsLoading && productsData?.products.length > 0 && (
+        {!productsLoading && productsData?.products && productsData.products.length > 0 && (
           <div className="pagination mt-20 mb-14">
-            <Pagination />
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         )}
       </div>
