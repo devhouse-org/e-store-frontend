@@ -24,6 +24,12 @@ interface BackendAuction {
 interface BackendResponse {
   success: boolean;
   auctions: BackendAuction[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 interface TransformedResponse {
@@ -34,16 +40,18 @@ interface TransformedResponse {
 const formatBase64Image = (base64String: string) => {
   if (!base64String) return "";
   // Check if the string already has the data URL prefix
-  if (base64String.startsWith('data:')) return base64String;
+  if (base64String.startsWith("data:")) return base64String;
   // Add the appropriate data URL prefix for base64 images
   return `data:image/jpeg;base64,${base64String}`;
 };
 
-const useAuctions = () => {
+const useAuctions = (page: number) => {
   return useQuery<BackendResponse, Error, TransformedResponse>({
-    queryKey: ["auctions"],
+    queryKey: ["auctions", page],
     queryFn: async () => {
-      const response = await axiosInstance.get<BackendResponse>("/auctions");
+      const response = await axiosInstance.get<BackendResponse>(
+        `/auctions?page=${page}`
+      );
       return response.data;
     },
     select: (data) => ({
@@ -51,19 +59,21 @@ const useAuctions = () => {
       auctions: data.auctions.map((auction) => ({
         id: auction.id.toString(),
         title: auction.x_name,
-        currentPrice: auction.x_studio_current_bid || auction.x_studio_starting_bid_1,
+        currentPrice:
+          auction.x_studio_current_bid || auction.x_studio_starting_bid_1,
         startingPrice: auction.x_studio_starting_bid_1,
         endTime: auction.x_studio_end_date,
         image: formatBase64Image(auction.product?.image_1920 || ""),
         description: auction.x_studio_description,
       })),
+      pagination: data.pagination,
     }),
   });
 };
 
 const Auctions = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading, error } = useAuctions();
+  const { data, isLoading, error } = useAuctions(currentPage);
 
   const handleSubscribe = () => {
     alert("Subscribed!");
@@ -101,9 +111,9 @@ const Auctions = () => {
           ))}
         </div>
         <div className="pagination mt-20 mb-14">
-          <Pagination 
+          <Pagination
             currentPage={currentPage}
-            totalPages={Math.ceil((data?.auctions.length || 0) / 12)} // Assuming 12 items per page
+            totalPages={data?.pagination.totalPages || 1}
             onPageChange={handlePageChange}
           />
         </div>
