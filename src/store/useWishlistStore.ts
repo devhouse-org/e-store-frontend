@@ -18,7 +18,10 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
 
     if (!isAlreadyInWishlist) {
       set((state) => ({
-        wishlist: [...state.wishlist, product],
+        wishlist: [
+          ...state.wishlist,
+          { ...product, image: `data:image/png;base64,${product.image}` },
+        ],
         wishlistCount: state.wishlistCount + 1,
       }));
     }
