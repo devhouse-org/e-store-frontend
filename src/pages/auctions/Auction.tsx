@@ -21,6 +21,7 @@ import Slider from "react-slick";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import { products } from "@/utils/data/products";
+// import { toast } from "sonner";
 
 interface BackendAuction {
   id: number;
@@ -44,7 +45,7 @@ interface BackendResponse {
 
 const formatBase64Image = (base64String: string) => {
   if (!base64String) return "";
-  if (base64String.startsWith('data:')) return base64String;
+  if (base64String.startsWith("data:")) return base64String;
   return `data:image/jpeg;base64,${base64String}`;
 };
 
@@ -52,21 +53,27 @@ const useAuction = (id: string) => {
   return useQuery({
     queryKey: ["auction", id],
     queryFn: async () => {
-      const response = await axiosInstance.get<BackendResponse>(`/auctions/${id}`);
+      const response = await axiosInstance.get<BackendResponse>(
+        `/auctions/${id}`
+      );
       return {
         success: response.data.success,
         auction: {
           id: response.data.auction.id.toString(),
           title: response.data.auction.x_name,
-          currentPrice: response.data.auction.x_studio_current_bid || response.data.auction.x_studio_starting_bid_1,
+          currentPrice:
+            response.data.auction.x_studio_current_bid ||
+            response.data.auction.x_studio_starting_bid_1,
           startingPrice: response.data.auction.x_studio_starting_bid_1,
           endTime: response.data.auction.x_studio_end_date,
-          image: formatBase64Image(response.data.auction.product?.image_1920 || ""),
+          image: formatBase64Image(
+            response.data.auction.product?.image_1920 || ""
+          ),
           description: response.data.auction.x_studio_description,
-        }
+        },
       };
     },
-    enabled: !!id
+    enabled: !!id,
   });
 };
 
@@ -155,6 +162,33 @@ const Auction = (props: Props) => {
     });
   };
 
+  const handlePlaceBid = async () => {
+    if (totalPrice <= 0) return;
+
+    try {
+      const userId = localStorage.getItem("id");
+      if (!userId) {
+        // toast.error("يرجى تسجيل الدخول أولاً");
+        return;
+      }
+
+      const response = await axiosInstance.post(`/auctions/${id}/bid`, {
+        bidAmount: totalPrice + (auction.currentPrice || 0),
+        partnerId: Number(userId),
+      });
+
+      if (response.data.success) {
+        // toast.success("تم وضع المزايدة بنجاح");
+        // Refresh the auction data
+        window.location.reload();
+      }
+    } catch (error: any) {
+      // toast.error(
+      //   error.response?.data?.message || "حدث خطأ أثناء وضع المزايدة"
+      // );
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Auction details */}
@@ -174,7 +208,10 @@ const Auction = (props: Props) => {
               />
               <div className="other_images flex flex-wrap items-center gap-2 my-2">
                 {[1, 2, 3, 4].slice(0, 12).map((item) => (
-                  <div key={item} className="cursor-pointer border-2 bg-green-200 h-24 w-32 object-contain rounded-md" />
+                  <div
+                    key={item}
+                    className="cursor-pointer border-2 bg-green-200 h-24 w-32 object-contain rounded-md"
+                  />
                 ))}
               </div>
             </div>
@@ -256,11 +293,28 @@ const Auction = (props: Props) => {
             </div>
             <div className="details_footer py-4">
               <p className="font-tajawal-bold text-black">سعر المزايدة</p>
+              <p className="font-tajawal-regular">
+                {totalPrice <= 0 ? (
+                  ""
+                ) : (
+                  <>
+                    {totalPrice.toLocaleString()} د.ع +{" "}
+                    {auction.currentPrice.toLocaleString()} د.ع
+                  </>
+                )}
+              </p>
               <p className="font-tajawal-bold pb-2 text-[24px] text-orange-500">
-                {totalPrice.toLocaleString()}د.ع
+                {totalPrice <= 0
+                  ? "0.00"
+                  : (totalPrice + (auction.currentPrice || 0)).toLocaleString()}
+                د.ع
               </p>
               <div className="flex justify-between">
-                <Button disabled={totalPrice <= 0} label="مزايدة" />
+                <Button
+                  disabled={totalPrice <= 0}
+                  label="مزايدة"
+                  onClick={handlePlaceBid}
+                />
               </div>
             </div>
           </div>
