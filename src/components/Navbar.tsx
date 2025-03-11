@@ -165,7 +165,7 @@ const Navbar = (props: Props) => {
         className="navigation flex items-center py-4 px-4 lg:px-12 justify-between"
       >
         {/* Left Section */}
-        <div className="flex items-center gap-x-4">
+        <div className="flex flex-1 items-center gap-x-4">
           {/* Mobile Menu Button */}
           <button
             className="lg:hidden p-2 text-gray-700 rounded-lg hover:bg-gray-100"
