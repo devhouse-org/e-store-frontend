@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
-// import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 type TimeType = {
   seconds: number;
@@ -46,6 +46,7 @@ export function AuctionDialog({
   const [isAnimating, setIsAnimating] = useState(false);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!open) {
@@ -115,25 +116,42 @@ export function AuctionDialog({
     try {
       const userId = localStorage.getItem("id");
       if (!userId) {
-        // toast.error("يرجى تسجيل الدخول أولاً");
         return;
       }
 
       setIsLoading(true);
+      const newPrice = totalPrice + (currentPrice || 0);
+
       const response = await axiosInstance.post(`/auctions/${id}/bid`, {
-        bidAmount: totalPrice + (currentPrice || 0),
+        bidAmount: newPrice,
         partnerId: Number(userId),
       });
 
       if (response.data.success) {
+        // Update the individual auction
+        queryClient.setQueryData(["auction", id], (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            currentPrice: newPrice,
+          };
+        });
+
+        // Update the auction list (if it exists in cache)
+        queryClient.setQueryData(["auctions"], (oldData: any) => {
+          if (!oldData) return oldData;
+          return oldData.map((auction: any) =>
+            auction.id === id ? { ...auction, currentPrice: newPrice } : auction
+          );
+        });
+
+        // Invalidate only relevant queries
+        await queryClient.invalidateQueries({ queryKey: ["auction", id] });
+
         setOpen(false);
-        window.location.reload();
       }
     } catch (error: any) {
       console.error(error.response?.data?.message);
-      // toast.error(
-      //   error.response?.data?.message || "حدث خطأ أثناء وضع المزايدة"
-      // );
     } finally {
       setIsLoading(false);
     }
