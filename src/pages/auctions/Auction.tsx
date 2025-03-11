@@ -183,7 +183,7 @@ const Auction = (props: Props) => {
   }, [data?.auction]);
 
   if (queryLoading) {
-    return <div className="container px-4 py-8 mx-auto">Loading...</div>;
+    return <div className="container px-4 py-8 mx-auto"><Loader/></div>;
   }
   
   if (error || !data?.auction) {
@@ -352,7 +352,7 @@ const Auction = (props: Props) => {
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center w-full">
-                      <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                      <Loader/>
                     </div>
                   ) : (
                     <span className="font-tajawal-regular">مزايدة</span>
@@ -414,7 +414,7 @@ const Auction = (props: Props) => {
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {loading ? (
-            <div className="py-8 text-center col-span-full">Loading...</div>
+            <div className="py-8 text-center col-span-full"><Loader/></div>
           ) : auctions.length > 0 ? (
             auctions.map((auction) => (
               <Link key={auction.id} to={`/auction/${auction.id}`}>
