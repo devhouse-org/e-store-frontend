@@ -3,7 +3,6 @@ import { Product, products } from "@/utils/data/products";
 import AuctionSection from "@/components/AuctionSection";
 import Banner from "@/components/Banner";
 import CarouselCard from "@/components/CarouselCard";
-import ProductCard from "@/components/ProductCard";
 import SpecialProducts from "@/components/SpecialProducts";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +11,13 @@ import {
   techLogos,
 } from "@/utils/dummy_data/data";
 import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
-import { IconType } from "react-icons";
 import Slider from "react-slick";
 import { Link, useNavigate } from "react-router-dom";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
-
+import Loader from "@/components/ui/LoadingState";
 
 import { useCartStore } from "@/store/useCartStore";
 
@@ -66,7 +64,7 @@ function Home() {
     return (
       <button
         onClick={onClick}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-2 transition-all duration-200"
+        className="absolute z-10 p-2 transition-all duration-200 -translate-y-1/2 rounded-full shadow-md left-4 top-1/2 bg-white/80 hover:bg-white"
       >
         <LucideArrowLeft className="w-6 h-6 text-gray-600" />
       </button>
@@ -78,7 +76,7 @@ function Home() {
     return (
       <button
         onClick={onClick}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-2 transition-all duration-200"
+        className="absolute z-10 p-2 transition-all duration-200 -translate-y-1/2 rounded-full shadow-md right-4 top-1/2 bg-white/80 hover:bg-white"
       >
         <LucideArrowRight className="w-6 h-6 text-gray-600" />
       </button>
@@ -116,8 +114,8 @@ function Home() {
     speed: 900,
     slidesToShow: 11,
     slidesToScroll: 4,
-    nextArrow: <LucideArrowLeft className="bg-black text-white" />,
-    prevArrow: <LucideArrowRight className="bg-black text-white" />,
+    nextArrow: <LucideArrowLeft className="text-white bg-black" />,
+    prevArrow: <LucideArrowRight className="text-white bg-black" />,
     responsive: [
       {
         breakpoint: 1400,
@@ -197,11 +195,17 @@ function Home() {
   };
 
   return (
-    <div className=" pt-4 px-4 md:px-12 mx-auto">
-      <div className="pb-14 pt-8 relative">
+    <div className="px-4 pt-4 mx-auto md:px-12">
+      <div className="relative pt-8 pb-14">
         {isBannersLoading ? (
           <div className="h-[280px] md:h-[380px] lg:h-[480px] flex items-center justify-center bg-gray-100 rounded-xl">
-            <p className="text-gray-500">جاري تحميل البانرات...</p>
+          <div role="status" className="w-full h-full animate-pulse">
+              <div className="flex items-center justify-center w-full h-full bg-gray-300 rounded-sm dark:bg-gray-700">
+                <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                </svg>
+              </div>
+          </div>
           </div>
         ) : banners.length > 0 ? (
           <Slider {...settings}>
@@ -214,7 +218,7 @@ function Home() {
                 <img
                   src={item}
                   alt={`Banner ${i + 1}`}
-                  className="focus:outline-none border-none w-full h-full object-cover"
+                  className="object-cover w-full h-full border-none focus:outline-none"
                 />
                 {/* {bannersData?.banners[i].x_studio_discount && (
                   <div className="z-[100] absolute top-4 pt-2 font-tajawal-bold right-4 bg-red-500 text-white px-3 py-1 rounded-full">
@@ -222,7 +226,7 @@ function Home() {
                   </div>
                 )} */}
                 <Link
-                  className="absolute bottom-10 right-10 w-20 h-14 rounded-sm bg-orange-500 flex items-center justify-center text-white font-tajawal-bold"
+                  className="absolute flex items-center justify-center w-20 text-white bg-orange-500 rounded-sm bottom-10 right-10 h-14 font-tajawal-bold"
                   to={bannersData?.banners[i].x_studio_product_link ? `${bannersData?.banners[i].x_studio_product_link}` : `/banner/${bannersData?.banners[i].id}`}
                 >
                   افتح
@@ -238,24 +242,24 @@ function Home() {
       </div>
 
       {/* Category Carousel */}
-      <div className="mb-20 bg-white p-4 rounded-md shadow-md">
+      <div className="p-4 mb-20 bg-white rounded-md shadow-md">
         <div className="relative">
           <button
             onClick={() => scrollCategories("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
+            className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
           >
             <LucideArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
 
           <button
             onClick={() => scrollCategories("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
+            className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
           >
             <LucideArrowRight className="w-5 h-5 text-gray-600" />
           </button>
 
           {/* Categories */}
-          <div className="flex mb-6 gap-x-4 overflow-x-auto hide-scrollbar categories-scroll px-12 scroll-smooth">
+          <div className="flex px-12 mb-6 overflow-x-auto gap-x-4 hide-scrollbar categories-scroll scroll-smooth">
             {carouselCardData.map((item) => (
               <button
                 key={item.id}
@@ -278,14 +282,14 @@ function Home() {
         <div className="relative">
           <button
             onClick={() => scrollCategories("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
+            className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
           >
             <LucideArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
 
           <button
             onClick={() => scrollCategories("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
+            className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
           >
             <LucideArrowRight className="w-5 h-5 text-gray-600" />
           </button>
@@ -293,7 +297,7 @@ function Home() {
           {/* Products Grid */}
           <div
             ref={scrollContainerRef}
-            className="grid grid-flow-col auto-cols-max gap-8 py-6 overflow-x-auto hide-scrollbar px-8"
+            className="grid grid-flow-col gap-8 px-8 py-6 overflow-x-auto auto-cols-max hide-scrollbar"
           >
             {filteredProducts.map((product) => (
               <div
@@ -302,7 +306,7 @@ function Home() {
               >
                 <Link to={`/product/${product.id}`} className="block">
                   <div className="relative mb-4">
-                    <div className="relative rounded-xl overflow-hidden bg-gray-50 p-4">
+                    <div className="relative p-4 overflow-hidden rounded-xl bg-gray-50">
                       <img
                         src={product.image}
                         alt={product.name}
@@ -321,7 +325,7 @@ function Home() {
                             .getState()
                             .addToWishlist(product as Product);
                       }}
-                      className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors duration-200"
+                      className="absolute p-2 transition-colors duration-200 bg-white rounded-full shadow-lg top-3 right-3 hover:bg-gray-50"
                     >
                       <Heart
                         className={`w-5 h-5 ${useWishlistStore.getState().isWishlisted(product.id)
@@ -361,7 +365,7 @@ function Home() {
             />
           </div>
 
-          <div className="grid grid-rows-2 gap-4 h-full">
+          <div className="grid h-full grid-rows-2 gap-4">
             <Banner
               title="ايفون 15 برو ماكس"
               subtitle="تجربة تصوير احترافية مع كاميرا متطورة."
@@ -396,39 +400,39 @@ function Home() {
 
       {/* Grid Banner */}
       {/* Grid Banner */}
-      <div className="w-full mx-auto p-4 mb-8">
+      <div className="w-full p-4 mx-auto mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[600px]">
           {/* Left banner taking full height */}
-          <div className="group cursor-pointer relative bg-gray-100 rounded-lg h-full w-full overflow-hidden">
+          <div className="relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer group">
             <img
-              className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
+              className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
               src="https://framerusercontent.com/images/7xR7TetootHNEHS8SguWlmMjAW8.jpg?scale-down-to=1024"
               alt="Left banner"
             />
-            <div className="absolute top-10 right-0 p-4">
-              <p className="text-black text-sm font-tajawal-medium">
+            <div className="absolute right-0 p-4 top-10">
+              <p className="text-sm text-black font-tajawal-medium">
                 سريع ودقيق
               </p>
-              <h3 className="text-black text-2xl font-tajawal-medium">
+              <h3 className="text-2xl text-black font-tajawal-medium">
                 التركيز التلقائي مع مستشعر Lidar
               </h3>
             </div>
           </div>
 
           {/* Right column with two banners */}
-          <div className="grid grid-rows-2 gap-4 h-full">
+          <div className="grid h-full grid-rows-2 gap-4">
             {/* Top right banner */}
             <div className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]">
               <img
-                className="object-cover group-hover:scale-110 cursor-pointer transition-all duration-300 w-full h-full"
+                className="object-cover w-full h-full transition-all duration-300 cursor-pointer group-hover:scale-110"
                 src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d9e4c8553309056.png"
                 alt="Top right banner"
               />
               <div className="absolute bottom-0 right-0 p-4">
-                <p className="text-white text-sm font-tajawal-medium">
+                <p className="text-sm text-white font-tajawal-medium">
                   سريع ودقيق
                 </p>
-                <h3 className="text-white text-2xl font-tajawal-medium">
+                <h3 className="text-2xl text-white font-tajawal-medium">
                   التركيز التلقائي مع مستشعر Lidar
                 </h3>
               </div>
@@ -437,15 +441,15 @@ function Home() {
             {/* Bottom right banner */}
             <div className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]">
               <img
-                className="object-cover group-hover:scale-110 transition-all duration-300 w-full h-full"
+                className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
                 src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d93cc3558396192.png"
                 alt="Bottom right banner"
               />
               <div className="absolute bottom-0 right-0 p-4">
-                <p className="text-white text-sm font-tajawal-medium">
+                <p className="text-sm text-white font-tajawal-medium">
                   سريع ودقيق
                 </p>
-                <h3 className="text-white text-2xl font-tajawal-medium">
+                <h3 className="text-2xl text-white font-tajawal-medium">
                   التركيز التلقائي مع مستشعر Lidar
                 </h3>
               </div>
@@ -457,11 +461,11 @@ function Home() {
       {/* Best Sellers Section */}
       <div className="mb-20">
         {/* Section Header */}
-        <div className="flex justify-between items-center mb-8 px-4">
+        <div className="flex items-center justify-between px-4 mb-8">
           <h2 className="font-tajawal-medium text-xl relative after:absolute after:bottom-0 after:right-0 after:w-full after:h-0.5 after:bg-gradient-to-l after:from-orange-500 after:to-orange-300 pb-2">
             الاكثر مبيعاً
           </h2>
-          <button className="bg-gradient-to-r from-orange-400 to-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:shadow-md transition-all duration-300 flex items-center gap-2">
+          <button className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md">
             عرض المزيد
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -481,13 +485,13 @@ function Home() {
         </div>
 
         {/* Products Container */}
-        <div className="relative bg-white p-6 rounded-2xl shadow-md bg-gradient-to-b from-white to-gray-50">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 relative z-10">
+        <div className="relative p-6 bg-white shadow-md rounded-2xl bg-gradient-to-b from-white to-gray-50">
+          <div className="relative z-10 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6">
             {featuredProducts.map((product) => (
               <Link
                 key={product.id}
                 to={`/product/${product.id}`}
-                className="group relative bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col h-full"
+                className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
               >
                 {/* Wishlist Button */}
                 <button
@@ -500,7 +504,7 @@ function Home() {
                         .removeFromWishlist(product.id)
                       : useWishlistStore.getState().addToWishlist(product);
                   }}
-                  className="absolute top-2 right-2 z-10 p-2 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-white"
+                  className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
                   aria-label="إضافة للمفضلة"
                 >
                   <Heart
@@ -512,22 +516,22 @@ function Home() {
                 </button>
 
                 {/* Product Image */}
-                <div className="aspect-square p-4 bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+                <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-4/5 h-4/5 object-contain group-hover:scale-110 transition-transform duration-300"
+                    className="object-contain w-4/5 transition-transform duration-300 h-4/5 group-hover:scale-110"
                     loading="lazy"
                   />
                 </div>
 
                 {/* Product Info */}
-                <div className="p-4 flex flex-col flex-grow">
-                  <h3 className="text-sm font-medium text-gray-800 line-clamp-2 mb-2 group-hover:text-orange-600 transition-colors">
+                <div className="flex flex-col flex-grow p-4">
+                  <h3 className="mb-2 text-sm font-medium text-gray-800 transition-colors line-clamp-2 group-hover:text-orange-600">
                     {product.name}
                   </h3>
 
-                  <div className="mt-auto flex items-center justify-between pt-2">
+                  <div className="flex items-center justify-between pt-2 mt-auto">
                     <p className="text-sm font-bold text-orange-600">
                       {product.price.toLocaleString()} د.ع
                     </p>
@@ -544,11 +548,11 @@ function Home() {
                           storage: product.storage,
                         });
                       }}
-                      className="p-2 rounded-lg bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors duration-200 relative overflow-hidden group-hover:shadow-sm"
+                      className="relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200 group-hover:shadow-sm"
                       aria-label="إضافة للسلة"
                     >
                       <ShoppingCart className="w-4 h-4" />
-                      <span className="absolute inset-0 bg-orange-500 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 opacity-0 group-hover:opacity-10"></span>
+                      <span className="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0 group-hover:scale-x-100 group-hover:opacity-10"></span>
                     </button>
                   </div>
                 </div>
@@ -560,8 +564,8 @@ function Home() {
           </div>
 
           {/* Decorative background elements */}
-          <div className="absolute top-0 left-0 w-32 h-32 bg-orange-50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30 blur-2xl"></div>
-          <div className="absolute bottom-0 right-0 w-40 h-40 bg-orange-50 rounded-full translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl"></div>
+          <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-50 opacity-30 blur-2xl"></div>
+          <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-orange-50 translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl"></div>
         </div>
       </div>
 
@@ -571,17 +575,17 @@ function Home() {
       </div>
 
       {/* Brands Carousel */}
-      <div className="mb-16 bg-white p-4 rounded-md shadow-md">
+      <div className="p-4 mb-16 bg-white rounded-md shadow-md">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center justify-between mb-6">
           <div className="relative">
-            <h2 className="font-tajawal-medium text-lg border-b-2 border-orange-400 w-fit">
+            <h2 className="text-lg border-b-2 border-orange-400 font-tajawal-medium w-fit">
               تسوق بالماركات
             </h2>
             <span className="absolute -bottom-1 right-0 w-1/3 h-[2px] bg-gray-100" />
           </div>
           {/* <Button label="عرض جميع الماركات" /> */}
-          <button className="bg-gradient-to-r from-orange-400 to-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:shadow-md transition-all duration-300 flex items-center gap-2">
+          <button className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md">
             عرض جميع الماركات
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -601,7 +605,7 @@ function Home() {
         </div>
 
         {/* Brands Grid */}
-        <div className="grid grid-flow-col auto-cols-max gap-6 py-4 overflow-x-auto hide-scrollbar px-1">
+        <div className="grid grid-flow-col gap-6 px-1 py-4 overflow-x-auto auto-cols-max hide-scrollbar">
           {techLogos.map((item) => (
             <div
               key={item.label}

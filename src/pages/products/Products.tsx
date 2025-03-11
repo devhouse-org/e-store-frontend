@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
+import Loader from "@/components/ui/LoadingState";
 
 interface Category {
   id: number;
@@ -386,7 +387,7 @@ const Products = () => {
         size="icon"
         Icon={Menu as IconType}
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed bottom-4 right-4 z-30 bg-orange-500 text-white hover:bg-orange-600 rounded-full w-12 h-12 shadow-lg"
+        className="fixed z-30 w-12 h-12 text-white bg-orange-500 rounded-full shadow-lg lg:hidden bottom-4 right-4 hover:bg-orange-600"
       />
 
       {/* Filter sidebar */}
@@ -420,26 +421,21 @@ const Products = () => {
       )}
 
       {/* Main content */}
-      <div className="flex-1 px-4 md:px-8 lg:px-12 pb-20 pt-4">
+      <div className="flex-1 px-4 pt-4 pb-20 md:px-8 lg:px-12">
         {/* Categories section */}
         <div className="mb-8">
-          <h1 className="font-tajawal-bold text-2xl mb-6">الفئات</h1>
+          <h1 className="mb-6 text-2xl font-tajawal-bold">الفئات</h1>
 
           {/* Categories */}
-          {categoriesLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-            </div>
-          ) : (
             <div className="relative">
               <button
                 onClick={() => scrollCategories("left", "categories-scroll")}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
               >
                 <ArrowLeft className="text-gray-600" size={20} />
               </button>
 
-              <div className="categories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
+              <div className="relative flex gap-3 px-12 overflow-x-hidden categories-scroll scroll-smooth">
                 {categoriesData?.map((category) => (
                   <button
                     key={category.id}
@@ -460,28 +456,27 @@ const Products = () => {
 
               <button
                 onClick={() => scrollCategories("right", "categories-scroll")}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
               >
                 <ArrowRight className="text-gray-600" size={20} />
               </button>
             </div>
-          )}
+          
 
           {/* Subcategories */}
-          {!categoriesLoading &&
-            selectedCategory &&
+          {selectedCategory &&
             getSubcategories().length > 0 && (
-              <div className="mt-4 relative">
+              <div className="relative mt-4">
                 <button
                   onClick={() =>
                     scrollCategories("left", "subcategories-scroll")
                   }
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                  className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
                 >
                   <ArrowLeft className="text-gray-600" size={20} />
                 </button>
 
-                <div className="subcategories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
+                <div className="relative flex gap-3 px-12 overflow-x-hidden subcategories-scroll scroll-smooth">
                   {getSubcategories().map((subcategory) => (
                     <button
                       key={subcategory.id}
@@ -504,7 +499,7 @@ const Products = () => {
                   onClick={() =>
                     scrollCategories("right", "subcategories-scroll")
                   }
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                  className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
                 >
                   <ArrowRight className="text-gray-600" size={20} />
                 </button>
@@ -516,16 +511,15 @@ const Products = () => {
         {productsLoading ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
               <p className="text-gray-500 font-tajawal-medium">
-                جاري تحميل المنتجات...
+                <Loader />
               </p>
             </div>
           </div>
         ) : productsError ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <p className="text-red-500 font-tajawal-medium text-lg mb-4">
+              <p className="mb-4 text-lg text-red-500 font-tajawal-medium">
                 {productsError.message}
               </p>
               <Button
@@ -534,7 +528,7 @@ const Products = () => {
                   setSelectedSubcategory(null);
                   setSelectedVariants([]);
                 }}
-                className="bg-orange-500 text-white hover:bg-orange-600"
+                className="text-white bg-orange-500 hover:bg-orange-600"
                 label="إعادة المحاولة"
               />
             </div>
@@ -542,7 +536,7 @@ const Products = () => {
         ) : productsData?.products.length === 0 ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <p className="text-gray-500 font-tajawal-medium text-lg mb-2">
+              <p className="mb-2 text-lg text-gray-500 font-tajawal-medium">
                 {selectedCategory
                   ? "لا توجد منتجات في هذه الفئة"
                   : "لا توجد منتجات متوفرة"}
@@ -564,7 +558,7 @@ const Products = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {productsData?.products.map((product: any) => {
               const cartItem = cartProducts.find(
                 (item) => item.id === product.id
@@ -574,40 +568,40 @@ const Products = () => {
                 <Link
                   to={`/product/${product.id}`}
                   key={product.id}
-                  className="relative flex flex-col rounded-xl bg-white bg-clip-border shadow-md h-full"
+                  className="relative flex flex-col h-full bg-white shadow-md rounded-xl bg-clip-border"
                 >
                   {/* Product image */}
-                  <div className="relative mx-4 p-1 mt-4 h-48 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
+                  <div className="relative h-48 p-1 mx-4 mt-4 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
                     <img
                       src={`data:image/png;base64,${product.image_1920}`}
                       alt={product.name}
-                      className="w-full h-full object-contain"
+                      className="object-contain w-full h-full"
                     />
                   </div>
 
                   {/* Product content */}
-                  <div className="p-6 flex flex-col h-full">
-                    <h5 className="mb-2 block text-lg font-tajawal-medium leading-snug tracking-normal antialiased">
+                  <div className="flex flex-col h-full p-6">
+                    <h5 className="block mb-2 text-lg antialiased leading-snug tracking-normal font-tajawal-medium">
                       {product.name}
                     </h5>
 
                     <div
-                      className="text-sm text-gray-600 mb-2 line-clamp-2"
+                      className="mb-2 text-sm text-gray-600 line-clamp-2"
                       dangerouslySetInnerHTML={{
                         __html: product?.description || "",
                       }}
                     />
 
                     {/* Price and buttons */}
-                    <div className="mt-auto pt-4">
-                      <p className="mb-4 font-tajawal-bold text-orange-500 text-xl">
+                    <div className="pt-4 mt-auto">
+                      <p className="mb-4 text-xl text-orange-500 font-tajawal-bold">
                         د.ع {product.list_price.toLocaleString()}
                       </p>
 
-                      <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex flex-col gap-3 sm:flex-row">
                         {/* Cart controls */}
                         {cartItem ? (
-                          <div className="flex items-center justify-center gap-2 px-2 bg-orange-100/25 rounded-md py-1 flex-1">
+                          <div className="flex items-center justify-center flex-1 gap-2 px-2 py-1 rounded-md bg-orange-100/25">
                             <Button
                               variant="ghost"
                               size="icon"
@@ -653,7 +647,7 @@ const Products = () => {
                         )}
 
                         {/* Action buttons */}
-                        <div className="flex gap-2 justify-center">
+                        <div className="flex justify-center gap-2">
                           <button
                             onClick={(e) => {
                               e.preventDefault();
@@ -691,7 +685,7 @@ const Products = () => {
         {!productsLoading &&
           productsData?.products &&
           productsData.products.length > 0 && (
-            <div className="pagination mt-20 mb-14">
+            <div className="mt-20 pagination mb-14">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
