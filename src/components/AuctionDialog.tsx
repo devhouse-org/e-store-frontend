@@ -45,6 +45,7 @@ export function AuctionDialog({
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -118,6 +119,7 @@ export function AuctionDialog({
         return;
       }
 
+      setIsLoading(true);
       const response = await axiosInstance.post(`/auctions/${id}/bid`, {
         bidAmount: totalPrice + (currentPrice || 0),
         partnerId: Number(userId),
@@ -132,6 +134,8 @@ export function AuctionDialog({
       // toast.error(
       //   error.response?.data?.message || "حدث خطأ أثناء وضع المزايدة"
       // );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -198,7 +202,7 @@ export function AuctionDialog({
           </DialogClose>
 
           <button
-            disabled={totalPrice <= 0}
+            disabled={totalPrice <= 0 || isLoading}
             onClick={handlePlaceBid}
             className={`p-2 flex disabled:bg-orange-300 justify-between items-center w-full bg-orange-500
                             hover:bg-orange-500/90 transition ease-in-out cursor-pointer 
@@ -206,13 +210,21 @@ export function AuctionDialog({
                               isAnimating && "bg-orange-300"
                             }`}
           >
-            <p className="font-tajawal-regular">
-              {totalPrice <= 0
-                ? "0.00 "
-                : (totalPrice + (currentPrice || 0)).toLocaleString()}
-              د.ع
-            </p>
-            <p className="font-tajawal-regular">تأكيد</p>
+            {isLoading ? (
+              <div className="flex items-center justify-center w-full">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              <>
+                <p className="font-tajawal-regular">
+                  {totalPrice <= 0
+                    ? "0.00 "
+                    : (totalPrice + (currentPrice || 0)).toLocaleString()}
+                  د.ع
+                </p>
+                <p className="font-tajawal-regular">تأكيد</p>
+              </>
+            )}
           </button>
         </DialogFooter>
       </DialogContent>
