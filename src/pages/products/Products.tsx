@@ -143,17 +143,13 @@ const Products = () => {
     max_price: priceRange?.max,
   });
 
-  // Calculate total pages
-  const totalPages = productsData
-    ? Math.ceil(productsData.total / itemsPerPage)
-    : 0;
-
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
     return (
       searchParams.has("category") ||
       searchParams.has("price") ||
-      searchParams.has("page")
+      searchParams.has("page") ||
+      searchParams.has("variants")
     );
   };
 
@@ -207,9 +203,6 @@ const Products = () => {
       const [catId, subCatId] = categoryParam.split("-").map(Number);
       setSelectedCategory(catId || null);
       setSelectedSubcategory(subCatId || null);
-    } else {
-      setSelectedCategory(null);
-      setSelectedSubcategory(null);
     }
 
     // Parse price parameter
@@ -217,8 +210,6 @@ const Products = () => {
     if (priceParam) {
       const [min, max] = priceParam.split("-").map(Number);
       setPriceRange({ min, max });
-    } else {
-      setPriceRange(undefined);
     }
 
     // Parse variants parameter
@@ -232,8 +223,6 @@ const Products = () => {
         };
       });
       setSelectedVariants(variants);
-    } else {
-      setSelectedVariants([]);
     }
 
     // Parse page parameter
@@ -243,8 +232,6 @@ const Products = () => {
       if (!isNaN(page) && page > 0) {
         setCurrentPage(page);
       }
-    } else {
-      setCurrentPage(1);
     }
   };
 
@@ -253,18 +240,18 @@ const Products = () => {
     if (hasUrlFilters()) {
       parseUrlParams();
     }
-  }, []); // Only run once on mount
+  }, []);
 
   // Effect to update URL when filters change
   useEffect(() => {
     if (!categoriesLoading) {
       updateUrlParams();
     }
-  }, [selectedCategory, selectedSubcategory, priceRange, currentPage]);
+  }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange, currentPage]);
 
   // Effect to handle URL parameter changes
   useEffect(() => {
-    if (!categoriesLoading && hasUrlFilters()) {
+    if (!categoriesLoading) {
       parseUrlParams();
     }
   }, [searchParams]);
@@ -378,6 +365,9 @@ const Products = () => {
     // Reset to first page when filters change
     setCurrentPage(1);
   };
+
+  // Calculate total pages based on the total count from the API
+  const totalPages = productsData ? Math.ceil(productsData.total / itemsPerPage) : 0;
 
   return (
     <div className="relative flex flex-col lg:flex-row">
@@ -558,141 +548,142 @@ const Products = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {productsData?.products.map((product: any) => {
-              const cartItem = cartProducts.find(
-                (item) => item.id === product.id
-              );
+          <>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {productsData?.products.map((product: any) => {
+                const cartItem = cartProducts.find(
+                  (item) => item.id === product.id
+                );
 
-              return (
-                <Link
-                  to={`/product/${product.id}`}
-                  key={product.id}
-                  className="relative flex flex-col h-full bg-white shadow-md rounded-xl bg-clip-border"
-                >
-                  {/* Product image */}
-                  <div className="relative h-48 p-1 mx-4 mt-4 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
-                    <img
-                      src={`data:image/png;base64,${product.image_1920}`}
-                      alt={product.name}
-                      className="object-contain w-full h-full"
-                    />
-                  </div>
+                return (
+                  <Link
+                    to={`/product/${product.id}`}
+                    key={product.id}
+                    className="relative flex flex-col h-full bg-white shadow-md rounded-xl bg-clip-border"
+                  >
+                    {/* Product image */}
+                    <div className="relative h-48 p-1 mx-4 mt-4 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
+                      <img
+                        src={`data:image/png;base64,${product.image_1920}`}
+                        alt={product.name}
+                        className="object-contain w-full h-full"
+                      />
+                    </div>
 
-                  {/* Product content */}
-                  <div className="flex flex-col h-full p-6">
-                    <h5 className="block mb-2 text-lg antialiased leading-snug tracking-normal font-tajawal-medium">
-                      {product.name}
-                    </h5>
+                    {/* Product content */}
+                    <div className="flex flex-col h-full p-6">
+                      <h5 className="block mb-2 text-lg antialiased leading-snug tracking-normal font-tajawal-medium">
+                        {product.name}
+                      </h5>
 
-                    <div
-                      className="mb-2 text-sm text-gray-600 line-clamp-2"
-                      dangerouslySetInnerHTML={{
-                        __html: product?.description || "",
-                      }}
-                    />
+                      <div
+                        className="mb-2 text-sm text-gray-600 line-clamp-2"
+                        dangerouslySetInnerHTML={{
+                          __html: product?.description || "",
+                        }}
+                      />
 
-                    {/* Price and buttons */}
-                    <div className="pt-4 mt-auto">
-                      <p className="mb-4 text-xl text-orange-500 font-tajawal-bold">
-                        د.ع {product.list_price.toLocaleString()}
-                      </p>
+                      {/* Price and buttons */}
+                      <div className="pt-4 mt-auto">
+                        <p className="mb-4 text-xl text-orange-500 font-tajawal-bold">
+                          د.ع {product.list_price.toLocaleString()}
+                        </p>
 
-                      <div className="flex flex-col gap-3 sm:flex-row">
-                        {/* Cart controls */}
-                        {cartItem ? (
-                          <div className="flex items-center justify-center flex-1 gap-2 px-2 py-1 rounded-md bg-orange-100/25">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-8 h-8 text-black"
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                          {/* Cart controls */}
+                          {cartItem ? (
+                            <div className="flex items-center justify-center flex-1 gap-2 px-2 py-1 rounded-md bg-orange-100/25">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="w-8 h-8 text-black"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleUpdateQuantity(
+                                    product,
+                                    cartItem.quantity + 1
+                                  );
+                                }}
+                                Icon={Plus as IconType}
+                              />
+                              <span className="w-6 text-center font-tajawal-medium">
+                                {cartItem.quantity}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="w-8 h-8 text-orange-500"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleUpdateQuantity(
+                                    product,
+                                    cartItem.quantity - 1
+                                  );
+                                }}
+                                Icon={Minus as IconType}
+                              />
+                            </div>
+                          ) : (
+                            <button
                               onClick={(e) => {
                                 e.preventDefault();
-                                e.stopPropagation();
-                                handleUpdateQuantity(
-                                  product,
-                                  cartItem.quantity + 1
-                                );
+                                handleAddToCart(product);
                               }}
-                              Icon={Plus as IconType}
-                            />
-                            <span className="w-6 text-center font-tajawal-medium">
-                              {cartItem.quantity}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-8 h-8 text-orange-500"
+                              className="flex-1 select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                            >
+                              <LucideShoppingCart className="mx-auto" />
+                            </button>
+                          )}
+
+                          {/* Action buttons */}
+                          <div className="flex justify-center gap-2">
+                            <button
                               onClick={(e) => {
                                 e.preventDefault();
-                                e.stopPropagation();
-                                handleUpdateQuantity(
-                                  product,
-                                  cartItem.quantity - 1
-                                );
+                                handleBuyNow(product);
                               }}
-                              Icon={Minus as IconType}
-                            />
+                              className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                            >
+                              <LucideCreditCard />
+                            </button>
+
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleComparisonClick(product);
+                              }}
+                              className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
+                            ${
+                              isCompared(product.id)
+                                ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
+                                : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
+                            }`}
+                            >
+                              <LucideCircleDashed />
+                            </button>
                           </div>
-                        ) : (
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleAddToCart(product);
-                            }}
-                            className="flex-1 select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                          >
-                            <LucideShoppingCart className="mx-auto" />
-                          </button>
-                        )}
-
-                        {/* Action buttons */}
-                        <div className="flex justify-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleBuyNow(product);
-                            }}
-                            className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                          >
-                            <LucideCreditCard />
-                          </button>
-
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleComparisonClick(product);
-                            }}
-                            className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${
-                            isCompared(product.id)
-                              ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
-                              : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                          }`}
-                          >
-                            <LucideCircleDashed />
-                          </button>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {!productsLoading &&
-          productsData?.products &&
-          productsData.products.length > 0 && (
-            <div className="mt-20 pagination mb-14">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
+                  </Link>
+                );
+              })}
             </div>
-          )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-20 mb-14">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
