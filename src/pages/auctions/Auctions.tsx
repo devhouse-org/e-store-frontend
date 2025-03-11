@@ -1,7 +1,7 @@
 import AuctionCard from "@/components/AuctionCard";
 import Pagination from "@/components/Pagination";
 import { Auction } from "@/utils/data/auctions";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
@@ -72,7 +72,8 @@ const useAuctions = (page: number) => {
 };
 
 const Auctions = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
   const { data, isLoading, error } = useAuctions(currentPage);
 
   const handleSubscribe = () => {
@@ -80,7 +81,7 @@ const Auctions = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setSearchParams({ page: page.toString() });
   };
 
   if (isLoading) {
