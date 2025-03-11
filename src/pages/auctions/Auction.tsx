@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { prices } from "@/utils/dummy_data/data";
 import {
   BadgeCheck,
+  ExternalLink,
   Facebook,
   HandCoins,
   Heart,
@@ -16,12 +17,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TiStarFullOutline, TiStarOutline } from "react-icons/ti";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Slider from "react-slick";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import { products } from "@/utils/data/products";
 import Loader from "@/components/ui/LoadingState";
+import AuctionCard from "@/components/AuctionCard";
 interface BackendAuction {
   id: number;
   x_name: string;
@@ -85,13 +87,59 @@ type timeType = {
   days: number;
 };
 
+interface Auction {
+  id: number;
+  x_name: string;
+  x_studio_description: string;
+  x_studio_publish: boolean;
+  x_studio_starting_bid_1: number;
+  x_studio_currency_id: [number, string];
+  x_studio_start_date: string;
+  x_studio_end_date: string;
+  x_studio_current_user: [number, string] | false;
+  x_studio_current_bid: number;
+  x_studio_max_bid: number;
+  x_studio_product: [number, string];
+  product: {
+    id: number;
+    name: string;
+    description: string | false;
+    image_1920: string;
+  };
+}
+
 const Auction = (props: Props) => {
   const { id } = useParams();
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [remainingTime, setRemainingTime] = useState<timeType | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data, isLoading, error } = useAuction(id || "");
+  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const { data, isLoading: queryLoading, error } = useAuction(id || "");
+
+  useEffect(() => {
+    const fetchAuctions = async () => {
+      try {
+        const response = await axiosInstance.get("/auctions", {
+          params: {
+            limit: 4,
+          },
+        });
+        if (response.data.success && response.data.auctions.length > 0) {
+          setAuctions(response.data.auctions);
+        }
+      } catch (error) {
+        console.error("Error fetching auctions:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAuctions();
+  }, []);
 
   useEffect(() => {
     if (!data?.auction) return;
@@ -134,8 +182,8 @@ const Auction = (props: Props) => {
     return () => clearInterval(intervalId);
   }, [data?.auction]);
 
-  if (isLoading) {
-    return <Loader />
+  if (queryLoading) {
+    return <div className="container px-4 py-8 mx-auto">Loading...</div>;
   }
   
   if (error || !data?.auction) {
@@ -171,6 +219,7 @@ const Auction = (props: Props) => {
         return;
       }
 
+      setIsLoading(true);
       const response = await axiosInstance.post(`/auctions/${id}/bid`, {
         bidAmount: totalPrice + (auction.currentPrice || 0),
         partnerId: Number(userId),
@@ -185,6 +234,8 @@ const Auction = (props: Props) => {
       // toast.error(
       //   error.response?.data?.message || "حدث خطأ أثناء وضع المزايدة"
       // );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -205,11 +256,6 @@ const Auction = (props: Props) => {
                   console.log("Failed to load image:", auction.image);
                 }}
               />
-              <div className="flex flex-wrap items-center gap-2 my-2 other_images">
-                {[1, 2, 3, 4].slice(0, 12).map((item) => (
-                  <div key={item} className="object-contain w-32 h-24 bg-green-200 border-2 rounded-md cursor-pointer" />
-                ))}
-              </div>
             </div>
           </div>
 
@@ -222,8 +268,12 @@ const Auction = (props: Props) => {
                     {auction.title}
                   </p>
 
+                  <p className="text-gray-500 font-tajawal-regular text-md">
+                    {auction.description}{" "}
+                  </p>
+
                   <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((_, index) => (
+                    {/* {[1, 2, 3, 4, 5].map((_, index) => (
                       <span key={index}>
                         {4 >= index + 1 ? (
                           <TiStarFullOutline className="text-orange-400" />
@@ -231,11 +281,10 @@ const Auction = (props: Props) => {
                           <TiStarOutline className="text-slate-400" />
                         )}
                       </span>
-                    ))}
-                    <p className="px-2">(2000)</p>
+                    ))} */}
+                    {/* <p className="px-2">(2000)</p> */}
                   </div>
                 </div>
-                <Heart />
               </div>
             </div>
             <div className="py-4 border-b current_price">
@@ -296,11 +345,19 @@ const Auction = (props: Props) => {
                 د.ع
               </p>
               <div className="flex justify-between">
-                <Button
-                  disabled={totalPrice <= 0}
-                  label="مزايدة"
+                <button
+                  disabled={totalPrice <= 0 || isLoading}
                   onClick={handlePlaceBid}
-                />
+                  className="px-4 py-2 text-white transition-colors bg-orange-500 rounded-md hover:bg-orange-500/90 disabled:bg-orange-300"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center w-full">
+                      <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                    </div>
+                  ) : (
+                    <span className="font-tajawal-regular">مزايدة</span>
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -341,13 +398,45 @@ const Auction = (props: Props) => {
         </div>
       </div>
 
-      {/* Related Products */}
+      {/* other auctions */}
       <div className="mt-12">
-        <h2 className="mb-6 text-2xl font-bold">منتجات ذات صلة</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="mb-6 text-2xl font-bold font-tajawal-bold">
+            مزادات أُخرى
+          </h2>
+          <Link to="/auctions">
+            <Button
+              variant="default"
+              label="رؤية المزيد"
+              className="text-white"
+            />
+          </Link>
+        </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {relatedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {loading ? (
+            <div className="py-8 text-center col-span-full">Loading...</div>
+          ) : auctions.length > 0 ? (
+            auctions.map((auction) => (
+              <Link key={auction.id} to={`/auction/${auction.id}`}>
+                <AuctionCard
+                  auction={{
+                    currentPrice: auction.x_studio_current_bid,
+                    startingPrice: auction.x_studio_starting_bid_1,
+                    endTime: auction.x_studio_end_date,
+                    image:
+                      "data:image/jpeg;base64," + auction.product?.image_1920,
+                    title: auction.x_name,
+                    description: auction.x_studio_description,
+                    id: auction.id.toString(),
+                  }}
+                />
+              </Link>
+            ))
+          ) : (
+            <div className="py-8 text-center col-span-full">
+              No other auctions available
+            </div>
+          )}
         </div>
       </div>
     </div>
