@@ -1,29 +1,22 @@
-import { AuctionDialog } from "@/components/AuctionDialog";
-import ProductCard from "@/components/ProductCard";
+import AuctionCard from "@/components/AuctionCard";
 import { Button } from "@/components/ui/button";
+import Loader from "@/components/ui/LoadingState";
+import axiosInstance from "@/utils/axiosInstance";
+import { products } from "@/utils/data/products";
 import { prices } from "@/utils/dummy_data/data";
+import { useQuery } from "@tanstack/react-query";
 import {
   BadgeCheck,
-  ExternalLink,
   Facebook,
   HandCoins,
-  Heart,
   Instagram,
   Mail,
   Share2,
   Truck,
-  Twitter,
-  X,
+  Twitter
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { TiStarFullOutline, TiStarOutline } from "react-icons/ti";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import Slider from "react-slick";
-import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/utils/axiosInstance";
-import { products } from "@/utils/data/products";
-import Loader from "@/components/ui/LoadingState";
-import AuctionCard from "@/components/AuctionCard";
 interface BackendAuction {
   id: number;
   x_name: string;
