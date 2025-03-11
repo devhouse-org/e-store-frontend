@@ -73,6 +73,26 @@ interface AdBannerResponse {
   banner: AdBanner;
 }
 
+interface ThreeAdBanner {
+  id: number;
+  x_name: string;
+  x_studio_banner_image: string;
+  x_studio_start_date: string;
+  x_studio_end_date: string;
+  x_studio_publish: boolean;
+  x_studio_discount: number;
+  x_studio_product_link: string | false;
+  x_studio_description: string;
+  create_date: string;
+  x_studio_is_3_ad: boolean;
+  x_studio_many2many_field_6sm_1ilj3d1qm: number[];
+}
+
+interface ThreeAdBannersResponse {
+  success: boolean;
+  banners: ThreeAdBanner[];
+}
+
 function Home() {
   const [oldSlide, setOldSlide] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -263,6 +283,18 @@ function Home() {
       queryKey: ["latestAdBanner"],
       queryFn: async () => {
         const response = await axiosInstance.get("/products/latest-ad-banner");
+        return response.data;
+      },
+    });
+
+  // Add this query near your other queries
+  const { data: threeAdBannersData, isLoading: isThreeAdBannersLoading } =
+    useQuery<ThreeAdBannersResponse>({
+      queryKey: ["latestThreeAdBanners"],
+      queryFn: async () => {
+        const response = await axiosInstance.get(
+          "/products/latest-three-ad-banners"
+        );
         return response.data;
       },
     });
@@ -511,64 +543,122 @@ function Home() {
         )}
       </div>
 
-      {/* Grid Banner */}
-      {/* Grid Banner */}
+      {/* three ad banners section */}
       <div className="w-full p-4 mx-auto mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[600px]">
-          {/* Left banner taking full height */}
-          <div className="relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer group">
-            <img
-              className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
-              src="https://framerusercontent.com/images/7xR7TetootHNEHS8SguWlmMjAW8.jpg?scale-down-to=1024"
-              alt="Left banner"
-            />
-            <div className="absolute right-0 p-4 top-10">
-              <p className="text-sm text-black font-tajawal-medium">
-                سريع ودقيق
-              </p>
-              <h3 className="text-2xl text-black font-tajawal-medium">
-                التركيز التلقائي مع مستشعر Lidar
-              </h3>
+        {isThreeAdBannersLoading ? (
+          // Loading state
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[600px]">
+            <div className="animate-pulse bg-gray-200 rounded-lg h-full" />
+            <div className="grid h-full grid-rows-2 gap-4">
+              <div className="animate-pulse bg-gray-200 rounded-lg" />
+              <div className="animate-pulse bg-gray-200 rounded-lg" />
             </div>
           </div>
+        ) : threeAdBannersData?.banners &&
+          threeAdBannersData.banners.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[600px]">
+            {threeAdBannersData.banners.length <= 2 ? (
+              // Show banners side by side if 2 or fewer
+              <>
+                {threeAdBannersData.banners.map((banner) => (
+                  <Link
+                    key={banner.id}
+                    to={
+                      banner.x_studio_product_link
+                        ? banner.x_studio_product_link
+                        : `/banner/${banner.id}`
+                    }
+                    className="relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer group"
+                  >
+                    <img
+                      className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
+                      src={`data:image/png;base64,${banner.x_studio_banner_image}`}
+                      alt={banner.x_name}
+                    />
+                    <div className="absolute right-0 p-4 bottom-10">
+                      <p className="text-sm text-black font-tajawal-medium bg-gray-300/50 w-fit p-2 rounded-full">
+                        {banner.x_studio_discount &&
+                          `خصم ${banner.x_studio_discount}%`}
+                      </p>
+                      <h3 className="text-2xl text-black line-clamp-1 font-tajawal-bold">
+                        {banner.x_name}
+                      </h3>
+                      <p className="mt-2 text-md line-clamp-2 text-black font-tajawal-medium">
+                        {banner.x_studio_description}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </>
+            ) : (
+              // Show first banner on left, others on right
+              <>
+                <Link
+                  to={
+                    threeAdBannersData.banners[0].x_studio_product_link
+                      ? threeAdBannersData.banners[0].x_studio_product_link
+                      : `/banner/${threeAdBannersData.banners[0].id}`
+                  }
+                  className="relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer group"
+                >
+                  <img
+                    className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
+                    src={`data:image/png;base64,${threeAdBannersData.banners[0].x_studio_banner_image}`}
+                    alt={threeAdBannersData.banners[0].x_name}
+                  />
+                  <div className="absolute right-0 p-4 top-10">
+                    <p className="text-sm text-black font-tajawal-medium">
+                      {threeAdBannersData.banners[0].x_studio_discount &&
+                        `خصم ${threeAdBannersData.banners[0].x_studio_discount}%`}
+                    </p>
+                    <h3 className="text-2xl text-black font-tajawal-medium">
+                      {threeAdBannersData.banners[0].x_name}
+                    </h3>
+                    <p className="mt-2 text-sm text-black font-tajawal-medium">
+                      {threeAdBannersData.banners[0].x_studio_description}
+                    </p>
+                  </div>
+                </Link>
 
-          {/* Right column with two banners */}
-          <div className="grid h-full grid-rows-2 gap-4">
-            {/* Top right banner */}
-            <div className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]">
-              <img
-                className="object-cover w-full h-full transition-all duration-300 cursor-pointer group-hover:scale-110"
-                src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d9e4c8553309056.png"
-                alt="Top right banner"
-              />
-              <div className="absolute bottom-0 right-0 p-4">
-                <p className="text-sm text-white font-tajawal-medium">
-                  سريع ودقيق
-                </p>
-                <h3 className="text-2xl text-white font-tajawal-medium">
-                  التركيز التلقائي مع مستشعر Lidar
-                </h3>
-              </div>
-            </div>
-
-            {/* Bottom right banner */}
-            <div className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]">
-              <img
-                className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
-                src="https://assets.awwwards.com/awards/element/2024/12/676eaa2d93cc3558396192.png"
-                alt="Bottom right banner"
-              />
-              <div className="absolute bottom-0 right-0 p-4">
-                <p className="text-sm text-white font-tajawal-medium">
-                  سريع ودقيق
-                </p>
-                <h3 className="text-2xl text-white font-tajawal-medium">
-                  التركيز التلقائي مع مستشعر Lidar
-                </h3>
-              </div>
-            </div>
+                <div className="grid h-full grid-rows-2 gap-4">
+                  {threeAdBannersData.banners.slice(1).map((banner) => (
+                    <Link
+                      key={banner.id}
+                      to={
+                        banner.x_studio_product_link
+                          ? banner.x_studio_product_link
+                          : `/banner/${banner.id}`
+                      }
+                      className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]"
+                    >
+                      <img
+                        className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
+                        src={`data:image/png;base64,${banner.x_studio_banner_image}`}
+                        alt={banner.x_name}
+                      />
+                      <div className="absolute bottom-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent w-full">
+                        <p className="text-sm text-white font-tajawal-medium">
+                          {banner.x_studio_discount &&
+                            `خصم ${banner.x_studio_discount}%`}
+                        </p>
+                        <h3 className="text-2xl text-white font-tajawal-medium">
+                          {banner.x_name}
+                        </h3>
+                        <p className="mt-2 text-sm text-white font-tajawal-medium">
+                          {banner.x_studio_description}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-center w-full h-[600px] bg-gray-100 rounded-xl">
+            <p className="text-gray-500">لا توجد إعلانات متاحة</p>
+          </div>
+        )}
       </div>
 
       {/* special products section */}
