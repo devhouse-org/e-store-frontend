@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
-// import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 type TimeType = {
   seconds: number;
@@ -45,6 +45,8 @@ export function AuctionDialog({
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!open) {
@@ -114,24 +116,44 @@ export function AuctionDialog({
     try {
       const userId = localStorage.getItem("id");
       if (!userId) {
-        // toast.error("يرجى تسجيل الدخول أولاً");
         return;
       }
 
+      setIsLoading(true);
+      const newPrice = totalPrice + (currentPrice || 0);
+
       const response = await axiosInstance.post(`/auctions/${id}/bid`, {
-        bidAmount: totalPrice + (currentPrice || 0),
+        bidAmount: newPrice,
         partnerId: Number(userId),
       });
 
       if (response.data.success) {
+        // Update the individual auction
+        queryClient.setQueryData(["auction", id], (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            currentPrice: newPrice,
+          };
+        });
+
+        // Update the auction list (if it exists in cache)
+        queryClient.setQueryData(["auctions"], (oldData: any) => {
+          if (!oldData) return oldData;
+          return oldData.map((auction: any) =>
+            auction.id === id ? { ...auction, currentPrice: newPrice } : auction
+          );
+        });
+
+        // Invalidate only relevant queries
+        await queryClient.invalidateQueries({ queryKey: ["auction", id] });
+
         setOpen(false);
-        window.location.reload();
       }
     } catch (error: any) {
       console.error(error.response?.data?.message);
-      // toast.error(
-      //   error.response?.data?.message || "حدث خطأ أثناء وضع المزايدة"
-      // );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -198,7 +220,7 @@ export function AuctionDialog({
           </DialogClose>
 
           <button
-            disabled={totalPrice <= 0}
+            disabled={totalPrice <= 0 || isLoading}
             onClick={handlePlaceBid}
             className={`p-2 flex disabled:bg-orange-300 justify-between items-center w-full bg-orange-500
                             hover:bg-orange-500/90 transition ease-in-out cursor-pointer 
@@ -206,13 +228,21 @@ export function AuctionDialog({
                               isAnimating && "bg-orange-300"
                             }`}
           >
-            <p className="font-tajawal-regular">
-              {totalPrice <= 0
-                ? "0.00 "
-                : (totalPrice + (currentPrice || 0)).toLocaleString()}
-              د.ع
-            </p>
-            <p className="font-tajawal-regular">تأكيد</p>
+            {isLoading ? (
+              <div className="flex items-center justify-center w-full">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              <>
+                <p className="font-tajawal-regular">
+                  {totalPrice <= 0
+                    ? "0.00 "
+                    : (totalPrice + (currentPrice || 0)).toLocaleString()}
+                  د.ع
+                </p>
+                <p className="font-tajawal-regular">تأكيد</p>
+              </>
+            )}
           </button>
         </DialogFooter>
       </DialogContent>
