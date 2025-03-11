@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
@@ -24,18 +24,18 @@ interface BrandResponse {
 }
 
 // Fetch function for React Query
-const fetchBrands = async (): Promise<BrandValue[]> => {
+const fetchBrands = async (): Promise<BrandResponse> => {
   const response = await axiosInstance.post<BrandResponse>("/products/brands");
-  // Return empty array if no values are present
-  return response.data.values || [];
+  return response.data;
 };
 
 const Brands = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
 
   // Replace useState and useEffect with useQuery
   const {
-    data: brands = [],
+    data: brandsData,
     isLoading,
     error,
     refetch,
@@ -44,10 +44,29 @@ const Brands = () => {
     queryFn: fetchBrands,
   });
 
+  // Update URL when search changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    } else {
+      params.delete("search");
+    }
+    setSearchParams(params);
+  }, [searchQuery]);
+
+  // Update search when URL changes
+  useEffect(() => {
+    const searchFromUrl = searchParams.get("search");
+    if (searchFromUrl !== searchQuery) {
+      setSearchQuery(searchFromUrl || "");
+    }
+  }, [searchParams]);
+
   // Filter brands based on search query
-  const filteredBrands = brands.filter((brand) =>
+  const filteredBrands = brandsData?.values?.filter((brand) =>
     brand.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) || [];
 
   return (
     <div className="container px-4 py-8 mx-auto">
@@ -85,7 +104,7 @@ const Brands = () => {
             {filteredBrands.map((brand) => (
               <Link
                 key={brand.id}
-                to={`/products?brand=${brand.name}`}
+                to={`/products?variants=${brandsData?.id}-${brand.id}`}
                 className="group"
               >
                 <div className="flex items-center justify-center p-4 transition-shadow bg-white rounded-lg shadow-sm aspect-square hover:shadow-md">
@@ -114,7 +133,7 @@ const Brands = () => {
         )}
 
         {/* No Results */}
-        { error && filteredBrands.length === 0 && (
+        {(!isLoading && error || filteredBrands.length === 0) && (
           <div className="py-12 text-center">
             <p className="text-gray-500 font-tajawal-medium">
               {searchQuery
@@ -122,7 +141,10 @@ const Brands = () => {
                 : "لا توجد علامات تجارية متاحة حالياً"}
             </p>
             <button
-              onClick={() => refetch()}
+              onClick={() => {
+                setSearchQuery("");
+                refetch();
+              }}
               className="px-4 py-2 mt-4 text-white transition-colors bg-orange-500 rounded-md hover:bg-orange-600"
             >
               إعادة المحاولة
