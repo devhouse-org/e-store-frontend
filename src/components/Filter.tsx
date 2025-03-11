@@ -12,8 +12,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import axiosInstance from "@/utils/axiosInstance";
-import Loader from "@/components/ui/LoadingState";
-
+import FilterSkeleton from "@/components/ui/FilterSkeleton";
 interface FilterProps {
   selectedCategory: number | null;
   onFilterChange: (variants: { attribute_id: number; value_id: number }[]) => void;
@@ -246,9 +245,7 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
 
         {/* Dynamic Variants Sections */}
         {variantsLoading ? (
-          <div className="flex items-center justify-center pt-12">
-            <Loader />
-          </div>
+          <FilterSkeleton />
         ) : error ? (
           <div className="py-4 text-center">
             <p className="mb-2 text-sm text-red-500">{error}</p>
