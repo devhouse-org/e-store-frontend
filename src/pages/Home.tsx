@@ -93,6 +93,46 @@ interface ThreeAdBannersResponse {
   banners: ThreeAdBanner[];
 }
 
+interface Category {
+  id: number;
+  name: string;
+  parent_id: [number, string] | false;
+  child_id: number[];
+}
+
+interface CategoryProduct {
+  id: number;
+  name: string;
+  list_price: number;
+  image_1920: string;
+  description_sale?: string;
+}
+
+interface CategoryProductsResponse {
+  products: CategoryProduct[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+// Update CartItem to match the expected types
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
+// Add WishlistItem interface to match Product type
+interface WishlistItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+}
+
 function Home() {
   const [oldSlide, setOldSlide] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -237,13 +277,37 @@ function Home() {
       (banner) => `data:image/png;base64,${banner.x_studio_banner_image}`
     ) || [];
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    carouselCardData[0].label
-  );
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
-  const filteredProducts = productsData.filter(
-    (product) => product.category === selectedCategory
-  );
+  // Add categories query
+  const { data: categoriesData, isLoading: isCategoriesLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await axiosInstance.post("/products/categories", {});
+      // Filter out categories with parent_id to get only root categories
+      const rootCategories = response.data.filter((category: Category) => !category.parent_id);
+      // Set the first category as default if we have categories and no category is selected
+      if (rootCategories.length > 0 && !selectedCategory) {
+        setSelectedCategory(rootCategories[0].id);
+      }
+      return rootCategories;
+    },
+  });
+
+  // Add category products query
+  const { data: categoryProductsData, isLoading: isCategoryProductsLoading } = useQuery<CategoryProductsResponse>({
+    queryKey: ["categoryProducts", selectedCategory],
+    queryFn: async () => {
+      if (!selectedCategory) return { products: [], total: 0, offset: 0, limit: 12 };
+      const response = await axiosInstance.post("/products", {
+        category_id: selectedCategory,
+        limit: 12,
+        page: 1,
+      });
+      return response.data;
+    },
+    enabled: !!selectedCategory, // Only run query if we have a selected category
+  });
 
   const handleBannerClick = (banner: Banner) => {
     if (banner.x_studio_product_link) {
@@ -356,148 +420,162 @@ function Home() {
         )}
       </div>
 
-      {/* Category Carousel */}
-      <div className="p-4 mb-20 bg-white rounded-md shadow-md">
-        <div className="relative">
-          <button
-            onClick={() => scrollCategories("left")}
-            className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-          >
-            <LucideArrowLeft className="w-5 h-5 text-gray-600" />
-          </button>
-
-          <button
-            onClick={() => scrollCategories("right")}
-            className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-          >
-            <LucideArrowRight className="w-5 h-5 text-gray-600" />
-          </button>
-
-          {/* Categories */}
-          <div className="flex px-12 mb-6 overflow-x-auto gap-x-4 hide-scrollbar categories-scroll scroll-smooth">
-            {carouselCardData.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSelectedCategory(item.label)}
-                className=""
+      {/* category product section */}
+      <div className="mb-20">
+        {/* Section Header */}
+        <div className="flex flex-col gap-6 px-4 mb-8">
+          <div className="flex items-center justify-between">
+            <h2 className="font-tajawal-medium text-xl relative after:absolute after:bottom-0 after:right-0 after:w-full after:h-0.5 after:bg-gradient-to-l after:from-orange-500 after:to-orange-300 pb-2">
+              منتجات الفئة
+            </h2>
+            <Link 
+              to="/categories"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md"
+            >
+              عرض المزيد
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="rtl:rotate-180"
               >
-                <Button
-                  variant={
-                    selectedCategory === item.label ? "default" : "outline"
-                  }
-                  color="orange"
-                  label={item.label}
-                />
-              </button>
-            ))}
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </Link>
           </div>
+
+          {/* Categories List */}
+          {!isCategoriesLoading && categoriesData && (
+            <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
+              {categoriesData.map((category: Category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 ${
+                    selectedCategory === category.id
+                      ? "bg-orange-500 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Products Grid */}
-        <div className="relative">
-          <button
-            onClick={() => scrollCategories("left")}
-            className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-          >
-            <LucideArrowLeft className="w-5 h-5 text-gray-600" />
-          </button>
+        <div className="relative p-6 bg-white shadow-md rounded-2xl bg-gradient-to-b from-white to-gray-50">
+          {isCategoriesLoading || isCategoryProductsLoading ? (
+            // Loading state
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="w-full h-48 bg-gray-200 rounded-xl"></div>
+                  <div className="w-3/4 h-4 mt-4 bg-gray-200 rounded"></div>
+                  <div className="w-1/2 h-4 mt-2 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          ) : categoryProductsData?.products?.length ? (
+            <div className="relative z-10 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6">
+              {categoryProductsData.products.map((product: CategoryProduct) => (
+                <Link
+                  key={product.id}
+                  to={`/product/${product.id}`}
+                  className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
+                >
+                  {/* Wishlist Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const wishlistItem: WishlistItem = {
+                        id: product.id.toString(),
+                        name: product.name,
+                        price: product.list_price,
+                        image: `data:image/jpeg;base64,${product.image_1920}`,
+                        description: product.description_sale || product.name,
+                      };
+                      useWishlistStore.getState().isWishlisted(product.id.toString())
+                        ? useWishlistStore.getState().removeFromWishlist(product.id.toString())
+                        : useWishlistStore.getState().addToWishlist(wishlistItem);
+                    }}
+                    className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
+                    aria-label="إضافة للمفضلة"
+                  >
+                    <Heart
+                      className={`w-4 h-4 transition-colors ${
+                        useWishlistStore.getState().isWishlisted(product.id.toString())
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-400 group-hover:text-gray-600"
+                      }`}
+                    />
+                  </button>
 
-          <button
-            onClick={() => scrollCategories("right")}
-            className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-          >
-            <LucideArrowRight className="w-5 h-5 text-gray-600" />
-          </button>
-
-          {/* Products Grid */}
-          <div
-            ref={scrollContainerRef}
-            className="grid grid-flow-col gap-8 px-8 py-6 overflow-x-auto auto-cols-max hide-scrollbar"
-          >
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="w-[220px] bg-white rounded-2xl p-4 transition-shadow duration-200 hover:shadow-lg border border-gray-100"
-              >
-                <Link to={`/product/${product.id}`} className="block">
-                  <div className="relative mb-4">
-                    <div className="relative p-4 overflow-hidden rounded-xl bg-gray-50">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-[180px] object-contain"
-                      />
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        useWishlistStore.getState().isWishlisted(product.id)
-                          ? useWishlistStore
-                              .getState()
-                              .removeFromWishlist(product.id)
-                          : useWishlistStore
-                              .getState()
-                              .addToWishlist(product as Product);
-                      }}
-                      className="absolute p-2 transition-colors duration-200 bg-white rounded-full shadow-lg top-3 right-3 hover:bg-gray-50"
-                    >
-                      <Heart
-                        className={`w-5 h-5 ${
-                          useWishlistStore.getState().isWishlisted(product.id)
-                            ? "text-red-500 fill-red-500"
-                            : "text-gray-400"
-                        }`}
-                      />
-                    </button>
+                  {/* Product Image */}
+                  <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">
+                    <img
+                      src={`data:image/jpeg;base64,${product.image_1920}`}
+                      alt={product.name}
+                      className="object-contain w-4/5 transition-transform duration-300 h-4/5 group-hover:scale-110"
+                      loading="lazy"
+                    />
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-gray-800 line-clamp-2 min-h-[40px]">
+
+                  {/* Product Info */}
+                  <div className="flex flex-col flex-grow p-4">
+                    <h3 className="mb-2 text-sm font-medium text-gray-800 transition-colors line-clamp-2 group-hover:text-orange-600">
                       {product.name}
                     </h3>
-                    <div className="pt-2 border-t border-gray-100">
-                      <p className="text-lg font-bold text-gray-900">
-                        {product.price.toLocaleString()} د.ع
+
+                    <div className="flex items-center justify-between pt-2 mt-auto">
+                      <p className="text-sm font-bold text-orange-600">
+                        {product.list_price.toLocaleString()} د.ع
                       </p>
+
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const cartItem: CartItem = {
+                            id: product.id.toString(),
+                            name: product.name,
+                            price: product.list_price,
+                            image: `data:image/jpeg;base64,${product.image_1920}`,
+                            quantity: 1,
+                          };
+                          useCartStore.getState().addToCart(cartItem);
+                        }}
+                        className="relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200 group-hover:shadow-sm"
+                        aria-label="إضافة للسلة"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        <span className="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0 group-hover:scale-x-100 group-hover:opacity-10"></span>
+                      </button>
                     </div>
                   </div>
+
+                  {/* Bottom shine effect on hover */}
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                 </Link>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-12">
+              <p className="text-gray-500">لا توجد منتجات متاحة</p>
+            </div>
+          )}
+
+          {/* Decorative background elements */}
+          <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-50 opacity-30 blur-2xl"></div>
+          <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-orange-50 translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl"></div>
         </div>
       </div>
-
-      {/* new banner section */}
-      {/* <div className="mb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h[600px]">
-          <div className="h-full">
-            <Banner
-              title="بيكسل 9 برو"
-              subtitle="عرض ملحمي للذكاء الاصطناعي من كوكل."
-              price={320000}
-              primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
-              className="h-full"
-            />
-          </div>
-
-          <div className="grid h-full grid-rows-2 gap-4">
-            <Banner
-              title="ايفون 15 برو ماكس"
-              subtitle="تجربة تصوير احترافية مع كاميرا متطورة."
-              price={450000}
-              primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
-            />
-
-            <Banner
-              title="سامسونج جالكسي زد فولد 5"
-              subtitle="الجيل الجديد من الهواتف القابلة للطي."
-              price={380000}
-              primaryImage="https://imgs.search.brave.com/6jvVwjfcZkPlC9DY9B3xPr5Qzhc_-dt0fSl_ALBxX1A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMxLmFucG9pbWFn/ZXMuY29tL3dvcmRw/cmVzcy93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNC8wOC9nb29n/bGUtcGl4ZWwtOS1w/cm8teGwucG5n"
-            />
-          </div>
-        </div>
-      </div> */}
 
       {/* Auctions Section */}
       <div className="mb-20">
