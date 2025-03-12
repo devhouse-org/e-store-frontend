@@ -1,26 +1,21 @@
-import { useRef, useState } from "react";
-import { Product, products } from "@/utils/data/products";
 import AuctionSection from "@/components/AuctionSection";
 import Banner from "@/components/Banner";
-import CarouselCard from "@/components/CarouselCard";
-import SpecialProducts from "@/components/SpecialProducts";
-import { Button } from "@/components/ui/button";
-import {
-  carouselCardData,
-  productsData,
-  techLogos,
-} from "@/utils/dummy_data/data";
-import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
-import Slider from "react-slick";
-import { Link, useNavigate } from "react-router-dom";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { Heart, ShoppingCart } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
-import Loader from "@/components/ui/LoadingState";
+import { products } from "@/utils/data/products";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Heart,
+  LucideArrowLeft,
+  LucideArrowRight,
+  ShoppingCart,
+} from "lucide-react";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Slider from "react-slick";
 
-import { useCartStore } from "@/store/useCartStore";
 import LogoPlaceholder from "@/assets/images/Logo.png";
+import { useCartStore } from "@/store/useCartStore";
 
 interface Banner {
   id: number;
