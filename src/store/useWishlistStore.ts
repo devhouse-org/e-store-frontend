@@ -9,18 +9,12 @@ interface WishlistStore {
   isWishlisted: (productId: string) => boolean;
 }
 
-interface WishlistId {
-  id: string;
-}
-
 // Get initial state from localStorage
 const getInitialState = () => {
-  const savedWishlists: WishlistId[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+  const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
   return {
-    wishlist: savedWishlists.map(item => ({
-      id: item.id,
-    })) as Product[],
-    wishlistCount: savedWishlists.length
+    wishlist: savedIds.map(id => ({ id })) as Product[],
+    wishlistCount: savedIds.length
   };
 };
 
@@ -39,11 +33,9 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
         wishlistCount: state.wishlistCount + 1,
       }));
 
-      const savedWishlists: WishlistId[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-      savedWishlists.push({
-        id: product.id.toString(),
-      });
-      localStorage.setItem('wishlists', JSON.stringify(savedWishlists));
+      const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+      savedIds.push(product.id.toString());
+      localStorage.setItem('wishlists', JSON.stringify(savedIds));
     }
   },
   removeFromWishlist: (productId) => {
@@ -52,12 +44,12 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
       wishlistCount: state.wishlistCount - 1,
     }));
 
-    const savedWishlists: WishlistId[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-    const updatedWishlists = savedWishlists.filter(item => item.id !== productId);
-    localStorage.setItem('wishlists', JSON.stringify(updatedWishlists));
+    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    const updatedIds = savedIds.filter(id => id !== productId);
+    localStorage.setItem('wishlists', JSON.stringify(updatedIds));
   },
   isWishlisted: (productId) => {
-    const savedWishlists: WishlistId[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-    return savedWishlists.some(item => item.id === productId);
+    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    return savedIds.includes(productId);
   },
 }));

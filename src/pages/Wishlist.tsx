@@ -2,68 +2,68 @@ import { useWishlistStore } from "@/store/useWishlistStore";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
+import Loader from "@/components/ui/LoadingState";
+
+interface Product {
+  id: string;
+  name: string;
+  image_1920: string;
+  list_price: number;
+}
 
 interface ProductsResponse {
-  products: Array<{
-    id: number;
-    name: string;
-    image_1920: string;
-    list_price: number;
-    description?: string;
-  }>;
+  products: Product[];
   total: number;
   offset: number;
   limit: number;
 }
 
-interface WishlistItem {
-  id: string;
-  price: number;
-  image: string;
-}
-
-const getWishlistProducts = useQuery<ProductsResponse, Error>({
-  queryKey: ["wishlistProducts"],
-  queryFn: async () => {
-    const wishlists = JSON.parse(localStorage.getItem('wishlists') || '[]');
-    const productIds = wishlists.map((item: WishlistItem) => item.id);
-
-    const response = await axiosInstance.post<ProductsResponse>(
-      "/products",
-      { ids: productIds }
-    );
-    return response.data;
-  },
-});
+const useWishlistProducts = (productIds: string[]) => {
+  return useQuery<ProductsResponse, Error>({
+    queryKey: ["products", { productIds }],
+    queryFn: async () => {
+      if (productIds.length === 0) {
+        return { products: [], total: 0, offset: 0, limit: 0 };
+      }
+      const response = await axiosInstance.post<ProductsResponse>(
+        "/products",
+        {
+          product_ids: productIds.map(id => parseInt(id)),
+          limit: productIds.length,
+          offset: 0
+        }
+      );
+      return response.data;
+    },
+    enabled: productIds.length > 0
+  });
+};
 
 function WishlistItemCard({ 
-  product, 
-  removeFromWishlist, 
-  setSavedProducts 
+  product,
+  removeFromWishlist,
 }: { 
-  product: WishlistItem, 
-  removeFromWishlist: (productId: string) => void, 
-  setSavedProducts: Dispatch<SetStateAction<WishlistItem[]>> 
+  product: Product;
+  removeFromWishlist: (productId: string) => void;
 }) {
   return (
     <Link to={`/product/${product.id}`} key={product.id} className="p-4 bg-white rounded-lg shadow-md">
       <img 
-        src={`data:image/png;base64,${product.image}`} 
-        alt="Product" 
+        src={`data:image/png;base64,${product.image_1920}`} 
+        alt={product.name} 
         className="object-cover w-full h-48 rounded-md"
       />
       <div className="mt-4">
+        <h3 className="mb-2 text-lg text-gray-800 font-tajawal-bold">{product.name}</h3>
         <p className="text-lg text-orange-600 font-tajawal-bold">
-          {product.price.toLocaleString('ar-IQ')} د.ع
+          {product.list_price.toLocaleString('ar-IQ')} د.ع
         </p>
         <button
           onClick={(e) => {
             e.preventDefault();
             removeFromWishlist(product.id);
-            setSavedProducts(prev => prev.filter(p => p.id !== product.id));
           }}
           className="w-full py-2 mt-2 text-red-600 transition-colors rounded-md bg-red-50 hover:bg-red-100"
         >
@@ -75,14 +75,27 @@ function WishlistItemCard({
 }
 
 const Wishlist = () => {
-  const [savedProducts, setSavedProducts] = useState<WishlistItem[]>([]);
   const { removeFromWishlist } = useWishlistStore();
+  const savedIds = JSON.parse(localStorage.getItem('wishlists') || '[]');
+  const { data, isLoading, error } = useWishlistProducts(savedIds);
 
-  useEffect(() => {
-    setSavedProducts(getWishlistProducts || []);
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
-  if (savedProducts.length === 0) {
+  if (error) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="text-red-500">حدث خطأ: {error.message}</div>
+      </div>
+    );
+  }
+
+  if (!data?.products?.length) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center gap-8 px-4 max-w-md mx-auto">
         <div className="space-y-4 text-center">
@@ -115,17 +128,16 @@ const Wishlist = () => {
             قائمة المفضلة
           </h1>
           <span className="px-4 py-2 text-orange-600 bg-orange-100 rounded-full font-tajawal-medium">
-            {savedProducts.length} منتجات
+            {data.products.length} منتجات
           </span>
         </div>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 md:gap-10">
-          {savedProducts.map((product) => (
+          {data.products.map((product) => (
             <WishlistItemCard 
               key={product.id}
               product={product}
               removeFromWishlist={removeFromWishlist}
-              setSavedProducts={setSavedProducts}
             />
           ))}
         </div>
