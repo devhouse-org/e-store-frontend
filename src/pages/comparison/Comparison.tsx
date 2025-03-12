@@ -1,15 +1,15 @@
-import LoadingComponent from "@/components/loading";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
+import { Plus, Trash2, Save } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { useSavedComparisonsStore } from "@/store/useSavedComparisonsStore";
-import axiosInstance from "@/utils/axiosInstance";
-import { Plus, Save, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Product } from "@/types";
 import { IconType } from "react-icons";
-import { Link } from "react-router-dom";
-
+import axiosInstance from "@/utils/axiosInstance";
+import Loader from "@/components/ui/LoadingState";
 // Update ProductDetails interface to match API response
 interface ProductDetails {
   id: number;
@@ -40,12 +40,12 @@ const EmptySlot = () => (
     >
       <Plus className="w-8 h-8 text-gray-400" />
     </Link>
-    <p className="font-tajawal-regular text-center text-gray-500">
+    <p className="text-center text-gray-500 font-tajawal-regular">
       أضف جهازاً للمقارنة
     </p>
     <Link
       to="/products"
-      className="hover:text-orange-600 font-tajawal-regular text-sm text-orange-500"
+      className="text-sm text-orange-500 hover:text-orange-600 font-tajawal-regular"
     >
       تصفح المنتجات
     </Link>
@@ -80,7 +80,7 @@ const ProductColumn = ({
             <div className="relative w-full">
               <button
                 onClick={onRemove}
-                className="-top-2 -right-2 hover:bg-red-200 absolute p-1 transition-colors bg-red-100 rounded-full"
+                className="absolute p-1 transition-colors bg-red-100 rounded-full -top-2 -right-2 hover:bg-red-200"
               >
                 <Trash2 className="w-4 h-4 text-red-500" />
               </button>
@@ -90,15 +90,15 @@ const ProductColumn = ({
                 className="object-cover w-24 h-24 mx-auto rounded-lg"
               />
             </div>
-            <h3 className="font-tajawal-regular text-sm font-semibold">
+            <h3 className="text-sm font-semibold font-tajawal-regular">
               {product.name}
             </h3>
-            <p className="font-tajawal-regular text-orange-500">
+            <p className="text-orange-500 font-tajawal-regular">
               {product.list_price.toLocaleString()} د.ع
             </p>
             <button
               onClick={() => handleAddToCart(product)}
-              className="hover:bg-orange-600 font-tajawal-regular px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded-full"
+              className="px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600 font-tajawal-regular"
             >
               إضافة إلى السلة
             </button>
@@ -224,7 +224,12 @@ const Comparison = () => {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
-        <LoadingComponent />
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-tajawal-medium">
+            <Loader />
+          </p>
+        </div>
       </div>
     );
   }
@@ -232,15 +237,15 @@ const Comparison = () => {
   return (
     <div className="container px-4 py-8 mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="font-tajawal-regular text-2xl font-bold">
+        <h1 className="text-2xl font-bold font-tajawal-regular">
           مقارنة المنتجات
         </h1>
-        {productDetails.some((item) => item !== null) && (
+        {productDetails.some(item => item !== null) && (
           <Button
             label="حفظ المقارنة"
             Icon={Save as IconType}
             onClick={handleSaveComparison}
-            className="hover:bg-orange-600 flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg"
+            className="flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600"
           />
         )}
       </div>
@@ -249,7 +254,7 @@ const Comparison = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="bg-gray-50 font-tajawal-regular p-4 border">
+              <th className="p-4 border bg-gray-50 font-tajawal-regular">
                 المواصفات
               </th>
               {[0, 1, 2, 3].map((index) => (

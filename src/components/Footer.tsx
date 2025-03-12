@@ -25,20 +25,20 @@ type Props = {};
 
 const Footer = (props: Props) => {
   return (
-    <div className="bg-blue-800 overflow-hidden">
-      <div className="py-4  px-12">
-        <h1 className="font-tajawal-medium my-4 text-orange-400 text-2xl">
+    <div className="mt-auto overflow-hidden bg-blue-800">
+      <div className="px-12 py-4">
+        <h1 className="my-4 text-2xl text-orange-400 font-tajawal-medium">
           متواجدون دائماً لمساعدتكم
         </h1>
-        <div className="top flex flex-col gap-y-4 md:flex-row md:gap-y-0 justify-between ">
+        <div className="flex flex-col justify-between top gap-y-4 md:flex-row md:gap-y-0 ">
           <div className="flex flex-col md:flex-row gap-y-8 md:gap-y-0 gap-x-12">
 
             <div className="flex-1">
               <div className="">
-                <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
+                <h1 className="text-white border-b font-tajawal-medium border-b-light-800">
                   روابط سريعة
                 </h1>
-                <div className="flex gap-4 py-4 justify-center md:justify-normal">
+                <div className="flex justify-center gap-4 py-4 md:justify-normal">
                   <ul className="text-white font-tajawal-medium">
                     <li><Link to="/">الرئيسية</Link></li>
                     <li><Link to="/auctions">المزاد</Link></li>
@@ -47,21 +47,21 @@ const Footer = (props: Props) => {
                     <li><Link to="/products">تسوق</Link></li>
                   </ul>
                   {/* <div className="gap-y-4 flex max-w-[450px] md:max-w-auto flex-row w-full md:w-auto justify-between md:flex-col items-center">
-                    <div className="bg-black flex justify-center md:justify-normal p- rounded-md">
+                    <div className="flex justify-center bg-black rounded-md md:justify-normal p-">
                       <img
                         className="w-[140px] h-[60px] object-contain"
                         src={zainLogo}
                         alt=""
                       />
                     </div>
-                    <div className="bg-black flex justify-center p4 rounded-md">
+                    <div className="flex justify-center bg-black rounded-md p4">
                       <img
                         className="w-[140px] h-[60px] object-contain"
                         src={mcLogo}
                         alt=""
                       />
                     </div>
-                    <div className="bg-black flex justify-center p4 rounded-md">
+                    <div className="flex justify-center bg-black rounded-md p4">
                       <img
                         className="w-[140px] h-[60px] object-contain"
                         src={cash}
@@ -75,25 +75,25 @@ const Footer = (props: Props) => {
 
             <div className="flex-1">
               <div className="">
-                <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
+                <h1 className="text-white border-b font-tajawal-medium border-b-light-800">
                   تواصل معنا
                 </h1>
-                <div className="flex gap-x-4 py-2 md:py-4">
+                <div className="flex items-center py-2 gap-x-4 md:py-4">
                   <Phone className="text-white" />
-                  <div className="gap-x-4 items-center">
-                    <p className="text-white">9647712345643+</p>
-                    <p className="text-white">9647812345643+</p>
+                  <div className="flex flex-col items-center gap-x-4">
+                    <a href="tel:+9647712345643" className="text-white">9647712345643+</a>
+                    <a href="tel:+9647812345643" className="text-white">9647812345643+</a>
                   </div>
                 </div>
-                <div className="flex gap-x-4 py-2 md:py-4">
+                <div className="flex py-2 gap-x-4 md:py-4">
                   <Mail className="text-white" />
-                  <div className="gap-x-4 items-center">
-                    <p className="text-white">info@estoreiraq.com</p>
+                  <div className="items-center gap-x-4">
+                    <a href="mailto:info@estoreiraq.com" className="text-white">info@estoreiraq.com</a>
                   </div>
                 </div>
-                <div className="flex gap-x-4 py-2 md:py-4">
+                <div className="flex py-2 gap-x-4 md:py-4">
                   <Pin className="text-white" />
-                  <div className="gap-x-4 items-center">
+                  <div className="items-center gap-x-4">
                     <p className="text-white font-tajawal-regular">
                       العراق - البصرة - شارع الجزائر
                     </p>
@@ -104,26 +104,26 @@ const Footer = (props: Props) => {
 
             <div className="flex-1">
               <div className="">
-                <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
+                <h1 className="text-white border-b font-tajawal-medium border-b-light-800">
                   طرق الدفع
                 </h1>
-                <div className="flex gap-x-4 py-4 justify-center md:justify-normal">
+                <div className="flex justify-center py-4 gap-x-4 md:justify-normal">
                   <div className="gap-y-4 flex max-w-[450px] md:max-w-auto flex-row w-full md:w-auto justify-between md:flex-col items-center">
-                    <div className="bg-black flex justify-center md:justify-normal p- rounded-md">
+                    <div className="flex justify-center bg-black rounded-md md:justify-normal p-">
                       <img
                         className="w-[140px] h-[60px] object-contain"
                         src={zainLogo}
                         alt=""
                       />
                     </div>
-                    <div className="bg-black flex justify-center p4 rounded-md">
+                    <div className="flex justify-center bg-black rounded-md p4">
                       <img
                         className="w-[140px] h-[60px] object-contain"
                         src={mcLogo}
                         alt=""
                       />
                     </div>
-                    <div className="bg-black flex justify-center p4 rounded-md">
+                    <div className="flex justify-center bg-black rounded-md p4">
                       <img
                         className="w-[140px] h-[60px] object-contain"
                         src={cash}
@@ -144,25 +144,25 @@ const Footer = (props: Props) => {
                   نوصلك لكل مكان
                 </h1>
 
-                <div className="flex gap-x-4 items-center">
+                <div className="flex items-center gap-x-4">
                   <div className="w-full h-[250px] mt-2">
                     <img
                       src={location}
                       alt="e-store location"
-                      className="w-full h-full object-cover rounded-lg"
+                      className="object-cover w-full h-full rounded-lg"
                     />
                   </div>
                 </div>
 
-                <div className="flex gap-x-4 py-4 justify-center md:justify-normal">
+                <div className="flex justify-center py-4 gap-x-4 md:justify-normal">
                   <div className="gap-y-4 gap-x-4 max-w-[450px] md:max-w-auto md:gap-x-2 flex flex-row w-full md:w-auto justify-between items-center">
-                    <div className="flex justify-center md:justify-normal p4 rounded-md">
+                    <div className="flex justify-center rounded-md md:justify-normal p4">
                       <img className="" src={huawei} alt="" />
                     </div>
-                    <div className="flex justify-center p4 rounded-md">
+                    <div className="flex justify-center rounded-md p4">
                       <img className="" src={google} alt="" />
                     </div>
-                    <div className="flex justify-center p4 rounded-md">
+                    <div className="flex justify-center rounded-md p4">
                       <img className="" src={apple} alt="" />
                     </div>
                   </div>
@@ -172,27 +172,27 @@ const Footer = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className="bg-orange-500 text-white font-bold flex flex-col md:flex-row justify-between py-2 px-12 items-center">
-        <ul className="flex items-center flex-wrap justify-between gap-x-8 gap-y-2 md:gap-y-0 font-tajawal-regular list-none">
-          <li className="flex gap-x-2 items-center flex-1">
+      <div className="flex flex-col items-center justify-between px-12 py-2 font-bold text-white bg-orange-500 md:flex-row">
+        <ul className="flex flex-wrap items-center justify-between list-none gap-x-8 gap-y-2 md:gap-y-0 font-tajawal-regular">
+          <li className="flex items-center flex-1 gap-x-2">
             <Paperclip />
             <p className="text-[12px] text-nowrap md:text-[14px]">
               الشروط والاحكام
             </p>
           </li>
-          <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
+          <li className="flex items-center flex-1 gap-x-2 md:flex-auto">
             <Shield />
             <p className="text-[12px] text-nowrap md:text-[14px]">
               سياسة الخصوصية
             </p>
           </li>
-          <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
+          <li className="flex items-center flex-1 gap-x-2 md:flex-auto">
             <Recycle />
             <p className="text-[12px] text-nowrap md:text-[14px]">
               سياسة الاسترجاع
             </p>
           </li>
-          <li className="flex gap-x-2 items-center flex-1 md:flex-auto">
+          <li className="flex items-center flex-1 gap-x-2 md:flex-auto">
             <UsersRound />
             <p className="text-[12px] text-nowrap md:text-[14px]">من نحن</p>
           </li>

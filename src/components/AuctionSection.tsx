@@ -184,6 +184,7 @@ const AuctionSection = () => {
           {/* section two */}
           <div className="mt-8">
             <AuctionDialog
+              id={Number(activeAuction.id)}
               prices={prices}
               endTime={activeAuction.x_studio_end_date}
               title={activeAuction.x_name}

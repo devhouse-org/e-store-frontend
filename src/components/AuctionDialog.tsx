@@ -7,6 +7,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
+import axiosInstance from "@/utils/axiosInstance";
+import { useQueryClient } from "@tanstack/react-query";
 
 type TimeType = {
   seconds: number;
@@ -21,6 +23,7 @@ type AuctionItemType = {
   currentPrice?: number;
   image?: string;
   title?: string;
+  id?: number;
 };
 
 interface AuctionDialogProps {
@@ -34,6 +37,7 @@ export function AuctionDialog({
   currentPrice,
   image,
   title,
+  id,
 }: AuctionItemType) {
   const imgSrc =
     "https://ardes.bg/uploads/original/konzola-xbox-series-x-1tb-466538.jpg";
@@ -41,6 +45,8 @@ export function AuctionDialog({
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!open) {
@@ -104,6 +110,53 @@ export function AuctionDialog({
 
   const totalPrice = selectedPrices.reduce((acc, value) => acc + value, 0);
 
+  const handlePlaceBid = async () => {
+    if (totalPrice <= 0) return;
+
+    try {
+      const userId = localStorage.getItem("id");
+      if (!userId) {
+        return;
+      }
+
+      setIsLoading(true);
+      const newPrice = totalPrice + (currentPrice || 0);
+
+      const response = await axiosInstance.post(`/auctions/${id}/bid`, {
+        bidAmount: newPrice,
+        partnerId: Number(userId),
+      });
+
+      if (response.data.success) {
+        // Update the individual auction
+        queryClient.setQueryData(["auction", id], (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            currentPrice: newPrice,
+          };
+        });
+
+        // Update the auction list (if it exists in cache)
+        queryClient.setQueryData(["auctions"], (oldData: any) => {
+          if (!oldData) return oldData;
+          return oldData.map((auction: any) =>
+            auction.id === id ? { ...auction, currentPrice: newPrice } : auction
+          );
+        });
+
+        // Invalidate only relevant queries
+        await queryClient.invalidateQueries({ queryKey: ["auction", id] });
+
+        setOpen(false);
+      }
+    } catch (error: any) {
+      console.error(error.response?.data?.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -145,10 +198,11 @@ export function AuctionDialog({
                 <div
                   onClick={() => handlePriceSelection(price.value)}
                   key={price.id}
-                  className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${selectedPrices.includes(price.value)
+                  className={`cursor-pointer hover:border-orange-400 pt-2 transition ease-in-out font-tajawal-regular bg-light-500 px-2 py-1 border rounded-md border-dark-200 ${
+                    selectedPrices.includes(price.value)
                       ? "bg-orange-200 border-orange-400"
                       : ""
-                    }`}
+                  }`}
                 >
                   <p className="text-[16px]">{price.label}</p>
                 </div>
@@ -165,17 +219,31 @@ export function AuctionDialog({
             />
           </DialogClose>
 
-          <div
-            className={`p-2 flex justify-between items-center w-full bg-orange-500
+          <button
+            disabled={totalPrice <= 0 || isLoading}
+            onClick={handlePlaceBid}
+            className={`p-2 flex disabled:bg-orange-300 justify-between items-center w-full bg-orange-500
                             hover:bg-orange-500/90 transition ease-in-out cursor-pointer 
-                            rounded-md text-white ${isAnimating && "bg-orange-300"
-              }`}
+                            rounded-md text-white ${
+                              isAnimating && "bg-orange-300"
+                            }`}
           >
-            <p className="font-tajawal-regular">
-              {totalPrice.toLocaleString()}د.ع
-            </p>
-            <p className="font-tajawal-regular">تأكيد</p>
-          </div>
+            {isLoading ? (
+              <div className="flex items-center justify-center w-full">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              <>
+                <p className="font-tajawal-regular">
+                  {totalPrice <= 0
+                    ? "0.00 "
+                    : (totalPrice + (currentPrice || 0)).toLocaleString()}
+                  د.ع
+                </p>
+                <p className="font-tajawal-regular">تأكيد</p>
+              </>
+            )}
+          </button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

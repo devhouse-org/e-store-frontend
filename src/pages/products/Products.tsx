@@ -10,6 +10,7 @@ import {
   Menu,
   ArrowLeft,
   ArrowRight,
+  Heart,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
@@ -18,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
+import Loader from "@/components/ui/LoadingState";
+import { useWishlistStore } from "@/store/useWishlistStore";
 
 interface Category {
   id: number;
@@ -58,16 +61,24 @@ const useProducts = (params: {
   limit: number;
   page: number;
   category_id?: number | null;
-  variants?: { attribute_id: number; value_id: number }[];
+  variants?: Array<{ attribute_id: number; value_id: number }>;
   min_price?: number;
   max_price?: number;
 }) => {
   return useQuery<ProductsResponse, Error>({
     queryKey: ["products", params],
     queryFn: async () => {
+      const requestParams = {
+        ...params,
+        variants:
+          params.variants && params.variants.length > 0
+            ? params.variants
+            : undefined,
+      };
+
       const response = await axiosInstance.post<ProductsResponse>(
         "/products",
-        params
+        requestParams
       );
       return response.data;
     },
@@ -86,11 +97,11 @@ const Products = () => {
   } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
-  const [prods, setProds] = useState<ProductsResponse>({ 
-    products: [], 
-    total: 0, 
-    offset: 0, 
-    limit: 0 
+  const [prods, setProds] = useState<ProductsResponse>({
+    products: [],
+    total: 0,
+    offset: 0,
+    limit: 0,
   });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -101,7 +112,9 @@ const Products = () => {
   const [selectedVariants, setSelectedVariants] = useState<
     { attribute_id: number; value_id: number }[]
   >([]);
-  const [priceRange, setPriceRange] = useState<{ min: number; max: number } | undefined>(undefined);
+  const [priceRange, setPriceRange] = useState<
+    { min: number; max: number } | undefined
+  >(undefined);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Number of products per page
@@ -120,24 +133,26 @@ const Products = () => {
     data: productsData,
     isLoading: productsLoading,
     error: productsError,
-    refetch: refetchProducts
+    refetch: refetchProducts,
   } = useProducts({
     currentUid: Number(localStorage.getItem("session_id")) || 0,
     currentOffset: (currentPage - 1) * itemsPerPage,
     limit: itemsPerPage,
     page: currentPage,
     category_id: selectedSubcategory || selectedCategory,
-    variants: selectedVariants,
+    variants: selectedVariants.length > 0 ? selectedVariants : undefined,
     min_price: priceRange?.min,
-    max_price: priceRange?.max
+    max_price: priceRange?.max,
   });
-
-  // Calculate total pages
-  const totalPages = productsData ? Math.ceil(productsData.total / itemsPerPage) : 0;
 
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
-    return searchParams.has("category") || searchParams.has("price") || searchParams.has("page");
+    return (
+      searchParams.has("category") ||
+      searchParams.has("price") ||
+      searchParams.has("page") ||
+      searchParams.has("variants")
+    );
   };
 
   // Function to update URL with current filters
@@ -153,6 +168,16 @@ const Products = () => {
       params.set("category", categoryParam);
     } else {
       params.delete("category");
+    }
+
+    // Add variants to URL
+    if (selectedVariants.length > 0) {
+      const variantsParam = selectedVariants
+        .map((v) => `${v.attribute_id}-${v.value_id}`)
+        .join(",");
+      params.set("variants", variantsParam);
+    } else {
+      params.delete("variants");
     }
 
     // Add price range
@@ -180,9 +205,6 @@ const Products = () => {
       const [catId, subCatId] = categoryParam.split("-").map(Number);
       setSelectedCategory(catId || null);
       setSelectedSubcategory(subCatId || null);
-    } else {
-      setSelectedCategory(null);
-      setSelectedSubcategory(null);
     }
 
     // Parse price parameter
@@ -190,8 +212,19 @@ const Products = () => {
     if (priceParam) {
       const [min, max] = priceParam.split("-").map(Number);
       setPriceRange({ min, max });
-    } else {
-      setPriceRange(undefined);
+    }
+
+    // Parse variants parameter
+    const variantsParam = searchParams.get("variants");
+    if (variantsParam) {
+      const variants = variantsParam.split(",").map((v) => {
+        const [attributeId, valueId] = v.split("-").map(Number);
+        return {
+          attribute_id: attributeId,
+          value_id: valueId,
+        };
+      });
+      setSelectedVariants(variants);
     }
 
     // Parse page parameter
@@ -201,8 +234,6 @@ const Products = () => {
       if (!isNaN(page) && page > 0) {
         setCurrentPage(page);
       }
-    } else {
-      setCurrentPage(1);
     }
   };
 
@@ -211,18 +242,18 @@ const Products = () => {
     if (hasUrlFilters()) {
       parseUrlParams();
     }
-  }, []); // Only run once on mount
+  }, []);
 
   // Effect to update URL when filters change
   useEffect(() => {
     if (!categoriesLoading) {
       updateUrlParams();
     }
-  }, [selectedCategory, selectedSubcategory, priceRange, currentPage]);
+  }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange, currentPage]);
 
   // Effect to handle URL parameter changes
   useEffect(() => {
-    if (!categoriesLoading && hasUrlFilters()) {
+    if (!categoriesLoading) {
       parseUrlParams();
     }
   }, [searchParams]);
@@ -232,7 +263,7 @@ const Products = () => {
       setPriceRange(undefined);
       // Remove price parameter from URL if it exists
       const newParams = new URLSearchParams(searchParams);
-      newParams.delete('price');
+      newParams.delete("price");
       setSearchParams(newParams);
       refetchProducts();
     } else {
@@ -248,7 +279,7 @@ const Products = () => {
     const cartItem = cartProducts.find((item) => item.id === product.id);
     console.log(product);
     if (!cartItem) {
-      console.log(product)
+      console.log(product);
       addToCart({
         id: product.id,
         name: product.name,
@@ -320,13 +351,25 @@ const Products = () => {
   // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange]);
+
+  // Update the filter change handler
+  const handleFilterChange = (
+    variants: Array<{ attribute_id: number; value_id: number }>
+  ) => {
+    setSelectedVariants(variants);
+    // Reset to first page when filters change
+    setCurrentPage(1);
+  };
+
+  // Calculate total pages based on the total count from the API
+  const totalPages = productsData ? Math.ceil(productsData.total / itemsPerPage) : 0;
 
   return (
     <div className="relative flex flex-col lg:flex-row">
@@ -336,7 +379,7 @@ const Products = () => {
         size="icon"
         Icon={Menu as IconType}
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed bottom-4 right-4 z-30 bg-orange-500 text-white hover:bg-orange-600 rounded-full w-12 h-12 shadow-lg"
+        className="fixed z-30 w-12 h-12 text-white bg-orange-500 rounded-full shadow-lg lg:hidden bottom-4 right-4 hover:bg-orange-600"
       />
 
       {/* Filter sidebar */}
@@ -353,7 +396,7 @@ const Products = () => {
         <div className="h-full">
           <Filter
             selectedCategory={selectedCategory}
-            onFilterChange={(variants) => setSelectedVariants(variants)}
+            onFilterChange={handleFilterChange}
             onPriceChange={handlePriceChange}
             initialVariants={selectedVariants}
             initialPriceRange={priceRange}
@@ -370,67 +413,61 @@ const Products = () => {
       )}
 
       {/* Main content */}
-      <div className="flex-1 px-4 md:px-8 lg:px-12 pb-20 pt-4">
+      <div className="flex-1 px-4 pt-4 pb-20 md:px-8 lg:px-12">
         {/* Categories section */}
         <div className="mb-8">
-          <h1 className="font-tajawal-bold text-2xl mb-6">الفئات</h1>
+          <h1 className="mb-6 text-2xl font-tajawal-bold">الفئات</h1>
 
           {/* Categories */}
-          {categoriesLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-            </div>
-          ) : (
-            <div className="relative">
-              <button
-                onClick={() => scrollCategories("left", "categories-scroll")}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
-              >
-                <ArrowLeft className="text-gray-600" size={20} />
-              </button>
+          <div className="relative">
+            <button
+              onClick={() => scrollCategories("left", "categories-scroll")}
+              className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
+            >
+              <ArrowLeft className="text-gray-600" size={20} />
+            </button>
 
-              <div className="categories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
-                {categoriesData?.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => handleCategoryClick(category.id)}
-                    className={`
+            <div className="relative flex gap-3 px-12 overflow-x-hidden categories-scroll scroll-smooth">
+              {categoriesData?.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category.id)}
+                  className={`
                       px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
                       ${selectedCategory === category.id
-                        ? "bg-orange-500 text-white shadow-md"
-                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                      }
+                      ? "bg-orange-500 text-white shadow-md"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    }
                     `}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={() => scrollCategories("right", "categories-scroll")}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
-              >
-                <ArrowRight className="text-gray-600" size={20} />
-              </button>
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
-          )}
+
+            <button
+              onClick={() => scrollCategories("right", "categories-scroll")}
+              className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
+            >
+              <ArrowRight className="text-gray-600" size={20} />
+            </button>
+          </div>
+
 
           {/* Subcategories */}
-          {!categoriesLoading &&
-            selectedCategory &&
+          {selectedCategory &&
             getSubcategories().length > 0 && (
-              <div className="mt-4 relative">
+              <div className="relative mt-4">
                 <button
                   onClick={() =>
                     scrollCategories("left", "subcategories-scroll")
                   }
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                  className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
                 >
                   <ArrowLeft className="text-gray-600" size={20} />
                 </button>
 
-                <div className="subcategories-scroll flex gap-3 overflow-x-hidden scroll-smooth relative px-12">
+                <div className="relative flex gap-3 px-12 overflow-x-hidden subcategories-scroll scroll-smooth">
                   {getSubcategories().map((subcategory) => (
                     <button
                       key={subcategory.id}
@@ -452,7 +489,7 @@ const Products = () => {
                   onClick={() =>
                     scrollCategories("right", "subcategories-scroll")
                   }
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                  className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
                 >
                   <ArrowRight className="text-gray-600" size={20} />
                 </button>
@@ -464,16 +501,15 @@ const Products = () => {
         {productsLoading ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
               <p className="text-gray-500 font-tajawal-medium">
-                جاري تحميل المنتجات...
+                <Loader />
               </p>
             </div>
           </div>
         ) : productsError ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <p className="text-red-500 font-tajawal-medium text-lg mb-4">
+              <p className="mb-4 text-lg text-red-500 font-tajawal-medium">
                 {productsError.message}
               </p>
               <Button
@@ -482,7 +518,7 @@ const Products = () => {
                   setSelectedSubcategory(null);
                   setSelectedVariants([]);
                 }}
-                className="bg-orange-500 text-white hover:bg-orange-600"
+                className="text-white bg-orange-500 hover:bg-orange-600"
                 label="إعادة المحاولة"
               />
             </div>
@@ -490,7 +526,7 @@ const Products = () => {
         ) : productsData?.products.length === 0 ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <p className="text-gray-500 font-tajawal-medium text-lg mb-2">
+              <p className="mb-2 text-lg text-gray-500 font-tajawal-medium">
                 {selectedCategory
                   ? "لا توجد منتجات في هذه الفئة"
                   : "لا توجد منتجات متوفرة"}
@@ -504,6 +540,15 @@ const Products = () => {
                 onClick={() => {
                   setSelectedCategory(null);
                   setSelectedSubcategory(null);
+                  setSelectedVariants([]);
+                  setPriceRange(undefined);
+                  // Reset URL parameters
+                  const params = new URLSearchParams(searchParams);
+                  params.delete("category");
+                  params.delete("variants");
+                  params.delete("price");
+                  params.delete("page");
+                  setSearchParams(params);
                 }}
                 className="mt-4"
                 variant="outline"
@@ -512,81 +557,101 @@ const Products = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {productsData?.products.map((product: any) => {
-              const cartItem = cartProducts.find(
-                (item) => item.id === product.id
-              );
+          <>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {productsData?.products.map((product: any) => {
+                const cartItem = cartProducts.find(
+                  (item) => item.id === product.id
+                );
 
-              return (
-                <Link
-                  to={`/product/${product.id}`}
-                  key={product.id}
-                  className="relative flex flex-col rounded-xl bg-white bg-clip-border shadow-md h-full"
-                >
-                  {/* Product image */}
-                  <div className="relative mx-4 p-1 mt-4 h-48 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
-                    <img
-                      src={`data:image/png;base64,${product.image_1920}`}
-                      alt={product.name}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-
-                  {/* Product content */}
-                  <div className="p-6 flex flex-col h-full">
-                    <h5 className="mb-2 block text-lg font-tajawal-medium leading-snug tracking-normal antialiased">
-                      {product.name}
-                    </h5>
-
-                    <div
-                      className="text-sm text-gray-600 mb-2 line-clamp-2"
-                      dangerouslySetInnerHTML={{
-                        __html: product?.description || "",
+                return (
+                  <Link
+                    to={`/product/${product.id}`}
+                    key={product.id}
+                    className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
+                  >
+                    {/* Wishlist Button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const wishlistItem = {
+                          id: product.id.toString(),
+                          name: product.name,
+                          price: product.list_price,
+                          image: product.image_1920,
+                          description: product.description || product.name,
+                        };
+                        useWishlistStore.getState().isWishlisted(product.id.toString())
+                          ? useWishlistStore.getState().removeFromWishlist(product.id.toString())
+                          : useWishlistStore.getState().addToWishlist(wishlistItem);
                       }}
-                    />
+                      className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
+                      aria-label="إضافة للمفضلة"
+                    >
+                      <Heart
+                        className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id.toString())
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-400 group-hover:text-gray-600"
+                          }`}
+                      />
+                    </button>
 
-                    {/* Price and buttons */}
-                    <div className="mt-auto pt-4">
-                      <p className="mb-4 font-tajawal-bold text-orange-500 text-xl">
-                        د.ع {product.list_price.toLocaleString()}
-                      </p>
+                    {/* Product Image */}
+                    <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">
+                      <img
+                        src={`data:image/png;base64,${product.image_1920}`}
+                        alt={product.name}
+                        className="object-contain w-4/5 transition-transform duration-300 h-4/5 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    </div>
 
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        {/* Cart controls */}
+                    {/* Product Info */}
+                    <div className="flex flex-col flex-grow p-4">
+                      <h3 className="mb-2 text-sm font-bold text-gray-800 transition-colors line-clamp-1 group-hover:text-orange-600">
+                        {product.name}
+                      </h3>
+
+                      {product.description && (
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: product.description,
+                          }}
+                          className="mb-2 text-sm line-clamp-2 font-tajawal-regular text-gray-800 transition-colors"
+                        />
+                      )}
+
+                      <div className="flex items-center justify-between pt-2 mt-auto">
+                        <p className="text-sm font-bold text-orange-600">
+                          {product.list_price.toLocaleString()} د.ع
+                        </p>
+
                         {cartItem ? (
-                          <div className="flex items-center justify-center gap-2 px-2 bg-orange-100/25 rounded-md py-1 flex-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-8 h-8 text-black"
+                          <div className="flex items-center gap-2">
+                            <button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleUpdateQuantity(
-                                  product,
-                                  cartItem.quantity + 1
-                                );
+                                handleUpdateQuantity(product, cartItem.quantity - 1);
                               }}
-                              Icon={Plus as IconType}
-                            />
+                              className="p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
                             <span className="w-6 text-center font-tajawal-medium">
                               {cartItem.quantity}
                             </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-8 h-8 text-orange-500"
+                            <button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleUpdateQuantity(
-                                  product,
-                                  cartItem.quantity - 1
-                                );
+                                handleUpdateQuantity(product, cartItem.quantity + 1);
                               }}
-                              Icon={Minus as IconType}
-                            />
+                              className="p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
                           </div>
                         ) : (
                           <button
@@ -594,55 +659,34 @@ const Products = () => {
                               e.preventDefault();
                               handleAddToCart(product);
                             }}
-                            className="flex-1 select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                            className="relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200 group-hover:shadow-sm"
+                            aria-label="إضافة للسلة"
                           >
-                            <LucideShoppingCart className="mx-auto" />
+                            <LucideShoppingCart className="w-4 h-4" />
+                            <span className="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0 group-hover:scale-x-100 group-hover:opacity-10"></span>
                           </button>
                         )}
-
-                        {/* Action buttons */}
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleBuyNow(product);
-                            }}
-                            className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                          >
-                            <LucideCreditCard />
-                          </button>
-
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleComparisonClick(product);
-                            }}
-                            className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                          ${isCompared(product.id)
-                                ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
-                                : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                              }`}
-                          >
-                            <LucideCircleDashed />
-                          </button>
-                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
 
-        {!productsLoading && productsData?.products && productsData.products.length > 0 && (
-          <div className="pagination mt-20 mb-14">
-            <Pagination 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
+                    {/* Bottom shine effect on hover */}
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-20 mb-14">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

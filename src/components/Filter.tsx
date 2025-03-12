@@ -12,7 +12,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import axiosInstance from "@/utils/axiosInstance";
-
+import FilterSkeleton from "@/components/ui/FilterSkeleton";
 interface FilterProps {
   selectedCategory: number | null;
   onFilterChange: (variants: { attribute_id: number; value_id: number }[]) => void;
@@ -189,14 +189,14 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
 
   return (
     <Card className="w-full border-0 shadow-none" dir="rtl">
-      <CardHeader className="pb-3 sticky top-0 bg-white z-10">
-        <div className="flex justify-between items-center font-tajawal-medium">
+      <CardHeader className="sticky top-0 z-10 pb-3 bg-white">
+        <div className="flex items-center justify-between font-tajawal-medium">
           <CardTitle className="text-lg font-medium">فلتر</CardTitle>
           <Button
             variant="ghost"
             size="sm"
             label="حذف الفلتر"
-            className="text-orange-500 hover:text-orange-600 border-2 border-orange-500"
+            className="text-orange-500 border-2 border-orange-500 hover:text-orange-600"
             onClick={clearAllFilters}
           />
         </div>
@@ -205,13 +205,13 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
       <CardContent className="space-y-6">
         {/* Price Range Section */}
         <div>
-          <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold flex justify-between items-center">
+          <div className="flex items-center justify-between p-2 mb-3 text-white bg-orange-500 rounded-md font-tajawal-bold">
             <span>نطاق السعر</span>
             <Button
               variant="ghost"
               size="sm"
               label="حذف"
-              className="text-white hover:text-white/80 py-0 h-auto"
+              className="h-auto py-0 text-white hover:text-white/80"
               onClick={clearPriceFilter}
             />
           </div>
@@ -234,7 +234,7 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
                 variant="outline"
                 size="sm"
                 label="تأكيد السعر"
-                className="w-full mt-2 text-orange-500 hover:text-orange-600 border-2 border-orange-500"
+                className="w-full mt-2 text-orange-500 border-2 border-orange-500 hover:text-orange-600"
                 onClick={confirmPriceRange}
               />
             )}
@@ -245,12 +245,10 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
 
         {/* Dynamic Variants Sections */}
         {variantsLoading ? (
-          <div className="flex items-center justify-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-          </div>
+          <FilterSkeleton />
         ) : error ? (
-          <div className="text-center py-4">
-            <p className="text-red-500 text-sm mb-2">{error}</p>
+          <div className="py-4 text-center">
+            <p className="mb-2 text-sm text-red-500">{error}</p>
             <Button
               variant="ghost"
               size="sm"
@@ -267,7 +265,7 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
                 setVariantsOpen((prev) => ({ ...prev, [variant.id]: isOpen }))
               }
             >
-              <div className="bg-orange-500 text-white p-2 rounded-md mb-3 font-tajawal-bold">
+              <div className="p-2 mb-3 text-white bg-orange-500 rounded-md font-tajawal-bold">
                 {variant.name}
               </div>
               <div className="space-y-3">
@@ -284,7 +282,7 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
                     />
                     <label
                       htmlFor={`variant-${variant.id}-${value.id}`}
-                      className="text-sm font-tajawal-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm leading-none font-tajawal-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       {value.name}
                     </label>
@@ -294,7 +292,7 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
 
               {variant.values.length > 3 && (
                 <>
-                  <CollapsibleContent className="space-y-3 mt-2">
+                  <CollapsibleContent className="mt-2 space-y-3">
                     {variant.values.slice(3).map((value) => (
                       <div
                         key={value.id}
@@ -308,7 +306,7 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
                         />
                         <label
                           htmlFor={`variant-${variant.id}-${value.id}`}
-                          className="text-sm font-tajawal-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          className="text-sm leading-none font-tajawal-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           {value.name}
                         </label>
@@ -322,13 +320,13 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
                       size="sm"
                       label={variantsOpen[variant.id] ? "عرض اقل" : "عرض المزيد"}
                       Icon={ChevronDown as IconType}
-                      className="text-orange-500 mt-2 hover:text-orange-600 font-tajawal-regular"
+                      className="mt-2 text-orange-500 hover:text-orange-600 font-tajawal-regular"
                     />
                   </CollapsibleTrigger>
                 </>
               )}
             </Collapsible>
-            <Separator className="bg-gray-200 my-4" />
+            <Separator className="my-4 bg-gray-200" />
           </div>
         ))}
       </CardContent>

@@ -1,11 +1,11 @@
 import AuctionCard from "@/components/AuctionCard";
-import LoadingComponent from "@/components/loading";
 import Pagination from "@/components/Pagination";
-import axiosInstance from "@/utils/axiosInstance";
 import { Auction } from "@/utils/data/auctions";
-import { useQuery } from "@tanstack/react-query";
+import { Link, useSearchParams } from "react-router-dom";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axiosInstance";
+import Loader from "@/components/ui/LoadingState";
 
 interface BackendAuction {
   id: number;
@@ -25,6 +25,12 @@ interface BackendAuction {
 interface BackendResponse {
   success: boolean;
   auctions: BackendAuction[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 interface TransformedResponse {
@@ -40,11 +46,13 @@ const formatBase64Image = (base64String: string) => {
   return `data:image/jpeg;base64,${base64String}`;
 };
 
-const useAuctions = () => {
+const useAuctions = (page: number) => {
   return useQuery<BackendResponse, Error, TransformedResponse>({
-    queryKey: ["auctions"],
+    queryKey: ["auctions", page],
     queryFn: async () => {
-      const response = await axiosInstance.get<BackendResponse>("/auctions");
+      const response = await axiosInstance.get<BackendResponse>(
+        `/auctions?page=${page}`
+      );
       return response.data;
     },
     select: (data) => ({
@@ -59,34 +67,38 @@ const useAuctions = () => {
         image: formatBase64Image(auction.product?.image_1920 || ""),
         description: auction.x_studio_description,
       })),
+      pagination: data.pagination,
     }),
   });
 };
 
 const Auctions = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading, error } = useAuctions();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const { data, isLoading, error } = useAuctions(currentPage);
 
   const handleSubscribe = () => {
     alert("Subscribed!");
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setSearchParams({ page: page.toString() });
   };
 
   if (isLoading) {
-    return <LoadingComponent />;
+    return <div className="flex justify-center px-12 mx-auto mt-60">
+              <Loader/>
+           </div>
   }
 
   if (error) {
-    return <div className="px-12 mx-auto mt-8">Error loading auctions</div>;
+    return <div className="px-12 mx-auto mt-8 text-center">Error loading auctions</div>;
   }
 
   return (
-    <div className="px-12 mx-auto mt-8">
+    <div className="px-12 mx-auto mt-8 overflow-hidden">
       {/* Title */}
-      <div className="title pb-4">
+      <div className="pb-4 title">
         <h1 className="font-tajawal-bold text-[18px] md:text-[22px] lg:text-[32px]">
           المزادات
         </h1>
@@ -95,17 +107,17 @@ const Auctions = () => {
       {/* Auction Cards and Pagination */}
       <div className="">
         {/* Auction Cards Section */}
-        <div className="auction_cards flex flex-row flex-wrap justify-center gap-4">
+        <div className="flex flex-row flex-wrap justify-center gap-4 auction_cards">
           {data?.auctions.map((auction) => (
             <Link key={auction.id} to={`/auction/${auction.id}`}>
               <AuctionCard auction={auction} onSubscribe={handleSubscribe} />
             </Link>
           ))}
         </div>
-        <div className="pagination mb-14 mt-20">
-          <Pagination
+        <div className="mt-20 pagination mb-14">
+          <Pagination 
             currentPage={currentPage}
-            totalPages={Math.ceil((data?.auctions.length || 0) / 12)} // Assuming 12 items per page
+            totalPages={data?.pagination.totalPages || 1}
             onPageChange={handlePageChange}
           />
         </div>
