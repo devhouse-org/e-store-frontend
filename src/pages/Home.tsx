@@ -1,26 +1,21 @@
-import { useRef, useState } from "react";
-import { Product, products } from "@/utils/data/products";
 import AuctionSection from "@/components/AuctionSection";
 import Banner from "@/components/Banner";
-import CarouselCard from "@/components/CarouselCard";
-import SpecialProducts from "@/components/SpecialProducts";
-import { Button } from "@/components/ui/button";
-import {
-  carouselCardData,
-  productsData,
-  techLogos,
-} from "@/utils/dummy_data/data";
-import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
-import Slider from "react-slick";
-import { Link, useNavigate } from "react-router-dom";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { Heart, ShoppingCart } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
-import Loader from "@/components/ui/LoadingState";
+import { products } from "@/utils/data/products";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Heart,
+  LucideArrowLeft,
+  LucideArrowRight,
+  ShoppingCart,
+} from "lucide-react";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Slider from "react-slick";
 
-import { useCartStore } from "@/store/useCartStore";
 import LogoPlaceholder from "@/assets/images/Logo.png";
+import { useCartStore } from "@/store/useCartStore";
 
 interface Banner {
   id: number;
@@ -159,7 +154,7 @@ function Home() {
     return (
       <button
         onClick={onClick}
-        className="absolute z-10 p-2 transition-all duration-200 -translate-y-1/2 rounded-full shadow-md left-4 top-1/2 bg-white/80 hover:bg-white"
+        className="left-4 top-1/2 bg-white/80 hover:bg-white absolute z-10 p-2 transition-all duration-200 -translate-y-1/2 rounded-full shadow-md"
       >
         <LucideArrowLeft className="w-6 h-6 text-gray-600" />
       </button>
@@ -171,7 +166,7 @@ function Home() {
     return (
       <button
         onClick={onClick}
-        className="absolute z-10 p-2 transition-all duration-200 -translate-y-1/2 rounded-full shadow-md right-4 top-1/2 bg-white/80 hover:bg-white"
+        className="right-4 top-1/2 bg-white/80 hover:bg-white absolute z-10 p-2 transition-all duration-200 -translate-y-1/2 rounded-full shadow-md"
       >
         <LucideArrowRight className="w-6 h-6 text-gray-600" />
       </button>
@@ -190,8 +185,9 @@ function Home() {
     customPaging: (i: any) => (
       <div className="w-8 h-1 px-1 my-2">
         <div
-          className={`w-full h-full ${i === activeSlide ? "bg-orange-500" : "bg-orange-100"
-            } rounded-full`}
+          className={`w-full h-full ${
+            i === activeSlide ? "bg-orange-500" : "bg-orange-100"
+          } rounded-full`}
         />
       </div>
     ),
@@ -284,7 +280,9 @@ function Home() {
     queryFn: async () => {
       const response = await axiosInstance.post("/products/categories", {});
       // Filter out categories with parent_id to get only root categories
-      const rootCategories = response.data.filter((category: Category) => !category.parent_id);
+      const rootCategories = response.data.filter(
+        (category: Category) => !category.parent_id
+      );
       // Set the first category as default if we have categories and no category is selected
       if (rootCategories.length > 0 && !selectedCategory) {
         setSelectedCategory(rootCategories[0].id);
@@ -294,19 +292,21 @@ function Home() {
   });
 
   // Add category products query
-  const { data: categoryProductsData, isLoading: isCategoryProductsLoading } = useQuery<CategoryProductsResponse>({
-    queryKey: ["categoryProducts", selectedCategory],
-    queryFn: async () => {
-      if (!selectedCategory) return { products: [], total: 0, offset: 0, limit: 12 };
-      const response = await axiosInstance.post("/products", {
-        category_id: selectedCategory,
-        limit: 12,
-        page: 1,
-      });
-      return response.data;
-    },
-    enabled: !!selectedCategory, // Only run query if we have a selected category
-  });
+  const { data: categoryProductsData, isLoading: isCategoryProductsLoading } =
+    useQuery<CategoryProductsResponse>({
+      queryKey: ["categoryProducts", selectedCategory],
+      queryFn: async () => {
+        if (!selectedCategory)
+          return { products: [], total: 0, offset: 0, limit: 12 };
+        const response = await axiosInstance.post("/products", {
+          category_id: selectedCategory,
+          limit: 12,
+          page: 1,
+        });
+        return response.data;
+      },
+      enabled: !!selectedCategory, // Only run query if we have a selected category
+    });
 
   const handleBannerClick = (banner: Banner) => {
     if (banner.x_studio_product_link) {
@@ -363,14 +363,14 @@ function Home() {
     });
 
   return (
-    <div className="px-4 pt-4 mx-auto md:px-12">
-      <div className="relative pt-8 pb-14">
+    <div className="md:px-12 px-4 pt-4 mx-auto">
+      <div className="pb-14 relative pt-8">
         {isBannersLoading ? (
           <div className="h-[280px] md:h-[380px] lg:h-[480px] flex items-center justify-center bg-gray-100 rounded-xl">
-            <div role="status" className="w-full h-full animate-pulse">
-              <div className="flex items-center justify-center w-full h-full bg-gray-300 rounded-sm dark:bg-gray-700">
+            <div role="status" className="animate-pulse w-full h-full">
+              <div className="dark:bg-gray-700 flex items-center justify-center w-full h-full bg-gray-300 rounded-sm">
                 <svg
-                  className="w-10 h-10 text-gray-200 dark:text-gray-600"
+                  className="dark:text-gray-600 w-10 h-10 text-gray-200"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -387,12 +387,12 @@ function Home() {
               <div
                 key={i}
                 className="h-[280px] md:h-[380px] lg:h-[480px] overflow-hidden relative cursor-pointer"
-              // onClick={() => handleBannerClick(bannersData!.banners[i])}
+                // onClick={() => handleBannerClick(bannersData!.banners[i])}
               >
                 <img
                   src={item}
                   alt={`Banner ${i + 1}`}
-                  className="object-cover w-full h-full border-none focus:outline-none"
+                  className="focus:outline-none object-cover w-full h-full border-none"
                 />
                 {/* {bannersData?.banners[i].x_studio_discount && (
                   <div className="z-[100] absolute top-4 pt-2 font-tajawal-bold right-4 bg-red-500 text-white px-3 py-1 rounded-full">
@@ -400,7 +400,7 @@ function Home() {
                   </div>
                 )} */}
                 <Link
-                  className="absolute flex items-center justify-center w-20 text-white bg-orange-500 rounded-sm bottom-10 right-10 h-14 font-tajawal-bold"
+                  className="bottom-10 right-10 h-14 font-tajawal-bold absolute flex items-center justify-center w-20 text-white bg-orange-500 rounded-sm"
                   to={
                     bannersData?.banners[i].x_studio_product_link
                       ? `${bannersData?.banners[i].x_studio_product_link}`
@@ -429,7 +429,7 @@ function Home() {
             </h2>
             <Link
               to="/categories"
-              className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md"
+              className="bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg"
             >
               عرض المزيد
               <svg
@@ -451,15 +451,16 @@ function Home() {
 
           {/* Categories List */}
           {!isCategoriesLoading && categoriesData && (
-            <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
+            <div className="hide-scrollbar flex gap-4 pb-2 overflow-x-auto">
               {categoriesData.map((category: Category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 ${selectedCategory === category.id
-                    ? "bg-orange-500 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    }`}
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 ${
+                    selectedCategory === category.id
+                      ? "bg-orange-500 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
                 >
                   {category.name}
                 </button>
@@ -468,25 +469,25 @@ function Home() {
           )}
         </div>
 
-        <div className="relative p-6 bg-white shadow-md rounded-2xl bg-gradient-to-b from-white to-gray-50">
+        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 relative p-6 bg-white shadow-md">
           {isCategoriesLoading || isCategoryProductsLoading ? (
             // Loading state
-            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6">
+            <div className="md:grid-cols-3 lg:grid-cols-6 grid grid-cols-2 gap-5">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="w-full h-48 bg-gray-200 rounded-xl"></div>
+                  <div className="rounded-xl w-full h-48 bg-gray-200"></div>
                   <div className="w-3/4 h-4 mt-4 bg-gray-200 rounded"></div>
                   <div className="w-1/2 h-4 mt-2 bg-gray-200 rounded"></div>
                 </div>
               ))}
             </div>
           ) : categoryProductsData?.products?.length ? (
-            <div className="relative z-10 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6">
+            <div className="md:grid-cols-3 lg:grid-cols-6 relative z-10 grid grid-cols-2 gap-5">
               {categoryProductsData.products.map((product: CategoryProduct) => (
                 <Link
                   key={product.id}
                   to={`/product/${product.id}`}
-                  className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
+                  className="group rounded-xl hover:shadow-lg relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100"
                 >
                   {/* Wishlist Button */}
                   <button
@@ -500,34 +501,43 @@ function Home() {
                         image: `data:image/jpeg;base64,${product.image_1920}`,
                         description: product.description_sale || product.name,
                       };
-                      useWishlistStore.getState().isWishlisted(product.id.toString())
-                        ? useWishlistStore.getState().removeFromWishlist(product.id.toString())
-                        : useWishlistStore.getState().addToWishlist(wishlistItem);
+                      useWishlistStore
+                        .getState()
+                        .isWishlisted(product.id.toString())
+                        ? useWishlistStore
+                            .getState()
+                            .removeFromWishlist(product.id.toString())
+                        : useWishlistStore
+                            .getState()
+                            .addToWishlist(wishlistItem);
                     }}
-                    className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
+                    className="top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
                     aria-label="إضافة للمفضلة"
                   >
                     <Heart
-                      className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id.toString())
-                        ? "text-red-500 fill-red-500"
-                        : "text-gray-400 group-hover:text-gray-600"
-                        }`}
+                      className={`w-4 h-4 transition-colors ${
+                        useWishlistStore
+                          .getState()
+                          .isWishlisted(product.id.toString())
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-400 group-hover:text-gray-600"
+                      }`}
                     />
                   </button>
 
                   {/* Product Image */}
-                  <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">
+                  <div className="aspect-square bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
                     <img
                       src={`data:image/jpeg;base64,${product.image_1920}`}
                       alt={product.name}
-                      className="object-contain w-4/5 transition-transform duration-300 h-4/5 group-hover:scale-110"
+                      className="h-4/5 group-hover:scale-110 mix-blend-multiply object-contain w-4/5 transition-transform duration-300"
                       loading="lazy"
                     />
                   </div>
 
                   {/* Product Info */}
                   <div className="flex flex-col flex-grow p-4">
-                    <h3 className="mb-2 text-sm font-medium text-gray-800 transition-colors line-clamp-2 group-hover:text-orange-600">
+                    <h3 className="line-clamp-2 group-hover:text-orange-600 mb-2 text-sm font-medium text-gray-800 transition-colors">
                       {product.name}
                     </h3>
 
@@ -548,11 +558,11 @@ function Home() {
                           };
                           useCartStore.getState().addToCart(cartItem);
                         }}
-                        className="relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200 group-hover:shadow-sm"
+                        className="hover:bg-orange-200 group-hover:shadow-sm relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
                         aria-label="إضافة للسلة"
                       >
                         <ShoppingCart className="w-4 h-4" />
-                        <span className="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0 group-hover:scale-x-100 group-hover:opacity-10"></span>
+                        <span className="group-hover:scale-x-100 group-hover:opacity-10 absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0"></span>
                       </button>
                     </div>
                   </div>
@@ -569,8 +579,8 @@ function Home() {
           )}
 
           {/* Decorative background elements */}
-          <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-50 opacity-30 blur-2xl"></div>
-          <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-orange-50 translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl"></div>
+          <div className="bg-orange-50 opacity-30 blur-2xl absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full"></div>
+          <div className="bg-orange-50 translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl absolute bottom-0 right-0 w-40 h-40 rounded-full"></div>
         </div>
       </div>
 
@@ -623,7 +633,7 @@ function Home() {
         {isThreeAdBannersLoading ? (
           // Loading state
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[600px]">
-            <div className="animate-pulse bg-gray-200 rounded-lg h-full" />
+            <div className="animate-pulse h-full bg-gray-200 rounded-lg" />
             <div className="grid h-full grid-rows-2 gap-4">
               <div className="animate-pulse bg-gray-200 rounded-lg" />
               <div className="animate-pulse bg-gray-200 rounded-lg" />
@@ -643,22 +653,22 @@ function Home() {
                         ? banner.x_studio_product_link
                         : `/banner/${banner.id}`
                     }
-                    className="relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer group"
+                    className="group relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer"
                   >
                     <img
-                      className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
+                      className="group-hover:scale-110 object-cover w-full h-full transition-all duration-300"
                       src={`data:image/png;base64,${banner.x_studio_banner_image}`}
                       alt={banner.x_name}
                     />
-                    <div className="absolute right-0 p-4 bottom-10">
-                      <p className="text-sm text-black font-tajawal-medium bg-gray-300/50 w-fit p-2 rounded-full">
+                    <div className="bottom-10 absolute right-0 p-4">
+                      <p className="font-tajawal-medium bg-gray-300/50 w-fit p-2 text-sm text-black rounded-full">
                         {banner.x_studio_discount &&
                           `خصم ${banner.x_studio_discount}%`}
                       </p>
-                      <h3 className="text-2xl text-black line-clamp-1 font-tajawal-bold">
+                      <h3 className="line-clamp-1 font-tajawal-bold text-2xl text-black">
                         {banner.x_name}
                       </h3>
-                      <p className="mt-2 text-md line-clamp-2 text-black font-tajawal-medium">
+                      <p className="text-md line-clamp-2 font-tajawal-medium mt-2 text-black">
                         {banner.x_studio_description}
                       </p>
                     </div>
@@ -674,22 +684,22 @@ function Home() {
                       ? threeAdBannersData.banners[0].x_studio_product_link
                       : `/banner/${threeAdBannersData.banners[0].id}`
                   }
-                  className="relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer group"
+                  className="group relative w-full h-full overflow-hidden bg-gray-100 rounded-lg cursor-pointer"
                 >
                   <img
-                    className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
+                    className="group-hover:scale-110 object-cover w-full h-full transition-all duration-300"
                     src={`data:image/png;base64,${threeAdBannersData.banners[0].x_studio_banner_image}`}
                     alt={threeAdBannersData.banners[0].x_name}
                   />
-                  <div className="absolute right-0 p-4 top-10">
-                    <p className="text-sm text-black font-tajawal-medium">
+                  <div className="top-10 absolute right-0 p-4">
+                    <p className="font-tajawal-medium text-sm text-black">
                       {threeAdBannersData.banners[0].x_studio_discount &&
                         `خصم ${threeAdBannersData.banners[0].x_studio_discount}%`}
                     </p>
-                    <h3 className="text-2xl text-black font-tajawal-medium">
+                    <h3 className="font-tajawal-medium text-2xl text-black">
                       {threeAdBannersData.banners[0].x_name}
                     </h3>
-                    <p className="mt-2 text-sm text-black font-tajawal-medium">
+                    <p className="font-tajawal-medium mt-2 text-sm text-black">
                       {threeAdBannersData.banners[0].x_studio_description}
                     </p>
                   </div>
@@ -707,19 +717,19 @@ function Home() {
                       className="group relative cursor-pointer bg-gray-100 rounded-lg overflow-hidden h-[295px]"
                     >
                       <img
-                        className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
+                        className="group-hover:scale-110 object-cover w-full h-full transition-all duration-300"
                         src={`data:image/png;base64,${banner.x_studio_banner_image}`}
                         alt={banner.x_name}
                       />
-                      <div className="absolute bottom-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent w-full">
-                        <p className="text-sm text-white font-tajawal-medium">
+                      <div className="bg-gradient-to-t from-black/50 to-transparent absolute bottom-0 right-0 w-full p-4">
+                        <p className="font-tajawal-medium text-sm text-white">
                           {banner.x_studio_discount &&
                             `خصم ${banner.x_studio_discount}%`}
                         </p>
-                        <h3 className="text-2xl text-white font-tajawal-medium">
+                        <h3 className="font-tajawal-medium text-2xl text-white">
                           {banner.x_name}
                         </h3>
-                        <p className="mt-2 text-sm text-white font-tajawal-medium">
+                        <p className="font-tajawal-medium mt-2 text-sm text-white">
                           {banner.x_studio_description}
                         </p>
                       </div>
@@ -743,7 +753,7 @@ function Home() {
           <h2 className="font-tajawal-medium text-xl relative after:absolute after:bottom-0 after:right-0 after:w-full after:h-0.5 after:bg-gradient-to-l after:from-orange-500 after:to-orange-300 pb-2">
             المنتجات المميزة
           </h2>
-          <button className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md">
+          <button className="bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg">
             عرض المزيد
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -762,25 +772,25 @@ function Home() {
           </button>
         </div>
 
-        <div className="relative p-6 bg-white shadow-md rounded-2xl bg-gradient-to-b from-white to-gray-50">
+        <div className="rounded-2xl bg-gradient-to-b from-white to-gray-50 relative p-6 bg-white shadow-md">
           {isSpecialProductsLoading ? (
             // Loading state
-            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6">
+            <div className="md:grid-cols-3 lg:grid-cols-6 grid grid-cols-2 gap-5">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="w-full h-48 bg-gray-200 rounded-xl"></div>
+                  <div className="rounded-xl w-full h-48 bg-gray-200"></div>
                   <div className="w-3/4 h-4 mt-4 bg-gray-200 rounded"></div>
                   <div className="w-1/2 h-4 mt-2 bg-gray-200 rounded"></div>
                 </div>
               ))}
             </div>
           ) : specialProductsData?.products?.length > 0 ? (
-            <div className="relative z-10 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6">
+            <div className="md:grid-cols-3 lg:grid-cols-6 relative z-10 grid grid-cols-2 gap-5">
               {specialProductsData.products.map((product) => (
                 <Link
                   key={product.id}
                   to={`/product/${product.id}`}
-                  className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
+                  className="group rounded-xl hover:shadow-lg relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100"
                 >
                   {/* Wishlist Button */}
                   <button
@@ -789,47 +799,46 @@ function Home() {
                       e.stopPropagation();
                       useWishlistStore.getState().isWishlisted(product.id)
                         ? useWishlistStore
-                          .getState()
-                          .removeFromWishlist(product.id)
+                            .getState()
+                            .removeFromWishlist(product.id)
                         : useWishlistStore.getState().addToWishlist(product);
                     }}
-                    className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
+                    className="top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
                     aria-label="إضافة للمفضلة"
                   >
                     <Heart
-                      className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id)
-                        ? "text-red-500 fill-red-500"
-                        : "text-gray-400 group-hover:text-gray-600"
-                        }`}
+                      className={`w-4 h-4 transition-colors ${
+                        useWishlistStore.getState().isWishlisted(product.id)
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-400 group-hover:text-gray-600"
+                      }`}
                     />
                   </button>
 
                   {/* Product Image */}
-                  <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">
+                  <div className="aspect-square bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
                     <img
                       src={`data:image/jpeg;base64,${product.image_1920}`}
                       alt={product.name}
-                      className="object-contain w-4/5 transition-transform duration-300 h-4/5 group-hover:scale-110"
+                      className="h-4/5 group-hover:scale-110 mix-blend-multiply object-contain w-4/5 transition-transform duration-300"
                       loading="lazy"
                     />
                   </div>
 
                   {/* Product Info */}
                   <div className="flex flex-col flex-grow p-4">
-                    <h3 className="mb-2 text-sm line-clamp-1 font-bold text-gray-800 transition-colors group-hover:text-orange-600">
+                    <h3 className="line-clamp-1 group-hover:text-orange-600 mb-2 text-sm font-bold text-gray-800 transition-colors">
                       {product.name}
                     </h3>
 
-                    {
-                      product.description && (
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: product.description
-                          }}
-                          className="mb-2 text-sm line-clamp-2 font-tajawal-regular text-gray-800 transition-colors"
-                        />
-                      )
-                    }
+                    {product.description && (
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: product.description,
+                        }}
+                        className="line-clamp-2 font-tajawal-regular mb-2 text-sm text-gray-800 transition-colors"
+                      />
+                    )}
 
                     <div className="flex items-center justify-between pt-2 mt-auto">
                       <p className="text-sm font-bold text-orange-600">
@@ -847,11 +856,11 @@ function Home() {
                             quantity: 1,
                           });
                         }}
-                        className="relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200 group-hover:shadow-sm"
+                        className="hover:bg-orange-200 group-hover:shadow-sm relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
                         aria-label="إضافة للسلة"
                       >
                         <ShoppingCart className="w-4 h-4" />
-                        <span className="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0 group-hover:scale-x-100 group-hover:opacity-10"></span>
+                        <span className="group-hover:scale-x-100 group-hover:opacity-10 absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0"></span>
                       </button>
                     </div>
                   </div>
@@ -868,8 +877,8 @@ function Home() {
           )}
 
           {/* Decorative background elements */}
-          <div className="absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-50 opacity-30 blur-2xl"></div>
-          <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-orange-50 translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl"></div>
+          <div className="bg-orange-50 opacity-30 blur-2xl absolute top-0 left-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full"></div>
+          <div className="bg-orange-50 translate-x-1/4 translate-y-1/4 opacity-40 blur-3xl absolute bottom-0 right-0 w-40 h-40 rounded-full"></div>
         </div>
       </div>
 
@@ -878,14 +887,14 @@ function Home() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="relative">
-            <h2 className="text-lg border-b-2 border-orange-400 font-tajawal-medium w-fit">
+            <h2 className="font-tajawal-medium w-fit text-lg border-b-2 border-orange-400">
               تسوق بالماركات
             </h2>
             <span className="absolute -bottom-1 right-0 w-1/3 h-[2px] bg-gray-100" />
           </div>
           <Link
             to={"/brands"}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md"
+            className="bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg"
           >
             عرض جميع الماركات
             <svg
@@ -908,7 +917,7 @@ function Home() {
         {/* Brands Grid */}
         {isBrandsLoading ? (
           // Loading state
-          <div className="grid grid-flow-col gap-6 px-1 py-4 overflow-x-auto auto-cols-max hide-scrollbar">
+          <div className="auto-cols-max hide-scrollbar grid grid-flow-col gap-6 px-1 py-4 overflow-x-auto">
             {[...Array(10)].map((_, i) => (
               <div
                 key={i}
@@ -917,7 +926,7 @@ function Home() {
             ))}
           </div>
         ) : brandsData?.values && brandsData.values.length > 0 ? (
-          <div className="grid grid-flow-col gap-6 px-1 py-4 overflow-x-auto auto-cols-max hide-scrollbar">
+          <div className="auto-cols-max hide-scrollbar grid grid-flow-col gap-6 px-1 py-4 overflow-x-auto">
             {brandsData.values.map((brand) => (
               <div
                 key={brand.id}
@@ -925,7 +934,7 @@ function Home() {
               >
                 <Link
                   to={`/products?brand=${brand.id}`}
-                  className="flex flex-col items-center p-4 space-y-2 bg-white border rounded-lg hover:shadow-md transition-shadow duration-200"
+                  className="hover:shadow-md flex flex-col items-center p-4 space-y-2 transition-shadow duration-200 bg-white border rounded-lg"
                 >
                   <img
                     src={brand.image || LogoPlaceholder}
