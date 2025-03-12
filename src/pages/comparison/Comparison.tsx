@@ -10,6 +10,9 @@ import { Product } from "@/types";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/ui/LoadingState";
+import { CategorySelector } from "@/components/CategorySelector";
+import { CategoryProducts } from "@/components/CategoryProducts";
+
 // Update ProductDetails interface to match API response
 interface ProductDetails {
   id: number;
@@ -20,6 +23,7 @@ interface ProductDetails {
   image_1920: string;
   product_variant_ids?: number[];
   attribute_line_ids?: number[];
+  [key: string]: any; // Add index signature for dynamic access
   attributes?: {
     id: number;
     name: string;
@@ -116,12 +120,12 @@ const DataRow = ({
   label,
   getValue,
   slots,
-  key,
+  specKey = "",
 }: {
   label: string;
   getValue: (product: ProductDetails | null) => string;
   slots: (ProductDetails | null)[];
-  key: string;
+  specKey?: string;
 }) => (
   <tr>
     <td className="border p-4 bg-gray-50 font-tajawal-regular w-[200px]">
@@ -129,17 +133,15 @@ const DataRow = ({
     </td>
     {slots.map((product, index) => (
       <td key={index} className="border p-4 text-center w-[200px]">
-        {key === "description" ? (
+        {specKey === "description" && product ? (
           <div
             dangerouslySetInnerHTML={{
-              __html: product?.description || "-",
+              __html: product.description || "-",
             }}
             className="text-sm text-gray-600 max-h-[150px] overflow-y-auto"
           />
-        ) : product ? (
-          getValue(product)
         ) : (
-          "-"
+          getValue(product)
         )}
       </td>
     ))}
@@ -147,7 +149,7 @@ const DataRow = ({
 );
 
 const Comparison = () => {
-  const { comparisonItems, removeFromComparison } = useComparisonStore();
+  const { comparisonItems, removeFromComparison, clearComparison } = useComparisonStore();
   const { toast } = useToast();
   const saveComparison = useSavedComparisonsStore(
     (state) => state.saveComparison
@@ -156,6 +158,7 @@ const Comparison = () => {
     (ProductDetails | null)[]
   >([null, null, null, null]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   // Fetch product details for each product in comparison
   useEffect(() => {
@@ -240,53 +243,77 @@ const Comparison = () => {
         <h1 className="text-2xl font-bold font-tajawal-regular">
           مقارنة المنتجات
         </h1>
-        {productDetails.some(item => item !== null) && (
-          <Button
-            label="حفظ المقارنة"
-            Icon={Save as IconType}
-            onClick={handleSaveComparison}
-            className="flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600"
-          />
-        )}
+        <div className="flex items-center gap-4">
+          {comparisonItems.length > 0 && (
+            <Button
+              onClick={clearComparison}
+              className="flex items-center gap-2 px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600"
+            >
+              مسح المقارنة
+            </Button>
+          )}
+          {productDetails.some(item => item !== null) && (
+            <Button
+              label="حفظ المقارنة"
+              Icon={Save as IconType}
+              onClick={handleSaveComparison}
+              className="flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600"
+            />
+          )}
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="p-4 border bg-gray-50 font-tajawal-regular">
-                المواصفات
-              </th>
-              {[0, 1, 2, 3].map((index) => (
-                <ProductColumn
-                  key={`slot-${index}`}
-                  product={productDetails[index]}
-                  onRemove={() => {
-                    if (productDetails[index]) {
-                      removeFromComparison(productDetails[index]!.id);
+      <div className="mb-8">
+        <div className="max-w-xs">
+          <CategorySelector
+            onCategorySelect={setSelectedCategoryId}
+            disabled={comparisonItems.length > 0}
+          />
+        </div>
+      </div>
+
+      <div className="mb-8">
+        <CategoryProducts categoryId={selectedCategoryId} />
+      </div>
+
+      <div className="mt-8">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <tbody>
+              <tr>
+                <td className="border p-4 bg-gray-50 w-[200px]"></td>
+                {productDetails.map((product, index) => (
+                  <ProductColumn
+                    key={index}
+                    product={product}
+                    onRemove={() =>
+                      removeFromComparison(
+                        comparisonItems[index].id.toString()
+                      )
                     }
-                  }}
+                  />
+                ))}
+              </tr>
+              {specifications.map((spec) => (
+                <DataRow
+                  key={spec.key}
+                  label={spec.label}
+                  specKey={spec.key}
+                  getValue={(product) =>
+                    spec.key === "list_price"
+                      ? product
+                        ? `${product[spec.key].toLocaleString()} د.ع`
+                        : "-"
+                      : product
+                        ? product[spec.key]?.toString() || "-"
+                        : "-"
+                  }
+                  slots={productDetails}
                 />
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {specifications.map((spec) => (
-              <DataRow
-                key={spec.key}
-                label={spec.label}
-                getValue={(product) => {
-                  const value = product?.[spec.key];
-                  if (typeof value === "boolean" && !value) {
-                    return "-";
-                  }
-                  return value?.toString() || "-";
-                }}
-                slots={productDetails}
-              />
-            ))}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
