@@ -10,6 +10,7 @@ import {
   Menu,
   ArrowLeft,
   ArrowRight,
+  Heart,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
@@ -19,6 +20,7 @@ import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/ui/LoadingState";
+import { useWishlistStore } from "@/store/useWishlistStore";
 
 interface Category {
   id: number;
@@ -417,41 +419,40 @@ const Products = () => {
           <h1 className="mb-6 text-2xl font-tajawal-bold">الفئات</h1>
 
           {/* Categories */}
-            <div className="relative">
-              <button
-                onClick={() => scrollCategories("left", "categories-scroll")}
-                className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-              >
-                <ArrowLeft className="text-gray-600" size={20} />
-              </button>
+          <div className="relative">
+            <button
+              onClick={() => scrollCategories("left", "categories-scroll")}
+              className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
+            >
+              <ArrowLeft className="text-gray-600" size={20} />
+            </button>
 
-              <div className="relative flex gap-3 px-12 overflow-x-hidden categories-scroll scroll-smooth">
-                {categoriesData?.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => handleCategoryClick(category.id)}
-                    className={`
+            <div className="relative flex gap-3 px-12 overflow-x-hidden categories-scroll scroll-smooth">
+              {categoriesData?.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category.id)}
+                  className={`
                       px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${
-                        selectedCategory === category.id
-                          ? "bg-orange-500 text-white shadow-md"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                      }
+                      ${selectedCategory === category.id
+                      ? "bg-orange-500 text-white shadow-md"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    }
                     `}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={() => scrollCategories("right", "categories-scroll")}
-                className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-              >
-                <ArrowRight className="text-gray-600" size={20} />
-              </button>
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
-          
+
+            <button
+              onClick={() => scrollCategories("right", "categories-scroll")}
+              className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
+            >
+              <ArrowRight className="text-gray-600" size={20} />
+            </button>
+          </div>
+
 
           {/* Subcategories */}
           {selectedCategory &&
@@ -473,11 +474,10 @@ const Products = () => {
                       onClick={() => handleSubcategoryClick(subcategory.id)}
                       className={`
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${
-                        selectedSubcategory === subcategory.id
+                      ${selectedSubcategory === subcategory.id
                           ? "bg-orange-500 text-white shadow-md"
                           : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                      }
+                        }
                     `}
                     >
                       {subcategory.name}
@@ -540,6 +540,15 @@ const Products = () => {
                 onClick={() => {
                   setSelectedCategory(null);
                   setSelectedSubcategory(null);
+                  setSelectedVariants([]);
+                  setPriceRange(undefined);
+                  // Reset URL parameters
+                  const params = new URLSearchParams(searchParams);
+                  params.delete("category");
+                  params.delete("variants");
+                  params.delete("price");
+                  params.delete("page");
+                  setSearchParams(params);
                 }}
                 className="mt-4"
                 variant="outline"
@@ -559,114 +568,109 @@ const Products = () => {
                   <Link
                     to={`/product/${product.id}`}
                     key={product.id}
-                    className="relative flex flex-col h-full bg-white shadow-md rounded-xl bg-clip-border"
+                    className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
                   >
-                    {/* Product image */}
-                    <div className="relative h-48 p-1 mx-4 mt-4 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border">
+                    {/* Wishlist Button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const wishlistItem = {
+                          id: product.id.toString(),
+                          name: product.name,
+                          price: product.list_price,
+                          image: product.image_1920,
+                          description: product.description || product.name,
+                        };
+                        useWishlistStore.getState().isWishlisted(product.id.toString())
+                          ? useWishlistStore.getState().removeFromWishlist(product.id.toString())
+                          : useWishlistStore.getState().addToWishlist(wishlistItem);
+                      }}
+                      className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
+                      aria-label="إضافة للمفضلة"
+                    >
+                      <Heart
+                        className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id.toString())
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-400 group-hover:text-gray-600"
+                          }`}
+                      />
+                    </button>
+
+                    {/* Product Image */}
+                    <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">
                       <img
                         src={`data:image/png;base64,${product.image_1920}`}
                         alt={product.name}
-                        className="object-contain w-full h-full"
+                        className="object-contain w-4/5 transition-transform duration-300 h-4/5 group-hover:scale-110"
+                        loading="lazy"
                       />
                     </div>
 
-                    {/* Product content */}
-                    <div className="flex flex-col h-full p-6">
-                      <h5 className="block mb-2 text-lg antialiased leading-snug tracking-normal font-tajawal-medium">
+                    {/* Product Info */}
+                    <div className="flex flex-col flex-grow p-4">
+                      <h3 className="mb-2 text-sm font-bold text-gray-800 transition-colors line-clamp-1 group-hover:text-orange-600">
                         {product.name}
-                      </h5>
+                      </h3>
 
-                      <div
-                        className="mb-2 text-sm text-gray-600 line-clamp-2"
-                        dangerouslySetInnerHTML={{
-                          __html: product?.description || "",
-                        }}
-                      />
+                      {product.description && (
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: product.description,
+                          }}
+                          className="mb-2 text-sm line-clamp-2 font-tajawal-regular text-gray-800 transition-colors"
+                        />
+                      )}
 
-                      {/* Price and buttons */}
-                      <div className="pt-4 mt-auto">
-                        <p className="mb-4 text-xl text-orange-500 font-tajawal-bold">
-                          د.ع {product.list_price.toLocaleString()}
+                      <div className="flex items-center justify-between pt-2 mt-auto">
+                        <p className="text-sm font-bold text-orange-600">
+                          {product.list_price.toLocaleString()} د.ع
                         </p>
 
-                        <div className="flex flex-col gap-3 sm:flex-row">
-                          {/* Cart controls */}
-                          {cartItem ? (
-                            <div className="flex items-center justify-center flex-1 gap-2 px-2 py-1 rounded-md bg-orange-100/25">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="w-8 h-8 text-black"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleUpdateQuantity(
-                                    product,
-                                    cartItem.quantity + 1
-                                  );
-                                }}
-                                Icon={Plus as IconType}
-                              />
-                              <span className="w-6 text-center font-tajawal-medium">
-                                {cartItem.quantity}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="w-8 h-8 text-orange-500"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleUpdateQuantity(
-                                    product,
-                                    cartItem.quantity - 1
-                                  );
-                                }}
-                                Icon={Minus as IconType}
-                              />
-                            </div>
-                          ) : (
+                        {cartItem ? (
+                          <div className="flex items-center gap-2">
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
-                                handleAddToCart(product);
+                                e.stopPropagation();
+                                handleUpdateQuantity(product, cartItem.quantity - 1);
                               }}
-                              className="flex-1 select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                              className="p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200"
                             >
-                              <LucideShoppingCart className="mx-auto" />
+                              <Minus className="w-4 h-4" />
                             </button>
-                          )}
-
-                          {/* Action buttons */}
-                          <div className="flex justify-center gap-2">
+                            <span className="w-6 text-center font-tajawal-medium">
+                              {cartItem.quantity}
+                            </span>
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
-                                handleBuyNow(product);
+                                e.stopPropagation();
+                                handleUpdateQuantity(product, cartItem.quantity + 1);
                               }}
-                              className="select-none rounded-lg bg-orange-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                              className="p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200"
                             >
-                              <LucideCreditCard />
-                            </button>
-
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleComparisonClick(product);
-                              }}
-                              className={`select-none rounded-lg py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md transition-all hover:shadow-lg focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
-                            ${
-                              isCompared(product.id)
-                                ? "bg-orange-500 shadow-blue-500/20 hover:shadow-blue-500/40"
-                                : "bg-orange-200 shadow-orange-200/20 hover:shadow-orange-200/40"
-                            }`}
-                            >
-                              <LucideCircleDashed />
+                              <Plus className="w-4 h-4" />
                             </button>
                           </div>
-                        </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleAddToCart(product);
+                            }}
+                            className="relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200 group-hover:shadow-sm"
+                            aria-label="إضافة للسلة"
+                          >
+                            <LucideShoppingCart className="w-4 h-4" />
+                            <span className="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0 group-hover:scale-x-100 group-hover:opacity-10"></span>
+                          </button>
+                        )}
                       </div>
                     </div>
+
+                    {/* Bottom shine effect on hover */}
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                   </Link>
                 );
               })}
