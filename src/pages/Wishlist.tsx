@@ -1,5 +1,5 @@
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { Heart, Trash2 } from "lucide-react";
+import { Heart, Trash, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -55,7 +55,7 @@ function WishlistItemCard({
 }) {
   return (
     <div className="relative p-4 bg-white rounded-lg shadow-md group">
-      <div className="absolute top-2 right-2 z-10">
+      <div className="absolute z-10 top-2 right-2">
         <Checkbox 
           checked={isSelected}
           onCheckedChange={() => onToggleSelect(product.id)}
@@ -153,31 +153,32 @@ const Wishlist = () => {
             <h1 className="text-3xl text-gray-800 font-tajawal-bold">
               قائمة المفضلة
             </h1>
-            <span className="px-4 py-2 text-orange-600 bg-orange-100 rounded-full font-tajawal-medium">
+            <span className="px-4 py-2 bg-orange-100 rounded-full font-tajawal-medium">
               {data.products.length} منتجات
             </span>
           </div>
           
           {selectedCount > 0 && (
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">
+            <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
+              <span className="text-sm text-gray-600 font-tajawal-medium">
                 تم اختيار {selectedCount} منتج
               </span>
-              <Button
-                onClick={clearSelection}
-                variant="outline"
-                className="text-gray-600"
-              >
-                إلغاء التحديد
-              </Button>
-              <Button
-                onClick={deleteSelectedItems}
-                variant="destructive"
-                className="flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                حذف المحدد
-              </Button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={clearSelection}
+                  className="flex items-center gap-2 px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600"
+                >
+                  <span>مسح التحديد</span>
+                  <X className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={deleteSelectedItems}
+                  className="flex items-center gap-2 px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600"
+                >
+                  <span>حذف المنتجات</span>
+                  <Trash className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           )}
         </div>
