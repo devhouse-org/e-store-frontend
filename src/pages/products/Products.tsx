@@ -1,26 +1,24 @@
-import { useEffect, useState } from "react";
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/ui/LoadingState";
+import { useCartStore } from "@/store/useCartStore";
+import { useComparisonStore } from "@/store/useComparisonStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
+import axiosInstance from "@/utils/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
 import {
-  LucideCircleDashed,
-  LucideCreditCard,
-  LucideShoppingCart,
-  Plus,
-  Minus,
-  Menu,
   ArrowLeft,
   ArrowRight,
   Heart,
+  LucideShoppingCart,
+  Menu,
+  Minus,
+  Plus,
 } from "lucide-react";
-import { useCartStore } from "@/store/useCartStore";
-import { useComparisonStore } from "@/store/useComparisonStore";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { IconType } from "react-icons";
-import axiosInstance from "@/utils/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import Loader from "@/components/ui/LoadingState";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 interface Category {
   id: number;
@@ -175,6 +173,7 @@ const Products = () => {
       const variantsParam = selectedVariants
         .map((v) => `${v.attribute_id}-${v.value_id}`)
         .join(",");
+      console.log("Setting variants URL parameter:", variantsParam);
       params.set("variants", variantsParam);
     } else {
       params.delete("variants");
@@ -199,7 +198,7 @@ const Products = () => {
 
   // Function to parse URL params and set initial state
   const parseUrlParams = () => {
-    // Parse category parameter
+    // Parse category parameter first, since variants depend on it
     const categoryParam = searchParams.get("category");
     if (categoryParam) {
       const [catId, subCatId] = categoryParam.split("-").map(Number);
@@ -214,17 +213,32 @@ const Products = () => {
       setPriceRange({ min, max });
     }
 
-    // Parse variants parameter
+    // Parse variants parameter - do this after setting the category
     const variantsParam = searchParams.get("variants");
     if (variantsParam) {
-      const variants = variantsParam.split(",").map((v) => {
-        const [attributeId, valueId] = v.split("-").map(Number);
-        return {
-          attribute_id: attributeId,
-          value_id: valueId,
-        };
-      });
-      setSelectedVariants(variants);
+      console.log("Parsing variants from URL:", variantsParam);
+
+      // Handle both single variant and multiple variants
+      const variantParts = variantsParam.includes(",")
+        ? variantsParam.split(",")
+        : [variantsParam];
+
+      const variants = variantParts
+        .map((v) => {
+          const [attributeId, valueId] = v.split("-").map(Number);
+          return {
+            attribute_id: attributeId,
+            value_id: valueId,
+          };
+        })
+        .filter((v) => !isNaN(v.attribute_id) && !isNaN(v.value_id));
+
+      console.log("Parsed variants:", variants);
+
+      // Only set variants if we have valid ones
+      if (variants.length > 0) {
+        setSelectedVariants(variants);
+      }
     }
 
     // Parse page parameter
@@ -239,24 +253,70 @@ const Products = () => {
 
   // Initial load - fetch categories and handle URL params
   useEffect(() => {
-    if (hasUrlFilters()) {
-      parseUrlParams();
-    }
+    // Always parse URL parameters on initial load
+    console.log("Initial load - parsing URL parameters");
+    parseUrlParams();
+
+    // Set a flag to indicate that we've completed the initial load
+    // This prevents the URL from being reset during the initial render cycle
+    const initialLoadComplete = true;
   }, []);
 
   // Effect to update URL when filters change
   useEffect(() => {
     if (!categoriesLoading) {
-      updateUrlParams();
+      const currentUrlVariants = searchParams.get("variants");
+      const isInitialLoad = currentUrlVariants && selectedVariants.length === 0;
+
+      if (!isInitialLoad) {
+        updateUrlParams();
+      }
     }
-  }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange, currentPage]);
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    selectedVariants,
+    priceRange,
+    currentPage,
+  ]);
 
   // Effect to handle URL parameter changes
   useEffect(() => {
-    if (!categoriesLoading) {
-      parseUrlParams();
+    // Only parse URL parameters if they were changed externally (like when opening in a new tab)
+    const currentUrlVariants = searchParams.get("variants");
+    const currentUrlCategory = searchParams.get("category");
+
+    // If URL has variants but our state doesn't, we need to parse them
+    // But only if we also have a category, since variants depend on category
+    if (
+      currentUrlVariants &&
+      selectedVariants.length === 0 &&
+      currentUrlCategory
+    ) {
+      console.log(
+        "Found variants in URL but not in state, parsing URL parameters"
+      );
+
+      // Use a timeout to ensure this happens after the category is set
+      setTimeout(() => {
+        parseUrlParams();
+      }, 0);
     }
   }, [searchParams]);
+
+  // Effect to handle category changes and ensure variants are properly loaded
+  useEffect(() => {
+    // If we have a category and variants in the URL but not in state, parse them
+    const currentUrlVariants = searchParams.get("variants");
+    if (
+      selectedCategory !== null &&
+      currentUrlVariants &&
+      selectedVariants.length === 0
+    ) {
+      console.log("Category set and variants in URL, parsing variants");
+      parseUrlParams();
+    }
+  }, [selectedCategory]);
 
   const handlePriceChange = (min: number, max: number) => {
     if (min === 0 && max === 0) {
@@ -359,27 +419,64 @@ const Products = () => {
     setCurrentPage(1);
   }, [selectedCategory, selectedSubcategory, selectedVariants, priceRange]);
 
+  // Refetch products when filters change
+  useEffect(() => {
+    if (selectedVariants.length > 0) {
+      console.log("Refetching products with variants:", selectedVariants);
+      refetchProducts();
+    }
+  }, [selectedVariants]);
+
   // Update the filter change handler
   const handleFilterChange = (
     variants: Array<{ attribute_id: number; value_id: number }>
   ) => {
+    console.log("Filter changed, new variants:", variants);
+
+    // Update the selectedVariants state
     setSelectedVariants(variants);
+
     // Reset to first page when filters change
     setCurrentPage(1);
+
+    // Manually update URL to ensure variants are included
+    const params = new URLSearchParams(searchParams);
+
+    if (variants.length > 0) {
+      const variantsParam = variants
+        .map((v) => `${v.attribute_id}-${v.value_id}`)
+        .join(",");
+      params.set("variants", variantsParam);
+    } else {
+      params.delete("variants");
+    }
+
+    // Reset page parameter when filters change
+    params.delete("page");
+
+    // Update URL without triggering a full page reload
+    setSearchParams(params);
   };
 
+  // Log selectedVariants changes for debugging
+  useEffect(() => {
+    console.log("selectedVariants changed:", selectedVariants);
+  }, [selectedVariants]);
+
   // Calculate total pages based on the total count from the API
-  const totalPages = productsData ? Math.ceil(productsData.total / itemsPerPage) : 0;
+  const totalPages = productsData
+    ? Math.ceil(productsData.total / itemsPerPage)
+    : 0;
 
   return (
-    <div className="relative flex flex-col lg:flex-row">
+    <div className="lg:flex-row relative flex flex-col">
       {/* Mobile Filter Toggle Button */}
       <Button
         variant="ghost"
         size="icon"
         Icon={Menu as IconType}
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed z-30 w-12 h-12 text-white bg-orange-500 rounded-full shadow-lg lg:hidden bottom-4 right-4 hover:bg-orange-600"
+        className="lg:hidden bottom-4 right-4 hover:bg-orange-600 fixed z-30 w-12 h-12 text-white bg-orange-500 rounded-full shadow-lg"
       />
 
       {/* Filter sidebar */}
@@ -413,31 +510,32 @@ const Products = () => {
       )}
 
       {/* Main content */}
-      <div className="flex-1 px-4 pt-4 pb-20 md:px-8 lg:px-12">
+      <div className="md:px-8 lg:px-12 flex-1 px-4 pt-4 pb-20">
         {/* Categories section */}
         <div className="mb-8">
-          <h1 className="mb-6 text-2xl font-tajawal-bold">الفئات</h1>
+          <h1 className="font-tajawal-bold mb-6 text-2xl">الفئات</h1>
 
           {/* Categories */}
           <div className="relative">
             <button
               onClick={() => scrollCategories("left", "categories-scroll")}
-              className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
+              className="top-1/2 hover:bg-gray-50 absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
             >
               <ArrowLeft className="text-gray-600" size={20} />
             </button>
 
-            <div className="relative flex gap-3 px-12 overflow-x-hidden categories-scroll scroll-smooth">
+            <div className="categories-scroll scroll-smooth relative flex gap-3 px-12 overflow-x-hidden">
               {categoriesData?.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryClick(category.id)}
                   className={`
                       px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${selectedCategory === category.id
-                      ? "bg-orange-500 text-white shadow-md"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    }
+                      ${
+                        selectedCategory === category.id
+                          ? "bg-orange-500 text-white shadow-md"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      }
                     `}
                 >
                   {category.name}
@@ -447,61 +545,58 @@ const Products = () => {
 
             <button
               onClick={() => scrollCategories("right", "categories-scroll")}
-              className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
+              className="top-1/2 hover:bg-gray-50 absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
             >
               <ArrowRight className="text-gray-600" size={20} />
             </button>
           </div>
 
-
           {/* Subcategories */}
-          {selectedCategory &&
-            getSubcategories().length > 0 && (
-              <div className="relative mt-4">
-                <button
-                  onClick={() =>
-                    scrollCategories("left", "subcategories-scroll")
-                  }
-                  className="absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-                >
-                  <ArrowLeft className="text-gray-600" size={20} />
-                </button>
+          {selectedCategory && getSubcategories().length > 0 && (
+            <div className="relative mt-4">
+              <button
+                onClick={() => scrollCategories("left", "subcategories-scroll")}
+                className="top-1/2 hover:bg-gray-50 absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
+              >
+                <ArrowLeft className="text-gray-600" size={20} />
+              </button>
 
-                <div className="relative flex gap-3 px-12 overflow-x-hidden subcategories-scroll scroll-smooth">
-                  {getSubcategories().map((subcategory) => (
-                    <button
-                      key={subcategory.id}
-                      onClick={() => handleSubcategoryClick(subcategory.id)}
-                      className={`
+              <div className="subcategories-scroll scroll-smooth relative flex gap-3 px-12 overflow-x-hidden">
+                {getSubcategories().map((subcategory) => (
+                  <button
+                    key={subcategory.id}
+                    onClick={() => handleSubcategoryClick(subcategory.id)}
+                    className={`
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${selectedSubcategory === subcategory.id
+                      ${
+                        selectedSubcategory === subcategory.id
                           ? "bg-orange-500 text-white shadow-md"
                           : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                        }
+                      }
                     `}
-                    >
-                      {subcategory.name}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() =>
-                    scrollCategories("right", "subcategories-scroll")
-                  }
-                  className="absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md top-1/2 hover:bg-gray-50"
-                >
-                  <ArrowRight className="text-gray-600" size={20} />
-                </button>
+                  >
+                    {subcategory.name}
+                  </button>
+                ))}
               </div>
-            )}
+
+              <button
+                onClick={() =>
+                  scrollCategories("right", "subcategories-scroll")
+                }
+                className="top-1/2 hover:bg-gray-50 absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
+              >
+                <ArrowRight className="text-gray-600" size={20} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Products grid */}
         {productsLoading ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
-              <p className="text-gray-500 font-tajawal-medium">
+              <p className="font-tajawal-medium text-gray-500">
                 <Loader />
               </p>
             </div>
@@ -509,7 +604,7 @@ const Products = () => {
         ) : productsError ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <p className="mb-4 text-lg text-red-500 font-tajawal-medium">
+              <p className="font-tajawal-medium mb-4 text-lg text-red-500">
                 {productsError.message}
               </p>
               <Button
@@ -518,7 +613,7 @@ const Products = () => {
                   setSelectedSubcategory(null);
                   setSelectedVariants([]);
                 }}
-                className="text-white bg-orange-500 hover:bg-orange-600"
+                className="hover:bg-orange-600 text-white bg-orange-500"
                 label="إعادة المحاولة"
               />
             </div>
@@ -526,13 +621,13 @@ const Products = () => {
         ) : productsData?.products.length === 0 ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <p className="mb-2 text-lg text-gray-500 font-tajawal-medium">
+              <p className="font-tajawal-medium mb-2 text-lg text-gray-500">
                 {selectedCategory
                   ? "لا توجد منتجات في هذه الفئة"
                   : "لا توجد منتجات متوفرة"}
               </p>
               {selectedCategory && (
-                <p className="text-gray-400 font-tajawal-regular">
+                <p className="font-tajawal-regular text-gray-400">
                   يرجى اختيار فئة أخرى لعرض منتجاتها
                 </p>
               )}
@@ -558,7 +653,7 @@ const Products = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid grid-cols-1 gap-6">
               {productsData?.products.map((product: any) => {
                 const cartItem = cartProducts.find(
                   (item) => item.id === product.id
@@ -568,7 +663,7 @@ const Products = () => {
                   <Link
                     to={`/product/${product.id}`}
                     key={product.id}
-                    className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
+                    className="group rounded-xl hover:shadow-lg relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100"
                   >
                     {/* Wishlist Button */}
                     <button
@@ -582,34 +677,43 @@ const Products = () => {
                           image: product.image_1920,
                           description: product.description || product.name,
                         };
-                        useWishlistStore.getState().isWishlisted(product.id.toString())
-                          ? useWishlistStore.getState().removeFromWishlist(product.id.toString())
-                          : useWishlistStore.getState().addToWishlist(wishlistItem);
+                        useWishlistStore
+                          .getState()
+                          .isWishlisted(product.id.toString())
+                          ? useWishlistStore
+                              .getState()
+                              .removeFromWishlist(product.id.toString())
+                          : useWishlistStore
+                              .getState()
+                              .addToWishlist(wishlistItem);
                       }}
-                      className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
+                      className="top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
                       aria-label="إضافة للمفضلة"
                     >
                       <Heart
-                        className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id.toString())
-                          ? "text-red-500 fill-red-500"
-                          : "text-gray-400 group-hover:text-gray-600"
-                          }`}
+                        className={`w-4 h-4 transition-colors ${
+                          useWishlistStore
+                            .getState()
+                            .isWishlisted(product.id.toString())
+                            ? "text-red-500 fill-red-500"
+                            : "text-gray-400 group-hover:text-gray-600"
+                        }`}
                       />
                     </button>
 
                     {/* Product Image */}
-                    <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">
+                    <div className="aspect-square bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
                       <img
                         src={`data:image/png;base64,${product.image_1920}`}
                         alt={product.name}
-                        className="object-contain w-4/5 transition-transform duration-300 h-4/5 group-hover:scale-110"
+                        className="h-4/5 group-hover:scale-110 object-contain w-4/5 transition-transform duration-300"
                         loading="lazy"
                       />
                     </div>
 
                     {/* Product Info */}
                     <div className="flex flex-col flex-grow p-4">
-                      <h3 className="mb-2 text-sm font-bold text-gray-800 transition-colors line-clamp-1 group-hover:text-orange-600">
+                      <h3 className="line-clamp-1 group-hover:text-orange-600 mb-2 text-sm font-bold text-gray-800 transition-colors">
                         {product.name}
                       </h3>
 
@@ -618,7 +722,7 @@ const Products = () => {
                           dangerouslySetInnerHTML={{
                             __html: product.description,
                           }}
-                          className="mb-2 text-sm line-clamp-2 font-tajawal-regular text-gray-800 transition-colors"
+                          className="line-clamp-2 font-tajawal-regular mb-2 text-sm text-gray-800 transition-colors"
                         />
                       )}
 
@@ -633,22 +737,28 @@ const Products = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleUpdateQuantity(product, cartItem.quantity - 1);
+                                handleUpdateQuantity(
+                                  product,
+                                  cartItem.quantity - 1
+                                );
                               }}
-                              className="p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200"
+                              className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
                             >
                               <Minus className="w-4 h-4" />
                             </button>
-                            <span className="w-6 text-center font-tajawal-medium">
+                            <span className="font-tajawal-medium w-6 text-center">
                               {cartItem.quantity}
                             </span>
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleUpdateQuantity(product, cartItem.quantity + 1);
+                                handleUpdateQuantity(
+                                  product,
+                                  cartItem.quantity + 1
+                                );
                               }}
-                              className="p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200"
+                              className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -659,11 +769,11 @@ const Products = () => {
                               e.preventDefault();
                               handleAddToCart(product);
                             }}
-                            className="relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg hover:bg-orange-200 group-hover:shadow-sm"
+                            className="hover:bg-orange-200 group-hover:shadow-sm relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
                             aria-label="إضافة للسلة"
                           >
                             <LucideShoppingCart className="w-4 h-4" />
-                            <span className="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0 group-hover:scale-x-100 group-hover:opacity-10"></span>
+                            <span className="group-hover:scale-x-100 group-hover:opacity-10 absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0"></span>
                           </button>
                         )}
                       </div>
@@ -678,7 +788,7 @@ const Products = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-20 mb-14">
+              <div className="mb-14 mt-20">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
