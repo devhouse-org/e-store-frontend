@@ -70,7 +70,7 @@ const Navbar = (props: Props) => {
 
   // Update comparison items count when items change
   useEffect(() => {
-    const items = localStorage.getItem('comparisonItems');
+    const items = localStorage.getItem('comparisonItemIds');
     const comparisonList = items ? JSON.parse(items) : [];
     setComparisonItemsNo(comparisonList.length);
   }, [comparisonItems]);
