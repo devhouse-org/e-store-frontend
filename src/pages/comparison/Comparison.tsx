@@ -264,7 +264,7 @@ const Comparison = () => {
       </div>
 
       <div className="mb-8">
-        <div className="max-w-xs">
+        <div className="max-w-full">
           <CategorySelector
             onCategorySelect={setSelectedCategoryId}
             disabled={comparisonItems.length > 0}
@@ -276,45 +276,47 @@ const Comparison = () => {
         <CategoryProducts categoryId={selectedCategoryId} />
       </div>
 
-      <div className="mt-8">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <tbody>
-              <tr>
-                <td className="border p-4 bg-gray-50 w-[200px]"></td>
-                {productDetails.map((product, index) => (
-                  <ProductColumn
-                    key={index}
-                    product={product}
-                    onRemove={() =>
-                      removeFromComparison(
-                        comparisonItems[index].id.toString()
-                      )
+      {comparisonItems.length > 0 && (
+        <div className="mt-8">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <tbody>
+                <tr>
+                  <td className="border p-4 bg-gray-50 w-[200px]"></td>
+                  {productDetails.map((product, index) => (
+                    <ProductColumn
+                      key={index}
+                      product={product}
+                      onRemove={() =>
+                        removeFromComparison(
+                          comparisonItems[index].id.toString()
+                        )
+                      }
+                    />
+                  ))}
+                </tr>
+                {specifications.map((spec) => (
+                  <DataRow
+                    key={spec.key}
+                    label={spec.label}
+                    specKey={spec.key}
+                    getValue={(product) =>
+                      spec.key === "list_price"
+                        ? product
+                          ? `${product[spec.key].toLocaleString()} د.ع`
+                          : "-"
+                        : product
+                          ? product[spec.key]?.toString() || "-"
+                          : "-"
                     }
+                    slots={productDetails}
                   />
                 ))}
-              </tr>
-              {specifications.map((spec) => (
-                <DataRow
-                  key={spec.key}
-                  label={spec.label}
-                  specKey={spec.key}
-                  getValue={(product) =>
-                    spec.key === "list_price"
-                      ? product
-                        ? `${product[spec.key].toLocaleString()} د.ع`
-                        : "-"
-                      : product
-                        ? product[spec.key]?.toString() || "-"
-                        : "-"
-                  }
-                  slots={productDetails}
-                />
-              ))}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
