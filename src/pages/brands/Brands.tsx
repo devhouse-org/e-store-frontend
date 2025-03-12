@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, PackageSearch } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import estoreLogo from "@/assets/images/Logo.png";
@@ -29,11 +29,37 @@ const fetchBrands = async (): Promise<BrandResponse> => {
   return response.data;
 };
 
+function EmptyState({ 
+  message, 
+  buttonText, 
+  onButtonClick 
+}: { 
+  message: string; 
+  buttonText: string;
+  onButtonClick: () => void;
+}) {
+  return (
+    <div className="py-12 text-center">
+      <div className="p-4 mx-auto mb-6 bg-orange-100 rounded-full w-fit">
+        <PackageSearch className="w-10 h-10 text-orange-500" />
+      </div>
+      <p className="mb-6 text-xl text-gray-600 font-tajawal-medium">
+        {message}
+      </p>
+      <button
+        onClick={onButtonClick}
+        className="px-6 py-3 text-white transition-colors bg-orange-500 rounded-md hover:bg-orange-600 font-tajawal-medium"
+      >
+        {buttonText}
+      </button>
+    </div>
+  );
+}
+
 const Brands = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
 
-  // Replace useState and useEffect with useQuery
   const {
     data: brandsData,
     isLoading,
@@ -68,6 +94,30 @@ const Brands = () => {
     brand.name.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
+  // Show loader while fetching data
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="container px-4 py-8 mx-auto">
+        <div className="max-w-6xl mx-auto">
+          <EmptyState
+            message="حدث خطأ في تحميل العلامات التجارية"
+            buttonText="إعادة المحاولة"
+            onButtonClick={() => refetch()}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container px-4 py-8 mx-auto">
       <div className="max-w-6xl mx-auto">
@@ -91,15 +141,8 @@ const Brands = () => {
           <Search className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-4 top-1/2" />
         </div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex flex-col items-center gap-20 mt-20">
-            <Loader/>
-          </div>
-        )}
-
         {/* Brands Grid */}
-        {!isLoading && !error && (
+        {filteredBrands.length > 0 ? (
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {filteredBrands.map((brand) => (
               <Link
@@ -130,26 +173,20 @@ const Brands = () => {
               </Link>
             ))}
           </div>
-        )}
-
-        {/* No Results */}
-        {(!isLoading && error || filteredBrands.length === 0) && (
-          <div className="py-12 text-center">
-            <p className="text-gray-500 font-tajawal-medium">
-              {searchQuery
-                ? `لم يتم العثور على نتائج للبحث: ${searchQuery}`
-                : "لا توجد علامات تجارية متاحة حالياً"}
-            </p>
-            <button
-              onClick={() => {
-                setSearchQuery("");
+        ) : (
+          <EmptyState
+            message={searchQuery 
+              ? `لم يتم العثور على نتائج للبحث: ${searchQuery}`
+              : "لا توجد علامات تجارية متاحة حالياً"
+            }
+            buttonText={searchQuery ? "مسح البحث" : "إعادة المحاولة"}
+            onButtonClick={() => {
+              setSearchQuery("");
+              if (!searchQuery) {
                 refetch();
-              }}
-              className="px-4 py-2 mt-4 text-white transition-colors bg-orange-500 rounded-md hover:bg-orange-600"
-            >
-              إعادة المحاولة
-            </button>
-          </div>
+              }
+            }}
+          />
         )}
       </div>
     </div>
