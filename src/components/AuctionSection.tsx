@@ -16,7 +16,7 @@ interface Auction {
   x_name: string;
   x_studio_description: string;
   x_studio_publish: boolean;
-  x_studio_starting_bid_1: number;
+  x_studio_starting_bid: number;
   x_studio_currency_id: [number, string];
   x_studio_start_date: string;
   x_studio_end_date: string;
@@ -157,7 +157,7 @@ const AuctionSection = () => {
             <div className="flex justify-between">
               <h3 className="font-tajawal-regular">تبدأ المزايدة من</h3>
               <p className="text-orange-500 font-tajawal-bold">
-                {activeAuction.x_studio_starting_bid_1.toLocaleString()}{" "}
+                {activeAuction.x_studio_starting_bid.toLocaleString()}{" "}
                 {activeAuction.x_studio_currency_id[1] === "IQD"
                   ? "د.ع"
                   : activeAuction.x_studio_currency_id[1]}

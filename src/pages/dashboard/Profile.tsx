@@ -33,6 +33,7 @@ interface UserData {
   name: string;
   email: string;
   phone: string;
+  image_medium: string;
 }
 
 interface PartnerData {
@@ -42,6 +43,7 @@ interface PartnerData {
     name: string;
     email: string;
     phone: string | false;
+    image_medium: string;
   };
 }
 
@@ -306,8 +308,8 @@ const Profile = () => {
               <label htmlFor="image" className="relative cursor-pointer">
                 <div className="overflow-hidden w-[120px] h-[120px] bg-gray-300 rounded-full shadow-sm">
                   <img
-                    className="object-cover w-full h-full"
-                    src="https://images.unsplash.com/photo-1569173112611-52a7cd38bea9?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    className="object-contain w-full h-full"
+                    src={`data:image/png;base64,${userData?.partner?.image_medium}`}
                     alt=""
                   />
                 </div>

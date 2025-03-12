@@ -80,7 +80,7 @@ interface ThreeAdBanner {
   x_studio_description: string;
   create_date: string;
   x_studio_is_3_ad: boolean;
-  x_studio_many2many_field_6sm_1ilj3d1qm: number[];
+  x_products: number[];
 }
 
 interface ThreeAdBannersResponse {

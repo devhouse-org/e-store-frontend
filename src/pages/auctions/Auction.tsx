@@ -21,7 +21,7 @@ interface BackendAuction {
   id: number;
   x_name: string;
   x_studio_description: string;
-  x_studio_starting_bid_1: number;
+  x_studio_starting_bid: number;
   x_studio_current_bid: number;
   x_studio_end_date: string;
   x_studio_product: [number, string] | false;
@@ -57,8 +57,8 @@ const useAuction = (id: string) => {
           title: response.data.auction.x_name,
           currentPrice:
             response.data.auction.x_studio_current_bid ||
-            response.data.auction.x_studio_starting_bid_1,
-          startingPrice: response.data.auction.x_studio_starting_bid_1,
+            response.data.auction.x_studio_starting_bid,
+          startingPrice: response.data.auction.x_studio_starting_bid,
           endTime: response.data.auction.x_studio_end_date,
           image: formatBase64Image(
             response.data.auction.product?.image_1920 || ""
@@ -85,7 +85,7 @@ interface Auction {
   x_name: string;
   x_studio_description: string;
   x_studio_publish: boolean;
-  x_studio_starting_bid_1: number;
+  x_studio_starting_bid: number;
   x_studio_currency_id: [number, string];
   x_studio_start_date: string;
   x_studio_end_date: string;
@@ -420,7 +420,7 @@ const Auction = (props: Props) => {
                 <AuctionCard
                   auction={{
                     currentPrice: auction.x_studio_current_bid,
-                    startingPrice: auction.x_studio_starting_bid_1,
+                    startingPrice: auction.x_studio_starting_bid,
                     endTime: auction.x_studio_end_date,
                     image:
                       "data:image/jpeg;base64," + auction.product?.image_1920,

@@ -16,13 +16,8 @@ const links = [
     label: "سجل الشراء",
   },
   {
-    id: 3,
-    link: "/dashboard/wishlist",
-    label: "المفضلات",
-  },
-  {
     id: 4,
-    link: "/dashboard/comparisons",
+    link: "/comparison",
     label: "مقارنات",
   },
   {

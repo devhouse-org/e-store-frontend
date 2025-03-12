@@ -10,7 +10,7 @@ interface BackendAuction {
   id: number;
   x_name: string;
   x_studio_description: string;
-  x_studio_starting_bid_1: number;
+  x_studio_starting_bid: number;
   x_studio_current_bid: number;
   x_studio_end_date: string;
   x_studio_product: [number, string] | false;
@@ -60,8 +60,8 @@ const useAuctions = (page: number) => {
         id: auction.id.toString(),
         title: auction.x_name,
         currentPrice:
-          auction.x_studio_current_bid || auction.x_studio_starting_bid_1,
-        startingPrice: auction.x_studio_starting_bid_1,
+          auction.x_studio_current_bid || auction.x_studio_starting_bid,
+        startingPrice: auction.x_studio_starting_bid,
         endTime: auction.x_studio_end_date,
         image: formatBase64Image(auction.product?.image_1920 || ""),
         description: auction.x_studio_description,
