@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ChevronDown } from "lucide-react";
-import { IconType } from "react-icons";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import axiosInstance from "@/utils/axiosInstance";
 import FilterSkeleton from "@/components/ui/FilterSkeleton";
+import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
+import axiosInstance from "@/utils/axiosInstance";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { IconType } from "react-icons";
 interface FilterProps {
   selectedCategory: number | null;
-  onFilterChange: (variants: { attribute_id: number; value_id: number }[]) => void;
+  onFilterChange: (
+    variants: { attribute_id: number; value_id: number }[]
+  ) => void;
   onPriceChange: (minPrice: number, maxPrice: number) => void;
   initialVariants?: { attribute_id: number; value_id: number }[];
   initialPriceRange?: { min: number; max: number };
@@ -51,13 +53,25 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVariants = [], initialPriceRange }: FilterProps) => {
-  const [variantsOpen, setVariantsOpen] = useState<{ [key: number]: boolean }>({});
+const Filter = ({
+  selectedCategory,
+  onFilterChange,
+  onPriceChange,
+  initialVariants = [],
+  initialPriceRange,
+}: FilterProps) => {
+  const [variantsOpen, setVariantsOpen] = useState<{ [key: number]: boolean }>(
+    {}
+  );
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [selectedValues, setSelectedValues] = useState<{ [key: number]: number[] }>({});
+  const [selectedValues, setSelectedValues] = useState<{
+    [key: number]: number[];
+  }>({});
   const [variantsLoading, setVariantsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<number[]>([initialPriceRange?.max || 3000000]);
+  const [priceRange, setPriceRange] = useState<number[]>([
+    initialPriceRange?.max || 3000000,
+  ]);
   const [isPriceConfirmNeeded, setIsPriceConfirmNeeded] = useState(false);
 
   // Initialize price range from URL params if available
@@ -72,37 +86,49 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
 
   // Initialize selected values from initialVariants
   useEffect(() => {
-    if (initialVariants.length > 0) {
-      setSelectedValues(prev => {
-        const newSelectedValues: { [key: number]: number[] } = {};
-        initialVariants.forEach(variant => {
-          if (!newSelectedValues[variant.attribute_id]) {
-            newSelectedValues[variant.attribute_id] = [];
-          }
-          newSelectedValues[variant.attribute_id].push(variant.value_id);
-        });
-        return JSON.stringify(prev) === JSON.stringify(newSelectedValues) ? prev : newSelectedValues;
-      });
-    } else {
-      setSelectedValues({});
-    }
+    const newSelectedValues = initialVariants.reduce((acc, variant) => {
+      if (!acc[variant.attribute_id]) {
+        acc[variant.attribute_id] = [];
+      }
+      if (!acc[variant.attribute_id].includes(variant.value_id)) {
+        acc[variant.attribute_id].push(variant.value_id);
+      }
+      return acc;
+    }, {} as { [key: number]: number[] });
+
+    setSelectedValues((prev) =>
+      JSON.stringify(prev) === JSON.stringify(newSelectedValues)
+        ? prev
+        : newSelectedValues
+    );
   }, [initialVariants]);
 
   const fetchVariants = async () => {
     try {
       setError(null);
       setVariantsLoading(true);
-      const response = await axiosInstance.post("/products/variants",
+
+      if (initialVariants.length > 0 && selectedCategory === null) {
+        return;
+      }
+
+      const response = await axiosInstance.post(
+        "/products/variants",
         selectedCategory ? { category_id: selectedCategory } : {}
       );
       // Filter out variants with empty values array
-      const filteredVariants = response.data.filter((variant: Variant) => variant.values.length > 0);
+      const filteredVariants = response.data.filter(
+        (variant: Variant) => variant.values.length > 0
+      );
       setVariants(filteredVariants);
       // Initialize open state for new variants
-      const newOpenState = filteredVariants.reduce((acc: any, variant: Variant) => {
-        acc[variant.id] = false;
-        return acc;
-      }, {});
+      const newOpenState = filteredVariants.reduce(
+        (acc: any, variant: Variant) => {
+          acc[variant.id] = false;
+          return acc;
+        },
+        {}
+      );
       setVariantsOpen(newOpenState);
       // Only reset selected values if no initial variants
       if (!initialVariants.length) {
@@ -124,36 +150,41 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
   };
 
   useEffect(() => {
-    fetchVariants();
+    if (selectedCategory !== null) {
+      fetchVariants();
+    }
   }, [selectedCategory]);
 
   // Modify the useEffect that calls onFilterChange to use debounced values
   useEffect(() => {
-    const selectedVariants = Object.entries(debouncedSelectedValues).flatMap(([attributeId, valueIds]) =>
-      valueIds.map(valueId => ({
-        attribute_id: Number(attributeId),
-        value_id: valueId
-      }))
+    const selectedVariants = Object.entries(debouncedSelectedValues).flatMap(
+      ([attributeId, valueIds]) =>
+        valueIds.map((valueId) => ({
+          attribute_id: Number(attributeId),
+          value_id: valueId,
+        }))
     );
 
     // Only call onFilterChange if there are actual changes
-    const hasValues = Object.values(debouncedSelectedValues).some(arr => arr.length > 0);
+    const hasValues = Object.values(debouncedSelectedValues).some(
+      (arr) => arr.length > 0
+    );
     if (hasValues || initialVariants.length > 0) {
       onFilterChange(selectedVariants);
     }
   }, [debouncedSelectedValues]);
 
   const handleValueChange = (attributeId: number, valueId: number) => {
-    setSelectedValues(prev => {
+    setSelectedValues((prev) => {
       const currentValues = prev[attributeId] || [];
       const newValues = currentValues.includes(valueId)
-        ? currentValues.filter(id => id !== valueId)
+        ? currentValues.filter((id) => id !== valueId)
         : [...currentValues, valueId];
 
       // If the new values array is empty, remove the key entirely
       const newState = {
         ...prev,
-        [attributeId]: newValues
+        [attributeId]: newValues,
       };
 
       if (newValues.length === 0) {
@@ -170,12 +201,12 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
   };
 
   const confirmPriceRange = () => {
-    onPriceChange(1000, priceRange[0]);
+    onPriceChange(500, priceRange[0]);
     setIsPriceConfirmNeeded(false);
   };
 
   const clearAllFilters = () => {
-    setPriceRange([3000000]);
+    setPriceRange([1000, 3000000]);
     setSelectedValues({});
     onPriceChange(0, 0);
     setIsPriceConfirmNeeded(false);
@@ -188,15 +219,15 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
   };
 
   return (
-    <Card className="w-full border-0 shadow-none" dir="rtl">
+    <Card className="h-fit w-full border-0 shadow-none" dir="rtl">
       <CardHeader className="sticky top-0 z-10 pb-3 bg-white">
-        <div className="flex items-center justify-between font-tajawal-medium">
+        <div className="font-tajawal-medium flex items-center justify-between">
           <CardTitle className="text-lg font-medium">فلتر</CardTitle>
           <Button
             variant="ghost"
             size="sm"
             label="حذف الفلتر"
-            className="text-orange-500 border-2 border-orange-500 hover:text-orange-600"
+            className="hover:text-orange-600 text-orange-500 border-2 border-orange-500"
             onClick={clearAllFilters}
           />
         </div>
@@ -205,13 +236,13 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
       <CardContent className="space-y-6">
         {/* Price Range Section */}
         <div>
-          <div className="flex items-center justify-between p-2 mb-3 text-white bg-orange-500 rounded-md font-tajawal-bold">
+          <div className="font-tajawal-bold flex items-center justify-between p-2 mb-3 text-white bg-orange-500 rounded-md">
             <span>نطاق السعر</span>
             <Button
               variant="ghost"
               size="sm"
               label="حذف"
-              className="h-auto py-0 text-white hover:text-white/80"
+              className="hover:text-white/80 h-auto py-0 text-white"
               onClick={clearPriceFilter}
             />
           </div>
@@ -225,16 +256,18 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
               onValueChange={handlePriceChange}
               dir="ltr"
             />
-            <div className="flex justify-between mt-2 font-tajawal-medium">
+            <div className="font-tajawal-medium flex justify-between mt-2">
               <span className="text-sm text-gray-600">3,000,000 د.ع</span>
-              <span className="text-sm text-gray-600">{priceRange[0].toLocaleString()} د.ع</span>
+              <span className="text-sm text-gray-600">
+                {priceRange[0].toLocaleString()} د.ع
+              </span>
             </div>
             {isPriceConfirmNeeded && (
               <Button
                 variant="outline"
                 size="sm"
                 label="تأكيد السعر"
-                className="w-full mt-2 text-orange-500 border-2 border-orange-500 hover:text-orange-600"
+                className="hover:text-orange-600 w-full mt-2 text-orange-500 border-2 border-orange-500"
                 onClick={confirmPriceRange}
               />
             )}
@@ -253,82 +286,100 @@ const Filter = ({ selectedCategory, onFilterChange, onPriceChange, initialVarian
               variant="ghost"
               size="sm"
               label="إعادة المحاولة"
-              className="text-orange-500 hover:text-orange-600"
+              className="hover:text-orange-600 text-orange-500"
               onClick={() => fetchVariants()}
             />
           </div>
-        ) : variants.map((variant) => (
-          <div key={variant.id}>
-            <Collapsible
-              open={variantsOpen[variant.id]}
-              onOpenChange={(isOpen) =>
-                setVariantsOpen((prev) => ({ ...prev, [variant.id]: isOpen }))
-              }
-            >
-              <div className="p-2 mb-3 text-white bg-orange-500 rounded-md font-tajawal-bold">
-                {variant.name}
-              </div>
-              <div className="space-y-3">
-                {variant.values.slice(0, 3).map((value) => (
-                  <div
-                    key={value.id}
-                    className="flex items-center space-x-2 space-x-reverse"
-                  >
-                    <Checkbox
-                      id={`variant-${variant.id}-${value.id}`}
-                      checked={(selectedValues[variant.id] || []).includes(value.id)}
-                      onCheckedChange={() => handleValueChange(variant.id, value.id)}
-                      className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
-                    />
-                    <label
-                      htmlFor={`variant-${variant.id}-${value.id}`}
-                      className="text-sm leading-none font-tajawal-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        ) : variants.length > 0 ? (
+          variants.map((variant) => (
+            <div key={variant.id}>
+              <Collapsible
+                open={variantsOpen[variant.id]}
+                onOpenChange={(isOpen) =>
+                  setVariantsOpen((prev) => ({ ...prev, [variant.id]: isOpen }))
+                }
+              >
+                <div className="font-tajawal-bold p-2 mb-3 text-white bg-orange-500 rounded-md">
+                  {variant.name}
+                </div>
+                <div className="space-y-3">
+                  {variant.values.slice(0, 3).map((value) => (
+                    <div
+                      key={value.id}
+                      className="flex items-center space-x-2 space-x-reverse"
                     >
-                      {value.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              {variant.values.length > 3 && (
-                <>
-                  <CollapsibleContent className="mt-2 space-y-3">
-                    {variant.values.slice(3).map((value) => (
-                      <div
-                        key={value.id}
-                        className="flex items-center space-x-2 space-x-reverse"
+                      <Checkbox
+                        id={`variant-${variant.id}-${value.id}`}
+                        checked={(selectedValues[variant.id] || []).includes(
+                          value.id
+                        )}
+                        onCheckedChange={() =>
+                          handleValueChange(variant.id, value.id)
+                        }
+                        className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                      />
+                      <label
+                        htmlFor={`variant-${variant.id}-${value.id}`}
+                        className="font-tajawal-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm leading-none"
                       >
-                        <Checkbox
-                          id={`variant-${variant.id}-${value.id}`}
-                          checked={(selectedValues[variant.id] || []).includes(value.id)}
-                          onCheckedChange={() => handleValueChange(variant.id, value.id)}
-                          className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
-                        />
-                        <label
-                          htmlFor={`variant-${variant.id}-${value.id}`}
-                          className="text-sm leading-none font-tajawal-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {value.name}
-                        </label>
-                      </div>
-                    ))}
-                  </CollapsibleContent>
+                        {value.name}
+                      </label>
+                    </div>
+                  ))}
+                </div>
 
-                  <CollapsibleTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      label={variantsOpen[variant.id] ? "عرض اقل" : "عرض المزيد"}
-                      Icon={ChevronDown as IconType}
-                      className="mt-2 text-orange-500 hover:text-orange-600 font-tajawal-regular"
-                    />
-                  </CollapsibleTrigger>
-                </>
-              )}
-            </Collapsible>
-            <Separator className="my-4 bg-gray-200" />
+                {variant.values.length > 3 && (
+                  <>
+                    <CollapsibleContent className="mt-2 space-y-3">
+                      {variant.values.slice(3).map((value) => (
+                        <div
+                          key={value.id}
+                          className="flex items-center space-x-2 space-x-reverse"
+                        >
+                          <Checkbox
+                            id={`variant-${variant.id}-${value.id}`}
+                            checked={(
+                              selectedValues[variant.id] || []
+                            ).includes(value.id)}
+                            onCheckedChange={() =>
+                              handleValueChange(variant.id, value.id)
+                            }
+                            className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                          />
+                          <label
+                            htmlFor={`variant-${variant.id}-${value.id}`}
+                            className="font-tajawal-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm leading-none"
+                          >
+                            {value.name}
+                          </label>
+                        </div>
+                      ))}
+                    </CollapsibleContent>
+
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        label={
+                          variantsOpen[variant.id] ? "عرض اقل" : "عرض المزيد"
+                        }
+                        Icon={ChevronDown as IconType}
+                        className="hover:text-orange-600 font-tajawal-regular mt-2 text-orange-500"
+                      />
+                    </CollapsibleTrigger>
+                  </>
+                )}
+              </Collapsible>
+              <Separator className="my-4 bg-gray-200" />
+            </div>
+          ))
+        ) : (
+          <div className="py-4 text-center">
+            <p className="mb-2 text-sm text-red-500">
+              لا يوجد خصائص لهذا المنتج
+            </p>
           </div>
-        ))}
+        )}
       </CardContent>
     </Card>
   );

@@ -172,7 +172,6 @@ const Product = () => {
           price: product.list_price,
           image: product.image_1920,
           description: product.description || product.description_sale || "",
-          
         });
       }
     }
@@ -208,15 +207,15 @@ const Product = () => {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen">
         Product not found
       </div>
     );
@@ -224,19 +223,19 @@ const Product = () => {
 
   return (
     <div className="px-12 py-6">
-      <div className="bg-white w-full p-4 rounded-md shadow my-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="w-full p-4 my-10 bg-white rounded-md shadow">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Left Column - Images */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="bg-gray-100 rounded-xl p-4 flex justify-center">
+          <div className="space-y-4 lg:col-span-4">
+            <div className="flex justify-center p-4 bg-gray-100 rounded-xl">
               <img
                 src={`data:image/png;base64,${product.image_1920}`}
                 alt={product.name}
-                className="w-full max-w-xs lg:w-80 object-contain transition-opacity duration-300"
+                className="object-contain w-full max-w-xs transition-opacity duration-300 lg:w-80"
               />
             </div>
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2 lg:gap-4">
+              <div className="lg:gap-4 grid grid-cols-4 gap-2">
                 {images.map((img, idx) => (
                   <div
                     key={idx}
@@ -270,8 +269,8 @@ const Product = () => {
           </div>
 
           {/* Right Column - Product Info */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="flex justify-between items-center">
+          <div className="space-y-6 lg:col-span-8">
+            <div className="flex items-center justify-between">
               <h1
                 className="text-wrap max-w-[90%] text-xl lg:text-2xl font-tajawal-medium text-right"
                 dir="rtl"
@@ -294,18 +293,18 @@ const Product = () => {
                   <Star size={"20"} />
                 </span>
               ))}
-              <span className="text-gray-500 mr-2">(2000+)</span>
+              <span className="mr-2 text-gray-500">(2000+)</span>
             </div>
             <Separator className="bg-gray-200 p-[.5px]" />
 
             <div className="space-y-4">
-              <h3 className="text-lg font-tajawal-medium text-right">
+              <h3 className="text-lg text-right font-tajawal-medium">
                 ابرز الخصائص
               </h3>
-              <ul className="space-y-2 font-tajawal-regular text-right text-blue-600 list-disc pr-4">
+              <ul className="pr-4 space-y-2 text-right text-blue-600 list-disc font-tajawal-regular">
                 <li>
                   <div
-                    className="text-sm text-gray-600 mb-2 line-clamp-2"
+                    className="mb-2 text-sm text-gray-600 line-clamp-2"
                     dangerouslySetInnerHTML={{
                       __html: product?.description || "",
                     }}
@@ -319,12 +318,12 @@ const Product = () => {
             {product.attributes &&
               product.attributes.map((attribute) => (
                 <div key={attribute.id} className="space-y-4">
-                  <h3 className="text-lg font-tajawal-medium text-right">
+                  <h3 className="text-lg text-right font-tajawal-medium">
                     {attribute.name}
                   </h3>
                   <div
                     dir="ltr"
-                    className="flex flex-wrap font-tajawal-medium justify-end gap-2 lg:gap-4"
+                    className="flex flex-wrap justify-end gap-2 font-tajawal-medium lg:gap-4"
                   >
                     {attribute.values.map((value) => (
                       <button
@@ -365,24 +364,24 @@ const Product = () => {
             </div>
 
             <div className="text-right">
-              <div className="text-2xl lg:text-3xl font-tajawal-medium text-orange-500">
+              <div className="text-2xl text-orange-500 lg:text-3xl font-tajawal-medium">
                 {product.list_price.toLocaleString()} د.ع
               </div>
             </div>
 
             <Separator className="bg-gray-200 p-[.5px]" />
 
-            <div className="flex gap-4 w-full lg:w-fit">
+            <div className="flex w-full gap-4 lg:w-fit">
               <Button
                 size="lg"
-                className="flex-1 bg-orange-500 hover:bg-orange-600"
+                className="hover:bg-orange-600 flex-1 bg-orange-500"
                 onClick={handleBuyNow}
                 label="شراء الآن"
               />
               <Button
                 variant="outline"
                 size="lg"
-                className="flex-1 bg-orange-100 text-orange-500 hover:bg-orange-200"
+                className="flex-1 text-orange-500 bg-orange-100 hover:bg-orange-200"
                 onClick={handleAddToCart}
                 label="إضافة للسلة"
               />
@@ -402,45 +401,45 @@ const Product = () => {
         </div>
 
         {/* The Last Line */}
-        <div className="flex flex-col lg:flex-row justify-between mt-8 gap-6 items-center">
-          <div className="grid grid-cols-3 gap-4 lg:gap-12 text-center text-sm w-full lg:w-auto">
-            <div className="items-center flex flex-col gap-y-1">
+        <div className="flex flex-col items-center justify-between gap-6 mt-8 lg:flex-row">
+          <div className="grid w-full grid-cols-3 gap-4 text-sm text-center lg:gap-12 lg:w-auto">
+            <div className="flex flex-col items-center gap-y-1">
               <BadgeCheck size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex-col flex font-tajawal-medium">
+              <div className="flex flex-col font-tajawal-medium">
                 <p>منتجات اصلية</p>
                 <p>وبضمان حقيقي</p>
               </div>
             </div>
 
-            <div className="items-center flex flex-col gap-y-1">
+            <div className="flex flex-col items-center gap-y-1">
               <HandCoins size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex-col flex font-tajawal-medium">
+              <div className="flex flex-col font-tajawal-medium">
                 <p>دفع عند الاستلام</p>
               </div>
             </div>
 
-            <div className="items-center flex flex-col gap-y-1">
+            <div className="flex flex-col items-center gap-y-1">
               <Truck size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex-col flex font-tajawal-medium">
+              <div className="flex flex-col font-tajawal-medium">
                 <p>شحن سريع وامن</p>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-3 text-orange-500">
+          <div className="flex flex-wrap items-center justify-center gap-3 text-orange-500">
             <h3 className="text-gray-500">مشاركة: </h3>
-            <Mail className="w-6 h-6 lg:w-8 lg:h-8 cursor-pointer hover:text-gray-700" />
-            <Twitter className="w-6 h-6 lg:w-8 lg:h-8 cursor-pointer hover:text-gray-700" />
-            <Share2 className="w-6 h-6 lg:w-8 lg:h-8 cursor-pointer hover:text-gray-700" />
-            <Instagram className="w-6 h-6 lg:w-8 lg:h-8 cursor-pointer hover:text-gray-700" />
-            <Facebook className="w-6 h-6 lg:w-8 lg:h-8 cursor-pointer hover:text-gray-700" />
+            <Mail className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Twitter className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Share2 className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Instagram className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Facebook className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
           </div>
         </div>
       </div>
 
       {/* Description section */}
       <div>
-        <div className="bg-white border border-light-100 p-4 shadow-md flex flex-col lg:flex-row gap-4">
+        <div className="flex flex-col gap-4 p-4 bg-white border shadow-md border-light-100 lg:flex-row">
           {/* Product Description Section */}
           <div className="w-full md:flex-[0.8]">
             <div className="flex flex-col justify-between">
@@ -451,7 +450,7 @@ const Product = () => {
               </div>
               <div className="pt-4">
                 <div
-                  className="text-right text-sm md:text-base leading-relaxed"
+                  className="text-sm leading-relaxed text-right md:text-base"
                   dangerouslySetInnerHTML={{
                     __html: product?.description || "",
                   }}
@@ -468,15 +467,15 @@ const Product = () => {
                   المراجعات
                 </h1>
               </div>
-              <div className="flex flex-col pt-4 gap-y-2">
+              <div className="gap-y-2 flex flex-col pt-4">
                 <ReviewCard reviews={reviews} />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white shadow-md border shadow-light-600 mt-2 rounded-md overflow-hidden mb-8 p-4">
-          <div className="border-b mb-4">
+        <div className="p-4 mt-2 mb-8 overflow-hidden bg-white border rounded-md shadow-md shadow-light-600">
+          <div className="mb-4 border-b">
             <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit">
               منتجات ذات صلة
             </h1>
