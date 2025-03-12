@@ -66,6 +66,7 @@ const Navbar = (props: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [localWishlistCount, setLocalWishlistCount] = useState(0);
 
   // Watch for changes in cartCount and trigger animation
   useEffect(() => {
@@ -77,6 +78,12 @@ const Navbar = (props: Props) => {
       return () => clearTimeout(timer);
     }
   }, [cartCount]);
+
+  // Fetch wishlist count from local storage
+  useEffect(() => {
+    const wishlists = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    setLocalWishlistCount(wishlists.length);
+  }, [wishlistCount]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -102,14 +109,14 @@ const Navbar = (props: Props) => {
       >
         <div className="flex flex-col h-full p-4">
           {/* Logo */}
-          <div className="mb-4 flex justify-center">
+          <div className="flex justify-center mb-4">
             <Link to="/" onClick={toggleMenu}>
-              <img src={logo} alt="e-store logo" className="h-12 w-auto" />
+              <img src={logo} alt="e-store logo" className="w-auto h-12" />
             </Link>
           </div>
 
           {/* Search Input */}
-          <div className="mb-6 px-2">
+          <div className="px-2 mb-6">
             <div
               onClick={() => {
                 setIsSearchModalOpen(true);
@@ -119,7 +126,7 @@ const Navbar = (props: Props) => {
               <CustomInput
                 placeholder="ما الذي تبحث عنه"
                 readOnly
-                className="h-10 text-sm w-full"
+                className="w-full h-10 text-sm"
               />
             </div>
           </div>
@@ -152,30 +159,30 @@ const Navbar = (props: Props) => {
   );
 
   return (
-    <div className="bg-white shadow-sm overflow-hidden fixed top-0 left-0 right-0 z-40">
+    <div className="fixed top-0 left-0 right-0 z-40 overflow-hidden bg-white shadow-sm">
       {props.hasAd && (
-        <div className="ad relative overflow-hidden bg-orange-500 text-white font-bold flex justify-center items-center py-1">
+        <div className="relative flex items-center justify-center py-1 overflow-hidden font-bold text-white bg-orange-500 ad">
           <h1 className="font-tajawal-regular">{props.adTitle}</h1>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full animate-light-effect"></div>
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-light-effect"></div>
         </div>
       )}
 
       <div
         dir="rtl"
-        className="navigation flex items-center py-4 px-4 lg:px-12 justify-between"
+        className="flex items-center justify-between px-4 py-4 navigation lg:px-12"
       >
         {/* Left Section */}
-        <div className="flex flex-1 items-center gap-x-4">
+        <div className="flex items-center flex-1 gap-x-4">
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 text-gray-700 rounded-lg hover:bg-gray-100"
+            className="p-2 text-gray-700 rounded-lg lg:hidden hover:bg-gray-100"
             onClick={toggleMenu}
           >
             {isOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
           {/* Desktop Navigation */}
-          <ul className="flex-wrap hidden lg:flex gap-x-4 list-none flex-1">
+          <ul className="flex-wrap flex-1 hidden list-none lg:flex gap-x-4">
             {links.map((link) => (
               <NavLink
                 key={link.id}
@@ -196,14 +203,14 @@ const Navbar = (props: Props) => {
         </div>
 
         {/* Center Logo */}
-        <div className="logo lg:flex-1 flex justify-center items-center">
+        <div className="flex items-center justify-center logo lg:flex-1">
           <Link to="/">
             <img src={logo} alt="e-store logo" />
           </Link>
         </div>
 
         {/* Right Section - Icons */}
-        <div dir="ltr" className="icons flex-1">
+        <div dir="ltr" className="flex-1 icons">
           <div className="flex items-center gap-x-4">
             <NavLink
               to="/dashboard"
@@ -255,9 +262,9 @@ const Navbar = (props: Props) => {
               `}
             >
               <Heart className="h-[18px] w-[18px]" />
-              {wishlistCount > 0 && (
+              {localWishlistCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-orange-500 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[10px]">
-                  {wishlistCount}
+                  {localWishlistCount}
                 </span>
               )}
             </NavLink>
