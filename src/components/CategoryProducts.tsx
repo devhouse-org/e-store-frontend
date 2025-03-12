@@ -6,6 +6,7 @@ import { Product as ComparisonProduct } from "@/utils/data/products";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useToast } from "@/hooks/use-toast";
 
 interface Product {
     id: number;
@@ -46,7 +47,8 @@ const CustomPrevArrow = (props: any) => {
 export const CategoryProducts = ({ categoryId }: CategoryProductsProps) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
-    const { addToComparison, isCompared } = useComparisonStore();
+    const { addToComparison, isCompared, comparisonItems } = useComparisonStore();
+    const { toast } = useToast();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -69,11 +71,20 @@ export const CategoryProducts = ({ categoryId }: CategoryProductsProps) => {
     }, [categoryId]);
 
     const handleAddToComparison = (product: Product) => {
+        if (comparisonItems.length >= 4) {
+            toast({
+                title: "تم الوصول إلى الحد الأقصى",
+                description: "يمكنك مقارنة 4 منتجات كحد أقصى",
+                variant: "destructive",
+            });
+            return;
+        }
+
         const comparisonProduct: ComparisonProduct = {
             id: product.id.toString(),
             name: product.name,
             price: product.list_price,
-            image: product.image_1920,
+            image: `data:image/png;base64,${product.image_1920}`,
             description: product.description || "",
         };
         addToComparison(comparisonProduct);

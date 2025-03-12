@@ -185,9 +185,8 @@ function Home() {
     customPaging: (i: any) => (
       <div className="w-8 h-1 px-1 my-2">
         <div
-          className={`w-full h-full ${
-            i === activeSlide ? "bg-orange-500" : "bg-orange-100"
-          } rounded-full`}
+          className={`w-full h-full ${i === activeSlide ? "bg-orange-500" : "bg-orange-100"
+            } rounded-full`}
         />
       </div>
     ),
@@ -387,7 +386,7 @@ function Home() {
               <div
                 key={i}
                 className="h-[280px] md:h-[380px] lg:h-[480px] overflow-hidden relative cursor-pointer"
-                // onClick={() => handleBannerClick(bannersData!.banners[i])}
+              // onClick={() => handleBannerClick(bannersData!.banners[i])}
               >
                 <img
                   src={item}
@@ -428,7 +427,7 @@ function Home() {
               منتجات الفئة
             </h2>
             <Link
-              to="/categories"
+              to="/products"
               className="bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg"
             >
               عرض المزيد
@@ -456,11 +455,10 @@ function Home() {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 ${
-                    selectedCategory === category.id
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 ${selectedCategory === category.id
                       ? "bg-orange-500 text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   {category.name}
                 </button>
@@ -505,23 +503,22 @@ function Home() {
                         .getState()
                         .isWishlisted(product.id.toString())
                         ? useWishlistStore
-                            .getState()
-                            .removeFromWishlist(product.id.toString())
+                          .getState()
+                          .removeFromWishlist(product.id.toString())
                         : useWishlistStore
-                            .getState()
-                            .addToWishlist(wishlistItem);
+                          .getState()
+                          .addToWishlist(wishlistItem);
                     }}
                     className="top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
                     aria-label="إضافة للمفضلة"
                   >
                     <Heart
-                      className={`w-4 h-4 transition-colors ${
-                        useWishlistStore
+                      className={`w-4 h-4 transition-colors ${useWishlistStore
                           .getState()
                           .isWishlisted(product.id.toString())
                           ? "text-red-500 fill-red-500"
                           : "text-gray-400 group-hover:text-gray-600"
-                      }`}
+                        }`}
                     />
                   </button>
 
@@ -799,19 +796,18 @@ function Home() {
                       e.stopPropagation();
                       useWishlistStore.getState().isWishlisted(product.id)
                         ? useWishlistStore
-                            .getState()
-                            .removeFromWishlist(product.id)
+                          .getState()
+                          .removeFromWishlist(product.id)
                         : useWishlistStore.getState().addToWishlist(product);
                     }}
                     className="top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
                     aria-label="إضافة للمفضلة"
                   >
                     <Heart
-                      className={`w-4 h-4 transition-colors ${
-                        useWishlistStore.getState().isWishlisted(product.id)
+                      className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id)
                           ? "text-red-500 fill-red-500"
                           : "text-gray-400 group-hover:text-gray-600"
-                      }`}
+                        }`}
                     />
                   </button>
 

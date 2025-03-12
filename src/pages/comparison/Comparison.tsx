@@ -37,23 +37,25 @@ interface ProductDetails {
 }
 
 const EmptySlot = () => (
-  <div className="flex flex-col items-center justify-center gap-4 py-8">
-    <Link
-      to="/products"
-      className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full"
-    >
-      <Plus className="w-8 h-8 text-gray-400" />
-    </Link>
-    <p className="text-center text-gray-500 font-tajawal-regular">
-      أضف جهازاً للمقارنة
-    </p>
-    <Link
-      to="/products"
-      className="text-sm text-orange-500 hover:text-orange-600 font-tajawal-regular"
-    >
-      تصفح المنتجات
-    </Link>
-  </div>
+  <td className="border p-4 bg-gray-50 min-w-[200px]">
+    <div className="flex flex-col items-center justify-center gap-4 py-8">
+      <Link
+        to="/products"
+        className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full"
+      >
+        <Plus className="w-8 h-8 text-gray-400" />
+      </Link>
+      <p className="text-center text-gray-500 font-tajawal-regular">
+        أضف منتج للمقارنة
+      </p>
+      <Link
+        to="/products"
+        className="text-sm text-orange-500 hover:text-orange-600 font-tajawal-regular"
+      >
+        تصفح المنتجات
+      </Link>
+    </div>
+  </td>
 );
 
 // Update ProductColumn component to handle the new data structure
@@ -76,42 +78,40 @@ const ProductColumn = ({
     });
   };
 
+  if (!product) {
+    return <EmptySlot />;
+  }
+
   return (
-    <th className="border p-4 bg-gray-50 min-w-[200px]">
+    <td className="border p-4 bg-gray-50 min-w-[200px]">
       <div className="flex flex-col items-center gap-2">
-        {product ? (
-          <>
-            <div className="relative w-full">
-              <button
-                onClick={onRemove}
-                className="absolute p-1 transition-colors bg-red-100 rounded-full -top-2 -right-2 hover:bg-red-200"
-              >
-                <Trash2 className="w-4 h-4 text-red-500" />
-              </button>
-              <img
-                src={`data:image/png;base64,${product.image_1920}`}
-                alt={product.name}
-                className="object-cover w-24 h-24 mx-auto rounded-lg"
-              />
-            </div>
-            <h3 className="text-sm font-semibold font-tajawal-regular">
-              {product.name}
-            </h3>
-            <p className="text-orange-500 font-tajawal-regular">
-              {product.list_price.toLocaleString()} د.ع
-            </p>
-            <button
-              onClick={() => handleAddToCart(product)}
-              className="px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600 font-tajawal-regular"
-            >
-              إضافة إلى السلة
-            </button>
-          </>
-        ) : (
-          <EmptySlot />
-        )}
+        <div className="relative w-full">
+          <button
+            onClick={onRemove}
+            className="absolute p-1 transition-colors bg-red-100 rounded-full -top-2 -right-2 hover:bg-red-200"
+          >
+            <Trash2 className="w-4 h-4 text-red-500" />
+          </button>
+          <img
+            src={product.image_1920}
+            alt={product.name}
+            className="object-cover w-24 h-24 mx-auto rounded-lg"
+          />
+        </div>
+        <h3 className="text-sm font-semibold font-tajawal-regular">
+          {product.name}
+        </h3>
+        <p className="text-orange-500 font-tajawal-regular">
+          {typeof product.list_price === 'number' ? product.list_price.toLocaleString() : '0'} د.ع
+        </p>
+        <button
+          onClick={() => handleAddToCart(product)}
+          className="px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600 font-tajawal-regular"
+        >
+          إضافة إلى السلة
+        </button>
       </div>
-    </th>
+    </td>
   );
 };
 
@@ -172,19 +172,20 @@ const Comparison = () => {
               const product = comparisonItems[index];
               if (!product) return null;
 
-              const response = await axiosInstance.post(
-                "/products/product-details",
-                {
-                  product_id: product.id,
-                }
-              );
-              return response.data;
+              // Instead of fetching from API, use the stored comparison item directly
+              return {
+                id: parseInt(product.id),
+                name: product.name,
+                list_price: product.price,
+                image_1920: product.image,
+                description: product.description
+              };
             })
         );
 
         setProductDetails(details);
       } catch (error) {
-        console.error("Error fetching product details:", error);
+        console.error("Error processing product details:", error);
         toast({
           title: "خطأ",
           description: "حدث خطأ أثناء تحميل تفاصيل المنتجات",
@@ -200,10 +201,22 @@ const Comparison = () => {
 
   // Update specifications array to match available fields
   const specifications = [
-    { key: "name", label: "المنتج" },
-    { key: "list_price", label: "السعر" },
-    { key: "description", label: "الوصف" },
-    // Add any other specifications you want to display based on the API response
+    {
+      key: "name",
+      label: "المنتج",
+      getValue: (product: ProductDetails | null) => product?.name || "-"
+    },
+    {
+      key: "list_price",
+      label: "السعر",
+      getValue: (product: ProductDetails | null) =>
+        product?.list_price ? `${product.list_price.toLocaleString()} د.ع` : "-"
+    },
+    {
+      key: "description",
+      label: "الوصف",
+      getValue: (product: ProductDetails | null) => product?.description || "-"
+    }
   ];
 
   const handleSaveComparison = () => {
@@ -246,11 +259,10 @@ const Comparison = () => {
         <div className="flex items-center gap-4">
           {comparisonItems.length > 0 && (
             <Button
+              label="مسح المقارنة"
               onClick={clearComparison}
               className="flex items-center gap-2 px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600"
-            >
-              مسح المقارنة
-            </Button>
+            />
           )}
           {productDetails.some(item => item !== null) && (
             <Button
@@ -289,7 +301,7 @@ const Comparison = () => {
                       product={product}
                       onRemove={() =>
                         removeFromComparison(
-                          comparisonItems[index].id.toString()
+                          comparisonItems[index]?.id.toString() || ""
                         )
                       }
                     />
@@ -300,15 +312,7 @@ const Comparison = () => {
                     key={spec.key}
                     label={spec.label}
                     specKey={spec.key}
-                    getValue={(product) =>
-                      spec.key === "list_price"
-                        ? product
-                          ? `${product[spec.key].toLocaleString()} د.ع`
-                          : "-"
-                        : product
-                          ? product[spec.key]?.toString() || "-"
-                          : "-"
-                    }
+                    getValue={(product) => spec.getValue(product)}
                     slots={productDetails}
                   />
                 ))}
