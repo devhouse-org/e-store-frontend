@@ -13,7 +13,7 @@ import {
   Mail,
   Share2,
   Truck,
-  Twitter
+  Twitter,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -176,9 +176,13 @@ const Auction = (props: Props) => {
   }, [data?.auction]);
 
   if (queryLoading) {
-    return <div className="container px-4 py-8 mx-auto"><Loader/></div>;
+    return (
+      <div className="container px-4 py-8 mx-auto">
+        <Loader />
+      </div>
+    );
   }
-  
+
   if (error || !data?.auction) {
     return <div className="container px-4 py-8 mx-auto">لا يوجد مزايدات</div>;
   }
@@ -235,8 +239,8 @@ const Auction = (props: Props) => {
   return (
     <div className="container px-4 py-8 mx-auto">
       {/* Auction details */}
-      <div className="mb-8 overflow-hidden bg-white border rounded-md shadow-md shadow-light-600 border-light-200">
-        <div className="flex ">
+      <div className="shadow-light-600 border-light-200 mb-8 overflow-hidden bg-white border rounded-md shadow-md">
+        <div className=" flex">
           {/* Right */}
           <div className="flex-1 p-4 max-w-[650px]">
             <div className="active_image">
@@ -254,14 +258,14 @@ const Auction = (props: Props) => {
 
           {/* Left */}
           <div className="flex-1 p-4">
-            <div className="py-2 border-b title_and_rate">
+            <div className="title_and_rate py-2 border-b">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="truncate font-tajawal-bold text-[18px] md:text-[20px] lg:text-[22px] text-black">
                     {auction.title}
                   </p>
 
-                  <p className="text-gray-500 font-tajawal-regular text-md">
+                  <p className="font-tajawal-regular text-md text-gray-500">
                     {auction.description}{" "}
                   </p>
 
@@ -280,26 +284,26 @@ const Auction = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div className="py-4 border-b current_price">
-              <p className="text-black font-tajawal-bold">السعر الحالي</p>
+            <div className="current_price py-4 border-b">
+              <p className="font-tajawal-bold text-black">السعر الحالي</p>
 
               <p className="font-tajawal-bold pb-2 text-[24px] text-orange-500">
                 {auction.currentPrice.toLocaleString()} د.ع
               </p>
             </div>
-            <div className="py-4 border-b time_remained">
-              <p className="pb-2 text-black font-tajawal-bold">
+            <div className="time_remained py-4 border-b">
+              <p className="font-tajawal-bold pb-2 text-black">
                 الوقت المتبقي لنهاية المزاد
               </p>
               <div className="w-[380px]">
-                <div className="flex items-center justify-between w-full px-4 pt-2 pb-1 border-2 rounded-md bg-light-500 text--500">
-                  <p className="pl-6 border-l font-tajawal-regular border-dark-100">
+                <div className="bg-light-500 text--500 flex items-center justify-between w-full px-4 pt-2 pb-1 border-2 rounded-md">
+                  <p className="font-tajawal-regular border-dark-100 pl-6 border-l">
                     {remainingTime?.seconds} ثانية
                   </p>
-                  <p className="pl-6 border-l font-tajawal-regular border-dark-100">
+                  <p className="font-tajawal-regular border-dark-100 pl-6 border-l">
                     {remainingTime?.minutes} دقيقة
                   </p>
-                  <p className="pl-6 border-l font-tajawal-regular border-dark-100">
+                  <p className="font-tajawal-regular border-dark-100 pl-6 border-l">
                     {remainingTime?.hours} ساعة
                   </p>
                   <p className="font-tajawal-regular">
@@ -308,8 +312,8 @@ const Auction = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div className="py-4 border-b auction_prices">
-              <p className="pb-2 text-black font-tajawal-bold">ضع سعرك</p>
+            <div className="auction_prices py-4 border-b">
+              <p className="font-tajawal-bold pb-2 text-black">ضع سعرك</p>
 
               <div className="flex flex-wrap gap-2">
                 {prices.map(
@@ -329,8 +333,8 @@ const Auction = (props: Props) => {
                 )}
               </div>
             </div>
-            <div className="py-4 details_footer">
-              <p className="text-black font-tajawal-bold">سعر المزايدة</p>
+            <div className="details_footer py-4">
+              <p className="font-tajawal-bold text-black">سعر المزايدة</p>
               <p className="font-tajawal-bold pb-2 text-[24px] text-orange-500">
                 {totalPrice <= 0
                   ? "0.00"
@@ -341,11 +345,11 @@ const Auction = (props: Props) => {
                 <button
                   disabled={totalPrice <= 0 || isLoading}
                   onClick={handlePlaceBid}
-                  className="px-4 py-2 text-white transition-colors bg-orange-500 rounded-md hover:bg-orange-500/90 disabled:bg-orange-300"
+                  className="hover:bg-orange-500/90 disabled:bg-orange-300 px-4 py-2 text-white transition-colors bg-orange-500 rounded-md"
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center w-full">
-                      <Loader/>
+                      <Loader />
                     </div>
                   ) : (
                     <span className="font-tajawal-regular">مزايدة</span>
@@ -355,38 +359,38 @@ const Auction = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-between gap-6 px-4 pb-4 mt-8 lg:flex-row">
-          <div className="grid w-full grid-cols-3 gap-4 text-sm text-center lg:gap-12 lg:w-auto">
-            <div className="flex flex-col items-center gap-y-1">
+        <div className="lg:flex-row flex flex-col items-center justify-between gap-6 px-4 pb-4 mt-8">
+          <div className="lg:gap-12 lg:w-auto grid w-full grid-cols-3 gap-4 text-sm text-center">
+            <div className="gap-y-1 flex flex-col items-center">
               <BadgeCheck size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex flex-col font-tajawal-medium">
+              <div className="font-tajawal-medium flex flex-col">
                 <p>منتجات اصلية</p>
                 <p>وبضمان حقيقي</p>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-y-1">
+            <div className="gap-y-1 flex flex-col items-center">
               <HandCoins size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex flex-col font-tajawal-medium">
+              <div className="font-tajawal-medium flex flex-col">
                 <p>دفع عند الاستلام</p>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-y-1">
+            <div className="gap-y-1 flex flex-col items-center">
               <Truck size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex flex-col font-tajawal-medium">
+              <div className="font-tajawal-medium flex flex-col">
                 <p>شحن سريع وامن</p>
               </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-orange-500">
-            <h3 className="text-gray-500 font-tajawal-medium">مشاركة: </h3>
-            <Mail className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Twitter className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Share2 className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Instagram className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Facebook className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <h3 className="font-tajawal-medium text-gray-500">مشاركة: </h3>
+            <Mail className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Twitter className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Share2 className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Instagram className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Facebook className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
           </div>
         </div>
       </div>
@@ -394,7 +398,7 @@ const Auction = (props: Props) => {
       {/* other auctions */}
       <div className="mt-12">
         <div className="flex items-center justify-between">
-          <h2 className="mb-6 text-2xl font-bold font-tajawal-bold">
+          <h2 className="font-tajawal-bold mb-6 text-2xl font-bold">
             مزادات أُخرى
           </h2>
           <Link to="/auctions">
@@ -405,9 +409,11 @@ const Auction = (props: Props) => {
             />
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="md:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-6">
           {loading ? (
-            <div className="py-8 text-center col-span-full"><Loader/></div>
+            <div className="col-span-full py-8 text-center">
+              <Loader />
+            </div>
           ) : auctions.length > 0 ? (
             auctions.map((auction) => (
               <Link key={auction.id} to={`/auction/${auction.id}`}>
@@ -426,7 +432,7 @@ const Auction = (props: Props) => {
               </Link>
             ))
           ) : (
-            <div className="py-8 text-center col-span-full">
+            <div className="col-span-full py-8 text-center">
               No other auctions available
             </div>
           )}
