@@ -173,7 +173,6 @@ const Products = () => {
       const variantsParam = selectedVariants
         .map((v) => `${v.attribute_id}-${v.value_id}`)
         .join(",");
-      console.log("Setting variants URL parameter:", variantsParam);
       params.set("variants", variantsParam);
     } else {
       params.delete("variants");
@@ -216,8 +215,6 @@ const Products = () => {
     // Parse variants parameter - do this after setting the category
     const variantsParam = searchParams.get("variants");
     if (variantsParam) {
-      console.log("Parsing variants from URL:", variantsParam);
-
       // Handle both single variant and multiple variants
       const variantParts = variantsParam.includes(",")
         ? variantsParam.split(",")
@@ -232,8 +229,6 @@ const Products = () => {
           };
         })
         .filter((v) => !isNaN(v.attribute_id) && !isNaN(v.value_id));
-
-      console.log("Parsed variants:", variants);
 
       // Only set variants if we have valid ones
       if (variants.length > 0) {
@@ -254,7 +249,6 @@ const Products = () => {
   // Initial load - fetch categories and handle URL params
   useEffect(() => {
     // Always parse URL parameters on initial load
-    console.log("Initial load - parsing URL parameters");
     parseUrlParams();
 
     // Set a flag to indicate that we've completed the initial load
@@ -422,7 +416,6 @@ const Products = () => {
   // Refetch products when filters change
   useEffect(() => {
     if (selectedVariants.length > 0) {
-      console.log("Refetching products with variants:", selectedVariants);
       refetchProducts();
     }
   }, [selectedVariants]);
@@ -431,8 +424,6 @@ const Products = () => {
   const handleFilterChange = (
     variants: Array<{ attribute_id: number; value_id: number }>
   ) => {
-    console.log("Filter changed, new variants:", variants);
-
     // Update the selectedVariants state
     setSelectedVariants(variants);
 
@@ -457,11 +448,6 @@ const Products = () => {
     // Update URL without triggering a full page reload
     setSearchParams(params);
   };
-
-  // Log selectedVariants changes for debugging
-  useEffect(() => {
-    console.log("selectedVariants changed:", selectedVariants);
-  }, [selectedVariants]);
 
   // Calculate total pages based on the total count from the API
   const totalPages = productsData
