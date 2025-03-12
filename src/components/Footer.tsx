@@ -176,25 +176,27 @@ const Footer = (props: Props) => {
         <ul className="flex flex-wrap items-center justify-between list-none gap-x-8 gap-y-2 md:gap-y-0 font-tajawal-regular">
           <li className="flex items-center flex-1 gap-x-2">
             <Paperclip />
-            <p className="text-[12px] text-nowrap md:text-[14px]">
+            <Link to="/terms-conditions" className="text-[12px] text-nowrap md:text-[14px]">
               الشروط والاحكام
-            </p>
+            </Link>
           </li>
           <li className="flex items-center flex-1 gap-x-2 md:flex-auto">
             <Shield />
-            <p className="text-[12px] text-nowrap md:text-[14px]">
+            <Link to="/security-policy" className="text-[12px] text-nowrap md:text-[14px]">
               سياسة الخصوصية
-            </p>
+            </Link>
           </li>
           <li className="flex items-center flex-1 gap-x-2 md:flex-auto">
             <Recycle />
-            <p className="text-[12px] text-nowrap md:text-[14px]">
+            <Link to="/refund-policy" className="text-[12px] text-nowrap md:text-[14px]">
               سياسة الاسترجاع
-            </p>
+            </Link>
           </li>
           <li className="flex items-center flex-1 gap-x-2 md:flex-auto">
             <UsersRound />
-            <p className="text-[12px] text-nowrap md:text-[14px]">من نحن</p>
+            <Link to="/support-policy" className="text-[12px] text-nowrap md:text-[14px]">
+              سياسة الدعم
+            </Link>
           </li>
         </ul>
         <h1 className="font-tajawal-regular text-[12px] mt-4 md:mt-0 md:text-[14px]">

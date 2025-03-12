@@ -33,7 +33,10 @@ import DashboardWishlist from "./pages/dashboard/DashboardWishlist";
 import OrderDetails from "./pages/dashboard/OrderDetails";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import BannerDetails from "@/pages/BannerDetails";
-
+import TermsConditions from "./pages/terms-conditions/TermsConditions";
+import SecurityPolicy from "./pages/security-policy/security-policy"; 
+import RefundPolicy from "./pages/refund-policy/refund-policy";
+import SupportPolicy from "./pages/support-policy/support-policy";
 const queryClient = new QueryClient();
 
 function App() {
@@ -89,6 +92,18 @@ function App() {
 
               {/* Banner Route */}
               <Route path="/banner/:id" element={<BannerDetails />} />
+
+              {/* Terms and Conditions Route */}
+              <Route path="/terms-conditions" element={<TermsConditions />} />
+
+              {/* Policy and Security Route */}
+              <Route path="/security-policy" element={<SecurityPolicy />} />
+
+              {/* Refund Policy Route */}
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              
+              {/* Support Policy Route */}
+              <Route path="/support-policy" element={<SupportPolicy />} />
 
               {/* 404 Route - Add this at the end */}
               <Route path="*" element={<NotFound />} />
