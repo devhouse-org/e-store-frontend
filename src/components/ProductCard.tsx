@@ -115,7 +115,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={product.image}
             alt={product.name}
             className={`
-              w-full object-contain rounded-lg
+              w-full object-cover rounded-lg mix-blend-multiply group-hover:scale-105 duration-200 transition-all
               ${size === "lg" ? "h-[280px]" : "h-[220px]"}
             `}
           />
@@ -164,7 +164,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <Button
                   size="icon"
                   Icon={CreditCard as IconType}
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  className="hover:bg-orange-600 text-white bg-orange-500"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -191,7 +191,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               {/* Right side - Cart button or quantity controls */}
               {cartItem ? (
                 <div
-                  className="flex items-center gap-2 px-2 bg-orange-100/25 rounded-md py-1"
+                  className="bg-orange-100/25 flex items-center gap-2 px-2 py-1 rounded-md"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -204,7 +204,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
                     Icon={Minus as IconType}
                   />
-                  <span className="w-6 text-center font-tajawal-medium">
+                  <span className="font-tajawal-medium w-6 text-center">
                     {cartItem.quantity}
                   </span>
                   <Button
@@ -219,7 +219,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="bg-orange-100 hover:bg-orange-200 text-orange-500"
+                  className="hover:bg-orange-200 text-orange-500 bg-orange-100"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -234,7 +234,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Active Indicator */}
         {activeCard && (
-          <div className="absolute top-2 right-2">
+          <div className="top-2 right-2 absolute">
             <div className="bg-orange-500 text-white p-1.5 rounded-full shadow-sm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
