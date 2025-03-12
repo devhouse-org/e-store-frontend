@@ -19,6 +19,7 @@ import {
 import { useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface Category {
   id: number;
@@ -117,8 +118,7 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Number of products per page
 
-  const { data: categoriesData = [], isLoading: categoriesLoading } =
-    useCategories();
+  const { data: categoriesData = [], isLoading: categoriesLoading } = useCategories();
 
   // Add this useEffect to set categories when data is loaded
   useEffect(() => {
@@ -142,6 +142,8 @@ const Products = () => {
     min_price: priceRange?.min,
     max_price: priceRange?.max,
   });
+
+  const { isWishlisted, addToWishlist, removeFromWishlist } = useWishlistStore();
 
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
@@ -663,27 +665,19 @@ const Products = () => {
                           image: product.image_1920,
                           description: product.description || product.name,
                         };
-                        useWishlistStore
-                          .getState()
-                          .isWishlisted(product.id.toString())
-                          ? useWishlistStore
-                              .getState()
-                              .removeFromWishlist(product.id.toString())
-                          : useWishlistStore
-                              .getState()
-                              .addToWishlist(wishlistItem);
+                        isWishlisted(product.id.toString())
+                          ? removeFromWishlist(product.id.toString())
+                          : addToWishlist(wishlistItem);
                       }}
                       className="top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
                       aria-label="إضافة للمفضلة"
                     >
                       <Heart
-                        className={`w-4 h-4 transition-colors ${
-                          useWishlistStore
-                            .getState()
-                            .isWishlisted(product.id.toString())
-                            ? "text-red-500 fill-red-500"
-                            : "text-gray-400 group-hover:text-gray-600"
-                        }`}
+                        className={cn("w-4 h-4 transition-colors" 
+                          , isWishlisted(product.id.toString())
+                           ? "text-red-500 fill-red-500" 
+                           : "text-gray-400 group-hover:text-gray-600"
+                          )}
                       />
                     </button>
 
@@ -708,7 +702,7 @@ const Products = () => {
                           dangerouslySetInnerHTML={{
                             __html: product.description,
                           }}
-                          className="line-clamp-2 font-tajawal-regular mb-2 text-sm text-gray-800 transition-colors"
+                          className="mb-2 text-sm text-gray-800 transition-colors line-clamp-2 font-tajawal-regular"
                         />
                       )}
 

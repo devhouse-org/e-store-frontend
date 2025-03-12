@@ -208,7 +208,7 @@ const Product = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full"></div>
+        <div className="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -224,14 +224,14 @@ const Product = () => {
   return (
     <div className="px-12 py-6">
       <div className="w-full p-4 my-10 bg-white rounded-md shadow">
-        <div className="lg:grid-cols-12 grid grid-cols-1 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Left Column - Images */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="rounded-xl flex justify-center p-4 bg-gray-100">
+          <div className="space-y-4 lg:col-span-4">
+            <div className="flex justify-center p-4 bg-gray-100 rounded-xl">
               <img
                 src={`data:image/png;base64,${product.image_1920}`}
                 alt={product.name}
-                className="lg:w-80 mix-blend-multiply object-contain w-full max-w-xs transition-opacity duration-300"
+                className="object-contain w-full max-w-xs transition-opacity duration-300 lg:w-80"
               />
             </div>
             {images.length > 1 && (
@@ -269,7 +269,7 @@ const Product = () => {
           </div>
 
           {/* Right Column - Product Info */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="space-y-6 lg:col-span-8">
             <div className="flex items-center justify-between">
               <h1
                 className="text-wrap max-w-[90%] text-xl lg:text-2xl font-tajawal-medium text-right"
@@ -298,13 +298,13 @@ const Product = () => {
             <Separator className="bg-gray-200 p-[.5px]" />
 
             <div className="space-y-4">
-              <h3 className="font-tajawal-medium text-lg text-right">
+              <h3 className="text-lg text-right font-tajawal-medium">
                 ابرز الخصائص
               </h3>
-              <ul className="font-tajawal-regular pr-4 space-y-2 text-right text-blue-600 list-disc">
+              <ul className="pr-4 space-y-2 text-right text-blue-600 list-disc font-tajawal-regular">
                 <li>
                   <div
-                    className="line-clamp-2 mb-2 text-sm text-gray-600"
+                    className="mb-2 text-sm text-gray-600 line-clamp-2"
                     dangerouslySetInnerHTML={{
                       __html: product?.description || "",
                     }}
@@ -318,12 +318,12 @@ const Product = () => {
             {product.attributes &&
               product.attributes.map((attribute) => (
                 <div key={attribute.id} className="space-y-4">
-                  <h3 className="font-tajawal-medium text-lg text-right">
+                  <h3 className="text-lg text-right font-tajawal-medium">
                     {attribute.name}
                   </h3>
                   <div
                     dir="ltr"
-                    className="font-tajawal-medium lg:gap-4 flex flex-wrap justify-end gap-2"
+                    className="flex flex-wrap justify-end gap-2 font-tajawal-medium lg:gap-4"
                   >
                     {attribute.values.map((value) => (
                       <button
@@ -364,14 +364,14 @@ const Product = () => {
             </div>
 
             <div className="text-right">
-              <div className="lg:text-3xl font-tajawal-medium text-2xl text-orange-500">
+              <div className="text-2xl text-orange-500 lg:text-3xl font-tajawal-medium">
                 {product.list_price.toLocaleString()} د.ع
               </div>
             </div>
 
             <Separator className="bg-gray-200 p-[.5px]" />
 
-            <div className="lg:w-fit flex w-full gap-4">
+            <div className="flex w-full gap-4 lg:w-fit">
               <Button
                 size="lg"
                 className="hover:bg-orange-600 flex-1 bg-orange-500"
@@ -381,7 +381,7 @@ const Product = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className="hover:bg-orange-200 flex-1 text-orange-500 bg-orange-100"
+                className="flex-1 text-orange-500 bg-orange-100 hover:bg-orange-200"
                 onClick={handleAddToCart}
                 label="إضافة للسلة"
               />
@@ -401,26 +401,26 @@ const Product = () => {
         </div>
 
         {/* The Last Line */}
-        <div className="lg:flex-row flex flex-col items-center justify-between gap-6 mt-8">
-          <div className="lg:gap-12 lg:w-auto grid w-full grid-cols-3 gap-4 text-sm text-center">
-            <div className="gap-y-1 flex flex-col items-center">
+        <div className="flex flex-col items-center justify-between gap-6 mt-8 lg:flex-row">
+          <div className="grid w-full grid-cols-3 gap-4 text-sm text-center lg:gap-12 lg:w-auto">
+            <div className="flex flex-col items-center gap-y-1">
               <BadgeCheck size={24} className="lg:w-8 lg:h-8" />
-              <div className="font-tajawal-medium flex flex-col">
+              <div className="flex flex-col font-tajawal-medium">
                 <p>منتجات اصلية</p>
                 <p>وبضمان حقيقي</p>
               </div>
             </div>
 
-            <div className="gap-y-1 flex flex-col items-center">
+            <div className="flex flex-col items-center gap-y-1">
               <HandCoins size={24} className="lg:w-8 lg:h-8" />
-              <div className="font-tajawal-medium flex flex-col">
+              <div className="flex flex-col font-tajawal-medium">
                 <p>دفع عند الاستلام</p>
               </div>
             </div>
 
-            <div className="gap-y-1 flex flex-col items-center">
+            <div className="flex flex-col items-center gap-y-1">
               <Truck size={24} className="lg:w-8 lg:h-8" />
-              <div className="font-tajawal-medium flex flex-col">
+              <div className="flex flex-col font-tajawal-medium">
                 <p>شحن سريع وامن</p>
               </div>
             </div>
@@ -428,18 +428,18 @@ const Product = () => {
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-orange-500">
             <h3 className="text-gray-500">مشاركة: </h3>
-            <Mail className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
-            <Twitter className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
-            <Share2 className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
-            <Instagram className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
-            <Facebook className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Mail className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Twitter className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Share2 className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Instagram className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Facebook className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
           </div>
         </div>
       </div>
 
       {/* Description section */}
       <div>
-        <div className="border-light-100 lg:flex-row flex flex-col gap-4 p-4 bg-white border shadow-md">
+        <div className="flex flex-col gap-4 p-4 bg-white border shadow-md border-light-100 lg:flex-row">
           {/* Product Description Section */}
           <div className="w-full md:flex-[0.8]">
             <div className="flex flex-col justify-between">
@@ -450,7 +450,7 @@ const Product = () => {
               </div>
               <div className="pt-4">
                 <div
-                  className="md:text-base text-sm leading-relaxed text-right"
+                  className="text-sm leading-relaxed text-right md:text-base"
                   dangerouslySetInnerHTML={{
                     __html: product?.description || "",
                   }}
@@ -474,7 +474,7 @@ const Product = () => {
           </div>
         </div>
 
-        <div className="shadow-light-600 p-4 mt-2 mb-8 overflow-hidden bg-white border rounded-md shadow-md">
+        <div className="p-4 mt-2 mb-8 overflow-hidden bg-white border rounded-md shadow-md shadow-light-600">
           <div className="mb-4 border-b">
             <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit">
               منتجات ذات صلة
