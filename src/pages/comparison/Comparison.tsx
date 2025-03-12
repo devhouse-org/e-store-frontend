@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { Plus, Trash2, Save } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useCartStore } from "@/store/useCartStore";
-import { useComparisonStore } from "@/store/useComparisonStore";
+import LoadingComponent from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useCartStore } from "@/store/useCartStore";
+import { useComparisonStore } from "@/store/useComparisonStore";
 import { useSavedComparisonsStore } from "@/store/useSavedComparisonsStore";
-import { Product } from "@/types";
-import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
+import { Plus, Save, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { IconType } from "react-icons";
+import { Link } from "react-router-dom";
 
 // Update ProductDetails interface to match API response
 interface ProductDetails {
@@ -36,16 +36,16 @@ const EmptySlot = () => (
   <div className="flex flex-col items-center justify-center gap-4 py-8">
     <Link
       to="/products"
-      className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center"
+      className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full"
     >
       <Plus className="w-8 h-8 text-gray-400" />
     </Link>
-    <p className="text-gray-500 text-center font-tajawal-regular">
+    <p className="font-tajawal-regular text-center text-gray-500">
       أضف جهازاً للمقارنة
     </p>
     <Link
       to="/products"
-      className="text-orange-500 hover:text-orange-600 font-tajawal-regular text-sm"
+      className="hover:text-orange-600 font-tajawal-regular text-sm text-orange-500"
     >
       تصفح المنتجات
     </Link>
@@ -80,25 +80,25 @@ const ProductColumn = ({
             <div className="relative w-full">
               <button
                 onClick={onRemove}
-                className="absolute -top-2 -right-2 p-1 bg-red-100 rounded-full hover:bg-red-200 transition-colors"
+                className="-top-2 -right-2 hover:bg-red-200 absolute p-1 transition-colors bg-red-100 rounded-full"
               >
                 <Trash2 className="w-4 h-4 text-red-500" />
               </button>
               <img
                 src={`data:image/png;base64,${product.image_1920}`}
                 alt={product.name}
-                className="w-24 h-24 object-cover mx-auto rounded-lg"
+                className="object-cover w-24 h-24 mx-auto rounded-lg"
               />
             </div>
-            <h3 className="font-semibold font-tajawal-regular text-sm">
+            <h3 className="font-tajawal-regular text-sm font-semibold">
               {product.name}
             </h3>
-            <p className="text-orange-500 font-tajawal-regular">
+            <p className="font-tajawal-regular text-orange-500">
               {product.list_price.toLocaleString()} د.ع
             </p>
             <button
               onClick={() => handleAddToCart(product)}
-              className="bg-orange-500 text-white px-3 py-1 rounded-full hover:bg-orange-600 transition-colors font-tajawal-regular text-sm"
+              className="hover:bg-orange-600 font-tajawal-regular px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded-full"
             >
               إضافة إلى السلة
             </button>
@@ -224,28 +224,23 @@ const Comparison = () => {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-          <p className="text-gray-500 font-tajawal-medium">
-            جاري تحميل المقارنة...
-          </p>
-        </div>
+        <LoadingComponent />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold font-tajawal-regular">
+    <div className="container px-4 py-8 mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="font-tajawal-regular text-2xl font-bold">
           مقارنة المنتجات
         </h1>
-        {productDetails.some(item => item !== null) && (
+        {productDetails.some((item) => item !== null) && (
           <Button
             label="حفظ المقارنة"
             Icon={Save as IconType}
             onClick={handleSaveComparison}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="hover:bg-orange-600 flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg"
           />
         )}
       </div>
@@ -254,7 +249,7 @@ const Comparison = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="border p-4 bg-gray-50 font-tajawal-regular">
+              <th className="bg-gray-50 font-tajawal-regular p-4 border">
                 المواصفات
               </th>
               {[0, 1, 2, 3].map((index) => (
