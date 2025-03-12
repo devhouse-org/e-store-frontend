@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "@/utils/axiosInstance";
 import {
   Select,
   SelectContent,
@@ -7,6 +5,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axiosInstance from "@/utils/axiosInstance";
+import { useEffect, useState } from "react";
+import LoadingComponent from "./loading";
 
 interface Country {
   id: number;
@@ -65,18 +66,23 @@ const LocationDropdowns = ({
   }, []);
 
   const filteredStates = selectedCountryId
-    ? states.filter((state) => state.country_id[0] === parseInt(selectedCountryId))
+    ? states.filter(
+        (state) => state.country_id[0] === parseInt(selectedCountryId)
+      )
     : [];
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent />;
   }
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <label className="text-sm font-medium">الدولة</label>
-        <Select value={selectedCountryId || undefined} onValueChange={onCountryChange}>
+        <Select
+          value={selectedCountryId || undefined}
+          onValueChange={onCountryChange}
+        >
           <SelectTrigger>
             <SelectValue placeholder="اختر الدولة" />
           </SelectTrigger>
@@ -92,7 +98,10 @@ const LocationDropdowns = ({
 
       <div className="space-y-2">
         <label className="text-sm font-medium">المحافظة</label>
-        <Select value={selectedStateId || undefined} onValueChange={onStateChange}>
+        <Select
+          value={selectedStateId || undefined}
+          onValueChange={onStateChange}
+        >
           <SelectTrigger>
             <SelectValue placeholder="اختر المحافظة" />
           </SelectTrigger>
@@ -109,4 +118,4 @@ const LocationDropdowns = ({
   );
 };
 
-export default LocationDropdowns; 
+export default LocationDropdowns;

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { AuctionDialog } from "./AuctionDialog";
 import type { Auction } from "@/utils/data/auctions";
 import { prices } from "@/utils/dummy_data/data";
+import React, { useEffect, useState } from "react";
+import { AuctionDialog } from "./AuctionDialog";
 
 interface AuctionCardProps {
   auction: Auction;
@@ -62,38 +62,38 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction, onSubscribe }) => {
   }, [auction.endTime]); // Re-run effect when endTime changes
 
   return (
-    <div className="w-full max-w-md bg-white shadow-md rounded-lg border border-gray-300 overflow-hidden">
-      <div className="p-6 flex flex-col md:items-center">
-        <div className="flex flex-col sm:flex-row sm:gap-8">
-          <div className="mx-auto md:mx-0">
+    <div className="w-full max-w-md overflow-hidden bg-white border border-gray-300 rounded-lg shadow-md">
+      <div className="md:items-center flex flex-col p-6">
+        <div className="sm:flex-row sm:gap-8 flex flex-col">
+          <div className="md:mx-0 mx-auto">
             {/* Product Image */}
             <img
               src={auction.image}
               alt={auction.title}
-              className="min-w-16 w-32 h-32 object-contain mt-4 mb-6 sm:mb-0"
+              className="min-w-16 sm:mb-0 mix-blend-multiply object-contain w-32 h-32 mt-4 mb-6"
             />
           </div>
-          <div className="flex flex-col justify-between sm:h-full">
+          <div className="sm:h-full flex flex-col justify-between">
             {/* Product Name */}
-            <h2 className="text-xl truncate text-center md:text-start font-semibold text-gray-800 mb-2 md:mb-4 font-tajawal-bold">
+            <h2 className="md:text-start md:mb-4 font-tajawal-bold mb-2 text-xl font-semibold text-center text-gray-800 truncate">
               {auction.title}
             </h2>
 
             {/* Prices */}
-            <div className="flex sm:flex-col justify-between text-center mb-2 sm:mb-4">
-              <div className="flex flex-col sm:flex-row sm:gap-4">
-                <p className="text-gray-500 font-tajawal-regular">
+            <div className="sm:flex-col sm:mb-4 flex justify-between mb-2 text-center">
+              <div className="sm:flex-row sm:gap-4 flex flex-col">
+                <p className="font-tajawal-regular text-gray-500">
                   السعر الحالي
                 </p>
-                <p className="text-orange-500 font-tajawal-bold text-xl">
+                <p className="font-tajawal-bold text-xl text-orange-500">
                   {auction.currentPrice.toLocaleString()} د.ع
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row sm:gap-4 md:mt-2 sm:mt-0">
-                <p className="text-gray-500 font-tajawal-regular">
+              <div className="sm:flex-row sm:gap-4 md:mt-2 sm:mt-0 flex flex-col">
+                <p className="font-tajawal-regular text-gray-500">
                   تبدأ المزايدة من
                 </p>
-                <p className="text-orange-500 font-tajawal-bold text-xl">
+                <p className="font-tajawal-bold text-xl text-orange-500">
                   {auction.startingPrice.toLocaleString()} د.ع
                 </p>
               </div>
@@ -101,10 +101,10 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction, onSubscribe }) => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row-reverse justify-between items-center sm:mt-4 sm:gap-12">
+        <div className="sm:flex-row-reverse sm:mt-4 sm:gap-12 flex flex-col items-center justify-between">
           {/* Timer */}
-          <div className="flex items-center justify-center w-full sm:w-auto border border-orange-500 rounded-md p-2 text-orange-500 font-medium mb-4 sm:mb-0">
-            <span className="ml-2 text-gray-700 font-tajawal-regular">
+          <div className="sm:w-auto sm:mb-0 flex items-center justify-center w-full p-2 mb-4 font-medium text-orange-500 border border-orange-500 rounded-md">
+            <span className="font-tajawal-regular ml-2 text-gray-700">
               الوقت المتبقي
             </span>
             <p>{remainingTime}</p>
