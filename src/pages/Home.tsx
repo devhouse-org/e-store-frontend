@@ -305,7 +305,7 @@ function Home() {
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="w-[220px] bg-white rounded-2xl p-4 transition-shadow duration-200 hover:shadow-lg border border-gray-100"
+                className="w-[220px] group bg-white rounded-2xl p-4 transition-shadow duration-200 hover:shadow-lg border border-gray-100"
               >
                 <Link to={`/product/${product.id}`} className="block">
                   <div className="relative mb-4">
@@ -313,7 +313,7 @@ function Home() {
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-[180px] object-contain"
+                        className="w-full h-[180px] object-contain mix-blend-multiply transition-all duration-300 group-hover:scale-105"
                       />
                     </div>
                     <button
