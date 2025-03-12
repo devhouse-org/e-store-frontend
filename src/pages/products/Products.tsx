@@ -695,7 +695,7 @@ const Products = () => {
                             ? removeFromWishlist(product.id.toString())
                             : addToWishlist(wishlistItem);
                         }}
-                        className="top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
+                        className="top-2 right-10 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
                         aria-label="إضافة للمفضلة"
                       >
                         <Heart
