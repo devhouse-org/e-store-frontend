@@ -97,8 +97,7 @@ const Products = () => {
     updateQuantity,
     removeFromCart,
   } = useCartStore();
-  const { addToComparison, removeFromComparison, isCompared } =
-    useComparisonStore();
+  const { addToComparison, removeFromComparison, isCompared, initializeFromStorage } = useComparisonStore();
   const [prods, setProds] = useState<ProductsResponse>({
     products: [],
     total: 0,
@@ -147,6 +146,11 @@ const Products = () => {
     min_price: priceRange?.min,
     max_price: priceRange?.max,
   });
+
+  // Initialize comparison items from localStorage
+  useEffect(() => {
+    initializeFromStorage();
+  }, []);
 
   // Function to check if URL has any filter parameters
   const hasUrlFilters = () => {
@@ -309,13 +313,11 @@ const Products = () => {
       return;
     }
 
-    const categoryId = selectedSubcategory || selectedCategory;
-    const currentCategoryId = useComparisonStore.getState().categoryId;
-
-    if (currentCategoryId !== null && currentCategoryId !== categoryId) {
+    // Check if comparison list is full
+    if (useComparisonStore.getState().comparisonItems.length >= 4) {
       toast({
         title: "تنبيه المقارنة",
-        description: "يمكنك فقط مقارنة المنتجات من نفس الفئة",
+        description: "يمكنك مقارنة 4 منتجات كحد أقصى",
         variant: "destructive",
       });
       return;
@@ -327,7 +329,7 @@ const Products = () => {
       price: product.list_price,
       image: product.image_1920,
       description: product.description || "",
-    }, categoryId!);
+    });
   };
 
   const handleUpdateQuantity = (product: any, newQuantity: number) => {
@@ -460,7 +462,7 @@ const Products = () => {
                       px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
                       ${selectedCategory === category.id
                       ? "bg-orange-500 text-white shadow-md"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      : "bg-white hover:bg-gray-200 text-gray-700"
                     }
                     `}
                 >
@@ -500,7 +502,7 @@ const Products = () => {
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
                       ${selectedSubcategory === subcategory.id
                           ? "bg-orange-500 text-white shadow-md"
-                          : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                          : "border border-gray-200 text-gray-600 hover:bg-white"
                         }
                     `}
                     >
