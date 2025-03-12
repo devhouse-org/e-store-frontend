@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Heart,
+  CircleDashed,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
@@ -21,6 +22,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/ui/LoadingState";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useToast } from "@/hooks/use-toast";
 
 interface Category {
   id: number;
@@ -118,6 +120,7 @@ const Products = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Number of products per page
+  const { toast } = useToast();
 
   const { data: categoriesData = [], isLoading: categoriesLoading } =
     useCategories();
@@ -298,12 +301,33 @@ const Products = () => {
   };
 
   const handleComparisonClick = (product: any) => {
-    const isInComparison = isCompared(product.id);
+    const productId = product.id.toString();
+    const isInComparison = isCompared(productId);
+
     if (isInComparison) {
-      removeFromComparison(product.id);
-    } else {
-      addToComparison(product);
+      removeFromComparison(productId);
+      return;
     }
+
+    const categoryId = selectedSubcategory || selectedCategory;
+    const currentCategoryId = useComparisonStore.getState().categoryId;
+
+    if (currentCategoryId !== null && currentCategoryId !== categoryId) {
+      toast({
+        title: "تنبيه المقارنة",
+        description: "يمكنك فقط مقارنة المنتجات من نفس الفئة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    addToComparison({
+      id: productId,
+      name: product.name,
+      price: product.list_price,
+      image: product.image_1920,
+      description: product.description || "",
+    }, categoryId!);
   };
 
   const handleUpdateQuantity = (product: any, newQuantity: number) => {
@@ -570,32 +594,56 @@ const Products = () => {
                     key={product.id}
                     className="relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100 group rounded-xl hover:shadow-lg"
                   >
-                    {/* Wishlist Button */}
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const wishlistItem = {
-                          id: product.id.toString(),
-                          name: product.name,
-                          price: product.list_price,
-                          image: product.image_1920,
-                          description: product.description || product.name,
-                        };
-                        useWishlistStore.getState().isWishlisted(product.id.toString())
-                          ? useWishlistStore.getState().removeFromWishlist(product.id.toString())
-                          : useWishlistStore.getState().addToWishlist(wishlistItem);
-                      }}
-                      className="absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 top-2 right-2 bg-white/90 group-hover:opacity-100 hover:bg-white"
-                      aria-label="إضافة للمفضلة"
-                    >
-                      <Heart
-                        className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id.toString())
-                          ? "text-red-500 fill-red-500"
-                          : "text-gray-400 group-hover:text-gray-600"
+                    {/* Wishlist and Comparison Buttons Container */}
+                    <div className="absolute z-10 flex gap-2 p-2 top-2 right-2">
+                      {/* Wishlist Button */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const wishlistItem = {
+                            id: product.id.toString(),
+                            name: product.name,
+                            price: product.list_price,
+                            image: product.image_1920,
+                            description: product.description || product.name,
+                          };
+                          useWishlistStore.getState().isWishlisted(product.id.toString())
+                            ? useWishlistStore.getState().removeFromWishlist(product.id.toString())
+                            : useWishlistStore.getState().addToWishlist(wishlistItem);
+                        }}
+                        className="p-2 transition-all duration-200 rounded-full shadow-sm opacity-0 bg-white/90 hover:bg-white group-hover:opacity-100"
+                        aria-label="إضافة للمفضلة"
+                      >
+                        <Heart
+                          className={`w-4 h-4 transition-colors ${useWishlistStore.getState().isWishlisted(product.id.toString())
+                            ? "text-red-500 fill-red-500"
+                            : "text-gray-400 group-hover:text-gray-600"
+                            }`}
+                        />
+                      </button>
+
+                      {/* Comparison Button - Always visible when in comparison */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleComparisonClick(product);
+                        }}
+                        className={`p-2 transition-all duration-200 rounded-full shadow-sm bg-white/90 hover:bg-white ${isCompared(product.id.toString())
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100"
                           }`}
-                      />
-                    </button>
+                        aria-label="إضافة للمقارنة"
+                      >
+                        <CircleDashed
+                          className={`w-4 h-4 transition-colors ${isCompared(product.id.toString())
+                            ? "text-orange-500"
+                            : "text-gray-400 group-hover:text-gray-600"
+                            }`}
+                        />
+                      </button>
+                    </div>
 
                     {/* Product Image */}
                     <div className="flex items-center justify-center p-4 aspect-square bg-gradient-to-b from-gray-50 to-white">

@@ -52,7 +52,7 @@ const EmptySlot = () => (
   </div>
 );
 
-// Update ProductColumn component to handle the new data structure
+// Update ProductColumn component to handle null values safely
 const ProductColumn = ({
   product,
   onRemove,
@@ -72,56 +72,63 @@ const ProductColumn = ({
     });
   };
 
+  if (!product) {
+    return (
+      <th className="border p-4 bg-gray-50 min-w-[200px]">
+        <EmptySlot />
+      </th>
+    );
+  }
+
+  // Ensure list_price exists and is a number
+  const formattedPrice = typeof product.list_price === 'number'
+    ? product.list_price.toLocaleString()
+    : '0';
+
   return (
     <th className="border p-4 bg-gray-50 min-w-[200px]">
       <div className="flex flex-col items-center gap-2">
-        {product ? (
-          <>
-            <div className="relative w-full">
-              <button
-                onClick={onRemove}
-                className="absolute p-1 transition-colors bg-red-100 rounded-full -top-2 -right-2 hover:bg-red-200"
-              >
-                <Trash2 className="w-4 h-4 text-red-500" />
-              </button>
-              <img
-                src={`data:image/png;base64,${product.image_1920}`}
-                alt={product.name}
-                className="object-cover w-24 h-24 mx-auto rounded-lg"
-              />
-            </div>
-            <h3 className="text-sm font-semibold font-tajawal-regular">
-              {product.name}
-            </h3>
-            <p className="text-orange-500 font-tajawal-regular">
-              {product.list_price.toLocaleString()} د.ع
-            </p>
-            <button
-              onClick={() => handleAddToCart(product)}
-              className="px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600 font-tajawal-regular"
-            >
-              إضافة إلى السلة
-            </button>
-          </>
-        ) : (
-          <EmptySlot />
-        )}
+        <div className="relative w-full">
+          <button
+            onClick={onRemove}
+            className="absolute p-1 transition-colors bg-red-100 rounded-full -top-2 -right-2 hover:bg-red-200"
+          >
+            <Trash2 className="w-4 h-4 text-red-500" />
+          </button>
+          <img
+            src={`data:image/png;base64,${product.image_1920}`}
+            alt={product.name}
+            className="object-cover w-24 h-24 mx-auto rounded-lg"
+          />
+        </div>
+        <h3 className="text-sm font-semibold font-tajawal-regular">
+          {product.name}
+        </h3>
+        <p className="text-orange-500 font-tajawal-regular">
+          {formattedPrice} د.ع
+        </p>
+        <button
+          onClick={() => handleAddToCart(product)}
+          className="px-3 py-1 text-sm text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600 font-tajawal-regular"
+        >
+          إضافة إلى السلة
+        </button>
       </div>
     </th>
   );
 };
 
-// Update DataRow component to include max width
+// Update DataRow component to fix the key prop issue and type safety
 const DataRow = ({
   label,
   getValue,
   slots,
-  key,
+  rowKey,
 }: {
   label: string;
   getValue: (product: ProductDetails | null) => string;
   slots: (ProductDetails | null)[];
-  key: string;
+  rowKey: string;
 }) => (
   <tr>
     <td className="border p-4 bg-gray-50 font-tajawal-regular w-[200px]">
@@ -129,17 +136,15 @@ const DataRow = ({
     </td>
     {slots.map((product, index) => (
       <td key={index} className="border p-4 text-center w-[200px]">
-        {key === "description" ? (
+        {rowKey === "description" && product?.description ? (
           <div
             dangerouslySetInnerHTML={{
-              __html: product?.description || "-",
+              __html: product.description,
             }}
             className="text-sm text-gray-600 max-h-[150px] overflow-y-auto"
           />
-        ) : product ? (
-          getValue(product)
         ) : (
-          "-"
+          getValue(product)
         )}
       </td>
     ))}
@@ -169,13 +174,25 @@ const Comparison = () => {
               const product = comparisonItems[index];
               if (!product) return null;
 
-              const response = await axiosInstance.post(
-                "/products/product-details",
-                {
-                  product_id: product.id,
-                }
-              );
-              return response.data;
+              try {
+                const response = await axiosInstance.post(
+                  "/products/product-details",
+                  {
+                    product_id: parseInt(product.id),
+                  }
+                );
+                return response.data;
+              } catch (error) {
+                console.error(`Error fetching details for product ${product.id}:`, error);
+                // Return basic product info if API call fails
+                return {
+                  id: parseInt(product.id),
+                  name: product.name,
+                  list_price: product.price,
+                  image_1920: product.image.replace('data:image/png;base64,', ''),
+                  description: product.description,
+                };
+              }
             })
         );
 
@@ -187,6 +204,22 @@ const Comparison = () => {
           description: "حدث خطأ أثناء تحميل تفاصيل المنتجات",
           variant: "destructive",
         });
+        // Set basic product info from comparisonItems if API fails
+        setProductDetails(
+          Array(4)
+            .fill(null)
+            .map((_, index) => {
+              const product = comparisonItems[index];
+              if (!product) return null;
+              return {
+                id: parseInt(product.id),
+                name: product.name,
+                list_price: product.price,
+                image_1920: product.image.replace('data:image/png;base64,', ''),
+                description: product.description,
+              };
+            })
+        );
       } finally {
         setLoading(false);
       }
@@ -200,7 +233,6 @@ const Comparison = () => {
     { key: "name", label: "المنتج" },
     { key: "list_price", label: "السعر" },
     { key: "description", label: "الوصف" },
-    // Add any other specifications you want to display based on the API response
   ];
 
   const handleSaveComparison = () => {
@@ -226,9 +258,7 @@ const Comparison = () => {
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"></div>
-          <p className="text-gray-500 font-tajawal-medium">
-            <Loader />
-          </p>
+          <span className="text-gray-500 font-tajawal-medium">جاري التحميل...</span>
         </div>
       </div>
     );
@@ -263,7 +293,7 @@ const Comparison = () => {
                   product={productDetails[index]}
                   onRemove={() => {
                     if (productDetails[index]) {
-                      removeFromComparison(productDetails[index]!.id);
+                      removeFromComparison(productDetails[index]!.id.toString());
                     }
                   }}
                 />
@@ -275,12 +305,21 @@ const Comparison = () => {
               <DataRow
                 key={spec.key}
                 label={spec.label}
+                rowKey={spec.key}
                 getValue={(product) => {
-                  const value = product?.[spec.key];
-                  if (typeof value === "boolean" && !value) {
-                    return "-";
+                  if (!product) return "-";
+                  switch (spec.key) {
+                    case "name":
+                      return product.name || "-";
+                    case "list_price":
+                      return typeof product.list_price === 'number'
+                        ? `${product.list_price.toLocaleString()} د.ع`
+                        : "-";
+                    case "description":
+                      return product.description || "-";
+                    default:
+                      return "-";
                   }
-                  return value?.toString() || "-";
                 }}
                 slots={productDetails}
               />
