@@ -10,36 +10,38 @@ interface ComparisonStore {
   initializeFromStorage: () => void;
 }
 
-// Load comparison items from localStorage
-const loadFromStorage = (): Product[] => {
+// Load comparison item IDs from localStorage and return empty array if none found
+const loadFromStorage = (): string[] => {
   try {
-    const items = localStorage.getItem('comparisonItems');
+    const items = localStorage.getItem('comparisonItemIds');
     return items ? JSON.parse(items) : [];
   } catch (error) {
-    console.error('Error loading comparison items from storage:', error);
+    console.error('Error loading comparison item IDs from storage:', error);
     return [];
   }
 };
 
-// Save comparison items to localStorage
+// Save comparison item IDs to localStorage
 const saveToStorage = (items: Product[]) => {
   try {
-    localStorage.setItem('comparisonItems', JSON.stringify(items));
+    const itemIds = items.map(item => item.id);
+    localStorage.setItem('comparisonItemIds', JSON.stringify(itemIds));
   } catch (error) {
-    console.error('Error saving comparison items to storage:', error);
+    console.error('Error saving comparison item IDs to storage:', error);
   }
 };
 
 export const useComparisonStore = create<ComparisonStore>((set, get) => ({
-  comparisonItems: loadFromStorage(),
+  comparisonItems: [],
 
   initializeFromStorage: () => {
-    const items = loadFromStorage();
-    set({ comparisonItems: items });
+    const itemIds = loadFromStorage();
+    // Here we only set the IDs since we'll fetch the full product data when needed
+    set({ comparisonItems: itemIds.map(id => ({ id })) as Product[] });
   },
 
   addToComparison: (product) => {
-    const currentItems = loadFromStorage();
+    const currentItems = get().comparisonItems;
 
     // Check if product is already in comparison
     if (currentItems.some((item) => item.id === product.id)) {
@@ -58,19 +60,19 @@ export const useComparisonStore = create<ComparisonStore>((set, get) => ({
   },
 
   removeFromComparison: (productId) => {
-    const currentItems = loadFromStorage();
+    const currentItems = get().comparisonItems;
     const updatedItems = currentItems.filter((item) => item.id !== productId);
     saveToStorage(updatedItems);
     set({ comparisonItems: updatedItems });
   },
 
   isCompared: (productId) => {
-    const currentItems = loadFromStorage();
-    return currentItems.some((item) => item.id === productId);
+    const itemIds = loadFromStorage();
+    return itemIds.includes(productId);
   },
 
   clearComparison: () => {
-    localStorage.removeItem('comparisonItems');
+    localStorage.removeItem('comparisonItemIds');
     set({ comparisonItems: [] });
   },
 }));

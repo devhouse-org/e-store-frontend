@@ -10,26 +10,24 @@ import { Product } from "@/types";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/ui/LoadingState";
+
 // Update ProductDetails interface to match API response
 interface ProductDetails {
   id: number;
   name: string;
   list_price: number;
-  description?: string;
+  description?: string | false;
   description_sale?: boolean | string;
   image_1920: string;
+  public_categ_ids?: number[];
   product_variant_ids?: number[];
   attribute_line_ids?: number[];
-  attributes?: {
-    id: number;
-    name: string;
-    display_type: string;
-    values: {
-      id: number;
-      name: string;
-      price_extra: number;
-    }[];
-  }[];
+}
+
+interface ProductsResponse {
+  success: boolean;
+  products: ProductDetails[];
+  total: number;
 }
 
 const EmptySlot = () => (
@@ -139,7 +137,7 @@ const DataRow = ({
         {rowKey === "description" && product?.description ? (
           <div
             dangerouslySetInnerHTML={{
-              __html: product.description,
+              __html: product.description.toString(),
             }}
             className="text-sm text-gray-600 max-h-[150px] overflow-y-auto"
           />
@@ -157,9 +155,7 @@ const Comparison = () => {
   const saveComparison = useSavedComparisonsStore(
     (state) => state.saveComparison
   );
-  const [productDetails, setProductDetails] = useState<
-    (ProductDetails | null)[]
-  >([null, null, null, null]);
+  const [productDetails, setProductDetails] = useState<(ProductDetails | null)[]>([null, null, null, null]);
   const [loading, setLoading] = useState(true);
 
   // Fetch product details for each product in comparison
@@ -167,36 +163,33 @@ const Comparison = () => {
     const fetchProductDetails = async () => {
       setLoading(true);
       try {
-        const details = await Promise.all(
-          Array(4)
-            .fill(null)
-            .map(async (_, index) => {
-              const product = comparisonItems[index];
-              if (!product) return null;
+        // Get IDs from localStorage
+        const itemIds = localStorage.getItem('comparisonItemIds');
+        const ids = itemIds ? JSON.parse(itemIds) : [];
 
-              try {
-                const response = await axiosInstance.post(
-                  "/products/product-details",
-                  {
-                    product_id: parseInt(product.id),
-                  }
-                );
-                return response.data;
-              } catch (error) {
-                console.error(`Error fetching details for product ${product.id}:`, error);
-                // Return basic product info if API call fails
-                return {
-                  id: parseInt(product.id),
-                  name: product.name,
-                  list_price: product.price,
-                  image_1920: product.image.replace('data:image/png;base64,', ''),
-                  description: product.description,
-                };
-              }
-            })
+        if (ids.length === 0) {
+          setProductDetails([null, null, null, null]);
+          setLoading(false);
+          return;
+        }
+
+        // Convert string IDs to numbers
+        const numericIds = ids.map((id: string) => parseInt(id));
+
+        // Make API call with the IDs
+        const response = await axiosInstance.post<ProductsResponse>(
+          "/products/by-ids",
+          {
+            product_ids: numericIds
+          }
         );
 
-        setProductDetails(details);
+        // Create an array of 4 slots, filling with products where available
+        const filledProducts = Array(4).fill(null).map((_, index) => {
+          return response.data.products[index] || null;
+        });
+
+        setProductDetails(filledProducts);
       } catch (error) {
         console.error("Error fetching product details:", error);
         toast({
@@ -204,22 +197,7 @@ const Comparison = () => {
           description: "حدث خطأ أثناء تحميل تفاصيل المنتجات",
           variant: "destructive",
         });
-        // Set basic product info from comparisonItems if API fails
-        setProductDetails(
-          Array(4)
-            .fill(null)
-            .map((_, index) => {
-              const product = comparisonItems[index];
-              if (!product) return null;
-              return {
-                id: parseInt(product.id),
-                name: product.name,
-                list_price: product.price,
-                image_1920: product.image.replace('data:image/png;base64,', ''),
-                description: product.description,
-              };
-            })
-        );
+        setProductDetails([null, null, null, null]);
       } finally {
         setLoading(false);
       }
@@ -236,7 +214,9 @@ const Comparison = () => {
   ];
 
   const handleSaveComparison = () => {
-    if (comparisonItems.length === 0) {
+    const nonNullProducts = productDetails.filter((product): product is ProductDetails => product !== null);
+
+    if (nonNullProducts.length === 0) {
       toast({
         title: "لا يمكن حفظ المقارنة",
         description: "الرجاء إضافة منتج واحد على الأقل للمقارنة",
@@ -245,7 +225,14 @@ const Comparison = () => {
       return;
     }
 
-    saveComparison(comparisonItems);
+    saveComparison(nonNullProducts.map(product => ({
+      id: product.id.toString(),
+      name: product.name,
+      price: product.list_price,
+      image: product.image_1920,
+      description: product.description?.toString() || "",
+    })));
+
     toast({
       title: "تم حفظ المقارنة",
       description: "يمكنك العثور على المقارنة المحفوظة في لوحة التحكم",
@@ -316,7 +303,7 @@ const Comparison = () => {
                         ? `${product.list_price.toLocaleString()} د.ع`
                         : "-";
                     case "description":
-                      return product.description || "-";
+                      return product.description?.toString() || "-";
                     default:
                       return "-";
                   }
