@@ -68,6 +68,10 @@ const useProductDetails = (productId: string | undefined) => {
 
 const Product = () => {
   const addToCart = useCartStore((state) => state.addToCart);
+  const isInCart = useCartStore((state) => state.isInCart);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const getProductQuantity = useCartStore((state) => state.getProductQuantity);
+  
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -77,6 +81,18 @@ const Product = () => {
   >({});
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
+  const [showCounter, setShowCounter] = useState(false);
+
+  // Initialize state based on cart
+  useEffect(() => {
+    if (product && id) {
+      const inCart = isInCart(id);
+      setShowCounter(inCart);
+      if (inCart) {
+        setQuantity(getProductQuantity(id));
+      }
+    }
+  }, [product, id, isInCart, getProductQuantity]);
 
   const images = [
     product?.image_1920,
@@ -150,7 +166,7 @@ const Product = () => {
         id: product.id.toString(),
         name: product.name,
         price: product.list_price,
-        image: product.image_1920,
+        image: product.image_1920.startsWith('data:image') ? product.image_1920 : `data:image/png;base64,${product.image_1920}`,
         quantity: quantity,
         selected_attributes: selectedAttributeValues,
       });
@@ -199,6 +215,42 @@ const Product = () => {
       ...prev,
       [attributeId]: valueId,
     }));
+  };
+
+  const handleInitialAddToCart = () => {
+    if (product) {
+      const selectedAttributeValues = Object.entries(selectedAttributes).map(
+        ([attributeId, valueId]) => {
+          const attribute = product.attributes?.find(
+            (attr) => attr.id === parseInt(attributeId)
+          );
+          const value = attribute?.values.find((val) => val.id === valueId);
+          return {
+            attribute_id: parseInt(attributeId),
+            value_id: valueId,
+            attribute_name: attribute?.name,
+            value_name: value?.name,
+          };
+        }
+      );
+
+      addToCart({
+        id: product.id.toString(),
+        name: product.name,
+        price: product.list_price,
+        image: product.image_1920.startsWith('data:image') ? product.image_1920 : `data:image/png;base64,${product.image_1920}`,
+        quantity: 1,
+        selected_attributes: selectedAttributeValues,
+      });
+      setShowCounter(true);
+    }
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (product && newQuantity >= 1) {
+      setQuantity(newQuantity);
+      updateQuantity(product.id.toString(), newQuantity);
+    }
   };
 
   // Get 4 related products (excluding current product)
@@ -342,23 +394,33 @@ const Product = () => {
                 </div>
               ))}
 
-            <div className="flex font-tajawal-medium justify-end items-center gap-4 border w-fit p-0.5 rounded">
+            {showCounter ? (
+              <div className="flex font-tajawal-medium justify-end items-center gap-4 border w-fit p-0.5 rounded">
+                <Button
+                  variant="arrows"
+                  size="sm"
+                  className="text-red-600"
+                  Icon={Minus as IconType}
+                  onClick={() => handleQuantityChange(quantity - 1)}
+                />
+                <span className="px-2">{quantity}</span>
+                <Button
+                  variant="arrows"
+                  size="sm"
+                  className="text-red-600"
+                  Icon={Plus as IconType}
+                  onClick={() => handleQuantityChange(quantity + 1)}
+                />
+              </div>
+            ) : (
               <Button
-                variant="arrows"
-                size="sm"
-                className="text-red-600"
-                Icon={Minus as IconType}
-                onClick={() => setQuantity(Math.max(quantity - 1, 1))}
+                variant="outline"
+                size="lg"
+                className="text-orange-500 bg-orange-100 w-fit hover:bg-orange-200"
+                onClick={handleInitialAddToCart}
+                label="إضافة للسلة"
               />
-              <span className="px-2">{quantity}</span>
-              <Button
-                variant="arrows"
-                size="sm"
-                className="text-red-600"
-                Icon={Plus as IconType}
-                onClick={() => setQuantity(quantity + 1)}
-              />
-            </div>
+            )}
 
             <div className="text-right">
               <div className="text-2xl text-orange-500 lg:text-3xl font-tajawal-medium">
@@ -374,13 +436,6 @@ const Product = () => {
                 className="flex-1 bg-orange-500 hover:bg-orange-600"
                 onClick={handleBuyNow}
                 label="شراء الآن"
-              />
-              <Button
-                variant="outline"
-                size="lg"
-                className="flex-1 text-orange-500 bg-orange-100 hover:bg-orange-200"
-                onClick={handleAddToCart}
-                label="إضافة للسلة"
               />
               <Button
                 variant="outline"
