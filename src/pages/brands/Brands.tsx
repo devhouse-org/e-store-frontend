@@ -133,7 +133,7 @@ const Brands = () => {
         )}
 
         {/* No Results */}
-        {(!isLoading && error || filteredBrands.length === 0) && (
+        {(!isLoading && error) && (
           <div className="py-12 text-center">
             <p className="text-gray-500 font-tajawal-medium">
               {searchQuery

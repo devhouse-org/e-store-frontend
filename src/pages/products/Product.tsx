@@ -28,6 +28,7 @@ import { useWishlistStore } from "@/store/useWishlistStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
+import ProductSkeleton from "@/components/ui/ProductSkeleton";
 
 // Update Product interface to match API response
 interface ProductDetails {
@@ -206,11 +207,7 @@ const Product = () => {
     .slice(0, 4);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"></div>
-      </div>
-    );
+    return <ProductSkeleton />;
   }
 
   if (error || !product) {
@@ -235,7 +232,7 @@ const Product = () => {
               />
             </div>
             {images.length > 1 && (
-              <div className="lg:gap-4 grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2 lg:gap-4">
                 {images.map((img, idx) => (
                   <div
                     key={idx}
@@ -374,7 +371,7 @@ const Product = () => {
             <div className="flex w-full gap-4 lg:w-fit">
               <Button
                 size="lg"
-                className="hover:bg-orange-600 flex-1 bg-orange-500"
+                className="flex-1 bg-orange-500 hover:bg-orange-600"
                 onClick={handleBuyNow}
                 label="شراء الآن"
               />
@@ -467,7 +464,7 @@ const Product = () => {
                   المراجعات
                 </h1>
               </div>
-              <div className="gap-y-2 flex flex-col pt-4">
+              <div className="flex flex-col pt-4 gap-y-2">
                 <ReviewCard reviews={reviews} />
               </div>
             </div>
