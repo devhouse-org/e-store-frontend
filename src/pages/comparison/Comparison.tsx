@@ -10,6 +10,7 @@ import { Product } from "@/types";
 import { IconType } from "react-icons";
 import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/ui/LoadingState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Update ProductDetails interface to match API response
 interface ProductDetails {
@@ -79,9 +80,10 @@ const ProductColumn = ({
   }
 
   // Ensure list_price exists and is a number
-  const formattedPrice = typeof product.list_price === 'number'
-    ? product.list_price.toLocaleString()
-    : '0';
+  const formattedPrice =
+    typeof product.list_price === "number"
+      ? product.list_price.toLocaleString()
+      : "0";
 
   return (
     <th className="border p-4 bg-gray-50 min-w-[200px]">
@@ -149,13 +151,84 @@ const DataRow = ({
   </tr>
 );
 
+const ComparisonSkeleton = () => {
+  return (
+    <div className="container px-4 py-8 mx-auto">
+      {/* Header Skeleton */}
+      <div className="flex items-center justify-between mb-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-10 w-32" />
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              {/* Specifications Header */}
+              <th className="p-4 border bg-gray-50 w-[200px]">
+                <Skeleton className="h-6 w-24" />
+              </th>
+
+              {/* Product Column Headers */}
+              {[...Array(4)].map((_, index) => (
+                <th key={index} className="border p-4 bg-gray-50 min-w-[200px]">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative w-full">
+                      {/* Product Image Skeleton */}
+                      <Skeleton className="w-24 h-24 mx-auto rounded-lg" />
+                    </div>
+                    {/* Product Name Skeleton */}
+                    <Skeleton className="h-4 w-3/4" />
+                    {/* Price Skeleton */}
+                    <Skeleton className="h-4 w-1/2" />
+                    {/* Add to Cart Button Skeleton */}
+                    <Skeleton className="h-8 w-32 rounded-full" />
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {/* Specification Rows */}
+            {[...Array(3)].map((_, rowIndex) => (
+              <tr key={rowIndex}>
+                {/* Specification Label */}
+                <td className="border p-4 bg-gray-50 w-[200px]">
+                  <Skeleton className="h-4 w-24" />
+                </td>
+                {/* Specification Values */}
+                {[...Array(4)].map((_, colIndex) => (
+                  <td
+                    key={colIndex}
+                    className="border p-4 text-center w-[200px]"
+                  >
+                    <Skeleton className="h-4 w-3/4 mx-auto" />
+                    {rowIndex === 2 && (
+                      <>
+                        <Skeleton className="h-4 w-2/3 mx-auto mt-2" />
+                        <Skeleton className="h-4 w-1/2 mx-auto mt-2" />
+                      </>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 const Comparison = () => {
   const { comparisonItems, removeFromComparison } = useComparisonStore();
   const { toast } = useToast();
   const saveComparison = useSavedComparisonsStore(
     (state) => state.saveComparison
   );
-  const [productDetails, setProductDetails] = useState<(ProductDetails | null)[]>([null, null, null, null]);
+  const [productDetails, setProductDetails] = useState<
+    (ProductDetails | null)[]
+  >([null, null, null, null]);
   const [loading, setLoading] = useState(true);
 
   // Fetch product details for each product in comparison
@@ -164,7 +237,7 @@ const Comparison = () => {
       setLoading(true);
       try {
         // Get IDs from localStorage
-        const itemIds = localStorage.getItem('comparisonItemIds');
+        const itemIds = localStorage.getItem("comparisonItemIds");
         const ids = itemIds ? JSON.parse(itemIds) : [];
 
         if (ids.length === 0) {
@@ -180,14 +253,16 @@ const Comparison = () => {
         const response = await axiosInstance.post<ProductsResponse>(
           "/products/by-ids",
           {
-            product_ids: numericIds
+            product_ids: numericIds,
           }
         );
 
         // Create an array of 4 slots, filling with products where available
-        const filledProducts = Array(4).fill(null).map((_, index) => {
-          return response.data.products[index] || null;
-        });
+        const filledProducts = Array(4)
+          .fill(null)
+          .map((_, index) => {
+            return response.data.products[index] || null;
+          });
 
         setProductDetails(filledProducts);
       } catch (error) {
@@ -214,7 +289,9 @@ const Comparison = () => {
   ];
 
   const handleSaveComparison = () => {
-    const nonNullProducts = productDetails.filter((product): product is ProductDetails => product !== null);
+    const nonNullProducts = productDetails.filter(
+      (product): product is ProductDetails => product !== null
+    );
 
     if (nonNullProducts.length === 0) {
       toast({
@@ -225,13 +302,15 @@ const Comparison = () => {
       return;
     }
 
-    saveComparison(nonNullProducts.map(product => ({
-      id: product.id.toString(),
-      name: product.name,
-      price: product.list_price,
-      image: product.image_1920,
-      description: product.description?.toString() || "",
-    })));
+    saveComparison(
+      nonNullProducts.map((product) => ({
+        id: product.id.toString(),
+        name: product.name,
+        price: product.list_price,
+        image: product.image_1920,
+        description: product.description?.toString() || "",
+      }))
+    );
 
     toast({
       title: "تم حفظ المقارنة",
@@ -241,14 +320,7 @@ const Comparison = () => {
   };
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-t-2 border-b-2 border-orange-500 rounded-full animate-spin"></div>
-          <span className="text-gray-500 font-tajawal-medium">جاري التحميل...</span>
-        </div>
-      </div>
-    );
+    return <ComparisonSkeleton />;
   }
 
   return (
@@ -257,14 +329,14 @@ const Comparison = () => {
         <h1 className="text-2xl font-bold font-tajawal-regular">
           مقارنة المنتجات
         </h1>
-        {productDetails.some(item => item !== null) && (
+        {/* {productDetails.some((item) => item !== null) && (
           <Button
             label="حفظ المقارنة"
             Icon={Save as IconType}
             onClick={handleSaveComparison}
             className="flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600"
           />
-        )}
+        )} */}
       </div>
 
       <div className="overflow-x-auto">
@@ -280,7 +352,9 @@ const Comparison = () => {
                   product={productDetails[index]}
                   onRemove={() => {
                     if (productDetails[index]) {
-                      removeFromComparison(productDetails[index]!.id.toString());
+                      removeFromComparison(
+                        productDetails[index]!.id.toString()
+                      );
                     }
                   }}
                 />
@@ -299,7 +373,7 @@ const Comparison = () => {
                     case "name":
                       return product.name || "-";
                     case "list_price":
-                      return typeof product.list_price === 'number'
+                      return typeof product.list_price === "number"
                         ? `${product.list_price.toLocaleString()} د.ع`
                         : "-";
                     case "description":

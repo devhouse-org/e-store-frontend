@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/ui/LoadingState";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Product {
   id: string;
@@ -28,26 +29,23 @@ const useWishlistProducts = (productIds: string[]) => {
       if (productIds.length === 0) {
         return { products: [], total: 0, offset: 0, limit: 0 };
       }
-      const response = await axiosInstance.post<ProductsResponse>(
-        "/products",
-        {
-          product_ids: productIds.map(id => parseInt(id)),
-          limit: productIds.length,
-          offset: 0
-        }
-      );
+      const response = await axiosInstance.post<ProductsResponse>("/products", {
+        product_ids: productIds.map((id) => parseInt(id)),
+        limit: productIds.length,
+        offset: 0,
+      });
       return response.data;
     },
-    enabled: productIds.length > 0
+    enabled: productIds.length > 0,
   });
 };
 
-function WishlistItemCard({ 
+function WishlistItemCard({
   product,
   removeFromWishlist,
   isSelected,
   onToggleSelect,
-}: { 
+}: {
   product: Product;
   removeFromWishlist: (productId: string) => void;
   isSelected: boolean;
@@ -56,22 +54,24 @@ function WishlistItemCard({
   return (
     <div className="relative p-4 bg-white rounded-lg shadow-md group">
       <div className="absolute z-10 top-2 right-2">
-        <Checkbox 
+        <Checkbox
           checked={isSelected}
           onCheckedChange={() => onToggleSelect(product.id)}
           className="w-5 h-5 border-2 border-orange-500"
         />
       </div>
       <Link to={`/product/${product.id}`} className="block">
-        <img 
-          src={`data:image/png;base64,${product.image_1920}`} 
-          alt={product.name} 
+        <img
+          src={`data:image/png;base64,${product.image_1920}`}
+          alt={product.name}
           className="object-cover w-full h-48 rounded-md"
         />
         <div className="mt-4">
-          <h3 className="mb-2 text-lg text-gray-800 font-tajawal-bold">{product.name}</h3>
+          <h3 className="mb-2 text-lg text-gray-800 font-tajawal-bold">
+            {product.name}
+          </h3>
           <p className="text-lg text-orange-600 font-tajawal-bold">
-            {product.list_price.toLocaleString('ar-IQ')} د.ع
+            {product.list_price.toLocaleString("ar-IQ")} د.ع
           </p>
         </div>
       </Link>
@@ -89,25 +89,52 @@ function WishlistItemCard({
   );
 }
 
+const WishlistSkeleton = () => {
+  return (
+    <div className="container mx-auto px-4 md:px-8 lg:px-12 mt-8 py-8 min-h-[calc(100vh-200px)]">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-40" />
+            <Skeleton className="h-8 w-24 rounded-full" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 md:gap-10">
+          {[...Array(8)].map((_, index) => (
+            <div key={index} className="p-4 bg-white rounded-lg shadow-md">
+              <div className="absolute z-10 top-2 right-2">
+                <Skeleton className="w-5 h-5 rounded" />
+              </div>
+              <Skeleton className="w-full h-48 rounded-md" />
+              <div className="mt-4 space-y-3">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-6 w-1/3" />
+              </div>
+              <Skeleton className="w-full h-10 mt-4 rounded-md" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Wishlist = () => {
-  const { 
-    removeFromWishlist, 
-    toggleSelectItem, 
+  const {
+    removeFromWishlist,
+    toggleSelectItem,
     deleteSelectedItems,
     isSelected,
     selectedItems,
-    clearSelection
+    clearSelection,
   } = useWishlistStore();
-  
-  const savedIds = JSON.parse(localStorage.getItem('wishlists') || '[]');
+
+  const savedIds = JSON.parse(localStorage.getItem("wishlists") || "[]");
   const { data, isLoading, error } = useWishlistProducts(savedIds);
 
   if (isLoading) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <Loader />
-      </div>
-    );
+    return <WishlistSkeleton />;
   }
 
   if (error) {
@@ -157,7 +184,7 @@ const Wishlist = () => {
               {data.products.length} منتجات
             </span>
           </div>
-          
+
           {selectedCount > 0 && (
             <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
               <span className="text-sm text-gray-600 font-tajawal-medium">
@@ -185,7 +212,7 @@ const Wishlist = () => {
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 md:gap-10">
           {data.products.map((product) => (
-            <WishlistItemCard 
+            <WishlistItemCard
               key={product.id}
               product={product}
               removeFromWishlist={removeFromWishlist}
