@@ -35,8 +35,6 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
     }
   }, []);
 
-  console.log(userEmail);
-
   const validateForm = () => {
     const newErrors: {
       oldPassword?: string;
@@ -93,7 +91,6 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
           return;
         }
       } catch (loginError: any) {
-        console.error("Login verification failed:", loginError);
         toast({
           title: "خطأ",
           description: "كلمة المرور الحالية غير صحيحة",
@@ -130,9 +127,6 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
         });
       }
     } catch (error: any) {
-      console.error("Error changing password:", error);
-
-      // Handle specific error cases
       if (error.response?.status === 401) {
         toast({
           title: "خطأ",

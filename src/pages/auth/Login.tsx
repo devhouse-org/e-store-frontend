@@ -19,7 +19,6 @@ const Login = () => {
         email,
         password,
       });
-      console.log(response.data);
       return response.data;
     },
     onSuccess: (data) => {
