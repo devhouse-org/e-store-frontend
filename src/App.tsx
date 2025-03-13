@@ -31,10 +31,11 @@ import DashboardComparisons from "./pages/dashboard/DashboardComparisons";
 import Profile from "./pages/dashboard/Profile";
 import DashboardWishlist from "./pages/dashboard/DashboardWishlist";
 import OrderDetails from "./pages/dashboard/OrderDetails";
+import Notifications from "./pages/dashboard/Notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import BannerDetails from "@/pages/BannerDetails";
 import TermsConditions from "./pages/terms-conditions/TermsConditions";
-import SecurityPolicy from "./pages/security-policy/security-policy"; 
+import SecurityPolicy from "./pages/security-policy/security-policy";
 import RefundPolicy from "./pages/refund-policy/refund-policy";
 import SupportPolicy from "./pages/support-policy/support-policy";
 const queryClient = new QueryClient();
@@ -74,6 +75,7 @@ function App() {
                 <Route path="wishlist" element={<DashboardWishlist />} />
                 <Route path="comparisons" element={<DashboardComparisons />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="notifications" element={<Notifications />} />
               </Route>
               <Route path="/wishlist" element={<Wishlist />} />
               {/* Auth routes */}
@@ -101,7 +103,7 @@ function App() {
 
               {/* Refund Policy Route */}
               <Route path="/refund-policy" element={<RefundPolicy />} />
-              
+
               {/* Support Policy Route */}
               <Route path="/support-policy" element={<SupportPolicy />} />
 
