@@ -1,7 +1,6 @@
 export default function ProductSkeleton() {
   return (
     <div className="container px-4 py-8 mx-auto">
-      {/* Main Product Section */}
       <div className="flex flex-col gap-8 lg:flex-row">
         {/* Left - Heart and Image */}
         <div className="relative flex-1">
@@ -61,7 +60,6 @@ export default function ProductSkeleton() {
           </div>
         </div>
       </div>
-
       {/* Description and Reviews Section */}
       <div className="flex flex-col gap-4 p-4 mt-8 bg-white border shadow-md border-light-100 lg:flex-row">
         {/* Description Section */}
