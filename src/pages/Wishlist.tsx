@@ -1,10 +1,11 @@
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { Heart } from "lucide-react";
+import { Heart, Trash, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/ui/LoadingState";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Product {
   id: string;
@@ -44,38 +45,60 @@ const useWishlistProducts = (productIds: string[]) => {
 function WishlistItemCard({ 
   product,
   removeFromWishlist,
+  isSelected,
+  onToggleSelect,
 }: { 
   product: Product;
   removeFromWishlist: (productId: string) => void;
+  isSelected: boolean;
+  onToggleSelect: (productId: string) => void;
 }) {
   return (
-    <Link to={`/product/${product.id}`} key={product.id} className="p-4 bg-white rounded-lg shadow-md">
-      <img 
-        src={`data:image/png;base64,${product.image_1920}`} 
-        alt={product.name} 
-        className="object-cover w-full h-48 rounded-md"
-      />
-      <div className="mt-4">
-        <h3 className="mb-2 text-lg text-gray-800 font-tajawal-bold">{product.name}</h3>
-        <p className="text-lg text-orange-600 font-tajawal-bold">
-          {product.list_price.toLocaleString('ar-IQ')} د.ع
-        </p>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            removeFromWishlist(product.id);
-          }}
-          className="w-full py-2 mt-2 text-red-600 transition-colors rounded-md bg-red-50 hover:bg-red-100"
-        >
-          إزالة من المفضلة
-        </button>
+    <div className="relative p-4 bg-white rounded-lg shadow-md group">
+      <div className="absolute z-10 top-2 right-2">
+        <Checkbox 
+          checked={isSelected}
+          onCheckedChange={() => onToggleSelect(product.id)}
+          className="w-5 h-5 border-2 border-orange-500"
+        />
       </div>
-    </Link>
+      <Link to={`/product/${product.id}`} className="block">
+        <img 
+          src={`data:image/png;base64,${product.image_1920}`} 
+          alt={product.name} 
+          className="object-cover w-full h-48 rounded-md"
+        />
+        <div className="mt-4">
+          <h3 className="mb-2 text-lg text-gray-800 font-tajawal-bold">{product.name}</h3>
+          <p className="text-lg text-orange-600 font-tajawal-bold">
+            {product.list_price.toLocaleString('ar-IQ')} د.ع
+          </p>
+        </div>
+      </Link>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          removeFromWishlist(product.id);
+        }}
+        className="w-full py-2 mt-2 text-red-600 transition-colors rounded-md bg-red-50 hover:bg-red-100"
+      >
+        إزالة من المفضلة
+      </button>
+    </div>
   );
 }
 
 const Wishlist = () => {
-  const { removeFromWishlist } = useWishlistStore();
+  const { 
+    removeFromWishlist, 
+    toggleSelectItem, 
+    deleteSelectedItems,
+    isSelected,
+    selectedItems,
+    clearSelection
+  } = useWishlistStore();
+  
   const savedIds = JSON.parse(localStorage.getItem('wishlists') || '[]');
   const { data, isLoading, error } = useWishlistProducts(savedIds);
 
@@ -120,16 +143,44 @@ const Wishlist = () => {
     );
   }
 
+  const selectedCount = selectedItems.size;
+
   return (
     <div className="container mx-auto px-4 md:px-8 lg:px-12 mt-8 py-8 min-h-[calc(100vh-200px)]">
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between mb-12">
-          <h1 className="text-3xl text-gray-800 font-tajawal-bold">
-            قائمة المفضلة
-          </h1>
-          <span className="px-4 py-2 text-orange-600 bg-orange-100 rounded-full font-tajawal-medium">
-            {data.products.length} منتجات
-          </span>
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl text-gray-800 font-tajawal-bold">
+              قائمة المفضلة
+            </h1>
+            <span className="px-4 py-2 bg-orange-100 rounded-full font-tajawal-medium">
+              {data.products.length} منتجات
+            </span>
+          </div>
+          
+          {selectedCount > 0 && (
+            <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
+              <span className="text-sm text-gray-600 font-tajawal-medium">
+                تم اختيار {selectedCount} منتج
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={clearSelection}
+                  className="flex items-center gap-2 px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600"
+                >
+                  <span>مسح التحديد</span>
+                  <X className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={deleteSelectedItems}
+                  className="flex items-center gap-2 px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600"
+                >
+                  <span>حذف المنتجات</span>
+                  <Trash className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 md:gap-10">
@@ -138,6 +189,8 @@ const Wishlist = () => {
               key={product.id}
               product={product}
               removeFromWishlist={removeFromWishlist}
+              isSelected={isSelected(product.id)}
+              onToggleSelect={toggleSelectItem}
             />
           ))}
         </div>
