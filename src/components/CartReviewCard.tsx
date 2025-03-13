@@ -36,7 +36,7 @@ const CartReviewCard = ({ cart }: Props) => {
             <div className="flex gap-x-2 items-center">
               <div className="img w-[50px]">
                 <img
-                  src={`data:image/png;base64,${item.image}`}
+                  src={`${item.image}`}
                   className="w-full object-cover" alt="" />
               </div>
               <div className="title_and_quantity flex flex-col">

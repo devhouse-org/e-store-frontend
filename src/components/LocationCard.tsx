@@ -18,6 +18,7 @@ type Props = {
   onUpdate?: () => void;
   handleSelect?: () => void;
   handleDelete?: () => Promise<void>;
+  editable?: boolean;
 };
 
 const LocationCard = ({
@@ -33,6 +34,7 @@ const LocationCard = ({
   selectable = false,
   isSelected = false,
   deletable = false,
+  editable = true,
   onUpdate,
   handleSelect,
   handleDelete,
@@ -85,7 +87,7 @@ const LocationCard = ({
         </p>
 
         <div className="flex gap-x-2 mt-4">
-          {id && (
+          {id && editable && (
             <LocationDialog
               id={id}
               location={location}
