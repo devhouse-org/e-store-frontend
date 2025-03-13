@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -163,10 +164,14 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
         aria-labelledby="change password dialog"
         aria-modal="true"
       >
-        <DialogHeader>
+        <DialogHeader className="mt-5">
           <DialogTitle className="font-tajawal-bold text-right">
             تغيير كلمة المرور
           </DialogTitle>
+          <DialogDescription className="text-right">
+            قم بإدخال كلمة المرور الحالية وكلمة المرور الجديدة لتغيير كلمة
+            المرور الخاصة بك.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div className="space-y-2">

@@ -328,7 +328,7 @@ const Profile = () => {
                 type="text"
                 className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none"
                 placeholder="أدخل اسمك الكامل"
-                value={name}
+                value={name || ""}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
@@ -340,7 +340,7 @@ const Profile = () => {
                 type="email"
                 className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none cursor-not-allowed"
                 placeholder="أدخل بريدك الإلكتروني"
-                value={localEmail}
+                value={localEmail || ""}
                 // onChange={(e) => setEmail(e.target.value)}
                 disabled
               />
@@ -353,7 +353,7 @@ const Profile = () => {
                 type="text"
                 className="block w-full px-4 py-2 mt-1 text-right border border-gray-300 rounded-md outline-none"
                 placeholder="أدخل رقم هاتفك"
-                value={phoneNumber}
+                value={phoneNumber || ""}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 dir="ltr"
               />
