@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import axiosInstance from "@/utils/axiosInstance";
-import { LucideKeyRound, LucideMail } from "lucide-react";
+import { LucideMail } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -107,9 +107,8 @@ const ForgotPasswordPage: React.FC = () => {
             <Button
               className="hover:bg-orange-600 mt-4 text-white bg-orange-500"
               onClick={() => navigate("/login")}
-            >
-              العودة إلى صفحة تسجيل الدخول
-            </Button>
+              label="العودة إلى صفحة تسجيل الدخول"
+            />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
