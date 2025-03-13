@@ -7,7 +7,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import logo from "../assets/images/Logo.png";
 import CustomInput from "./CustomInput";
 import { Link, NavLink } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
@@ -118,7 +117,7 @@ const Navbar = (props: Props) => {
           {/* Logo */}
           <div className="flex justify-center mb-4">
             <Link to="/" onClick={toggleMenu}>
-              <img src={logo} alt="e-store logo" className="w-auto h-12" />
+              <img src="/Logo.png" alt="e-store logo" className="w-auto h-12" />
             </Link>
           </div>
 
@@ -210,7 +209,7 @@ const Navbar = (props: Props) => {
         {/* Center Logo */}
         <div className="flex items-center justify-center logo lg:flex-1">
           <Link to="/">
-            <img src={logo} alt="e-store logo" />
+            <img src="/Logo.png" alt="e-store logo" />
           </Link>
         </div>
 

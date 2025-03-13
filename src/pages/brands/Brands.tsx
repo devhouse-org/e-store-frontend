@@ -3,7 +3,6 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
-import estoreLogo from "@/assets/images/Logo.png";
 import Loader from "@/components/ui/LoadingState";
 
 interface BrandValue {
@@ -117,7 +116,7 @@ const Brands = () => {
                   ) : (
                     <div className="flex items-center justify-center w-full h-full text-gray-500 font-tajawal-medium">
                       <img
-                        src={estoreLogo}
+                        src="/Logo.png"
                         alt={brand.name}
                         className="object-contain max-w-full max-h-full transition-transform duration-300 group-hover:scale-105"
                       />
