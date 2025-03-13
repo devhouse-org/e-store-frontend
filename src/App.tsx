@@ -16,6 +16,7 @@ import DashboardLayout from "./pages/dashboard/DashboardLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import ForgotPasswordPage from "./pages/auth/ForgotPassword";
 import { CartProvider } from "./context/CartContext";
 import Wishlist from "@/pages/Wishlist";
 import ScrollToTop from "./components/ScrollToTop";
@@ -81,6 +82,7 @@ function App() {
               {/* Auth routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
               {/* Comparison Route */}
               <Route path="/comparison" element={<Comparison />} />
