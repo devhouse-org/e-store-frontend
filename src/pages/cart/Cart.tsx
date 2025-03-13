@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Items from "./steps/Items";
 import Address from "./steps/Address";
 import Payment from "./steps/Payment";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/button";
 import { Flag, ShoppingBag } from "lucide-react";
@@ -35,7 +35,17 @@ const steps = [
 
 const Cart = (props: Props) => {
   const { products: cartProducts } = useCartStore();
-  const [active, setActive] = useState(steps[0]);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Get current step from URL or default to first step
+  const currentStep = searchParams.get("step") || StepsEnum.ITEMS;
+  const active = steps.find((step) => step.value === currentStep) || steps[0];
+
+  // Replace setActive with this function
+  const setActive = (newStep: (typeof steps)[0]) => {
+    navigate(`?step=${newStep.value}`);
+  };
 
   // Add this helper function to check if a step is completed or active
   const getStepStatus = (step: (typeof steps)[0]) => {

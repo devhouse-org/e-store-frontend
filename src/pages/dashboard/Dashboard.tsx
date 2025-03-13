@@ -15,6 +15,7 @@ import LocationCard from "@/components/LocationCard";
 import AddLocationDialog from "@/components/AddLocationDialog";
 import Loader from "@/components/ui/LoadingState";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define TypeScript interfaces for the data
 interface OrderLine {
@@ -118,7 +119,7 @@ const useUserAddresses = (userId: string | null) => {
           partner_id: Number(userId),
         }
       );
-      console.log(response.data)
+      console.log(response.data);
       return response.data.addresses;
     },
 
@@ -143,9 +144,68 @@ const useUserNotifications = (partnerId: number) => {
   });
 };
 
+// Add these skeleton components at the top of the file, before the Dashboard component
+const OrderSkeleton = () => (
+  <div className="bg-white border rounded-lg p-4 shadow-sm">
+    <div className="flex justify-between items-start mb-3">
+      <div className="space-y-2">
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+      <Skeleton className="h-6 w-20 rounded-full" />
+    </div>
+
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+    </div>
+
+    <div className="mt-4 pt-3 border-t">
+      <Skeleton className="h-9 w-full rounded-md" />
+    </div>
+  </div>
+);
+
+const NotificationSkeleton = () => (
+  <div className="flex bg-white shadow p-3 rounded-md gap-x-4 items-start">
+    <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
+    <div className="flex-1 space-y-2">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-3 w-20" />
+    </div>
+  </div>
+);
+
+const LocationSkeleton = () => (
+  <div className="bg-white p-4 rounded-lg shadow-sm w-full md:w-[calc(50%-8px)]">
+    <div className="space-y-3">
+      <Skeleton className="h-6 w-32" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-3/4" />
+      <div className="flex justify-end gap-2 mt-4">
+        <Skeleton className="h-8 w-20" />
+        <Skeleton className="h-8 w-20" />
+      </div>
+    </div>
+  </div>
+);
+
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { data, isLoading, error } = usePartnerOrders(Number(localStorage.getItem("id")));
+  const { data, isLoading, error } = usePartnerOrders(
+    Number(localStorage.getItem("id"))
+  );
   const orders = data?.orders || [];
   const cartCount = useCartStore((state) => state.cartCount);
   const wishlistCount = useWishlistStore((state) => state.wishlistCount);
@@ -207,17 +267,27 @@ const Dashboard = () => {
           <div>
             {cartCount > 0 ? (
               <>
-                <h2 className="text-lg font-tajawal-medium">{cartCount} منتجات في السلة</h2>
+                <h2 className="text-lg font-tajawal-medium">
+                  {cartCount} منتجات في السلة
+                </h2>
                 <p className="font-tajawal-regular">اضغط لإكمال عملية التسوق</p>
-                <Link to="/cart" className="text-orange-500 font-tajawal-regular">
+                <Link
+                  to="/cart"
+                  className="text-orange-500 font-tajawal-regular"
+                >
                   رؤية المزيد
                 </Link>
               </>
             ) : (
               <>
                 <h2 className="text-lg font-tajawal-medium">السلة فارغة</h2>
-                <p className="font-tajawal-regular">لم تضف أي منتجات للسلة بعد</p>
-                <Link to="/products" className="text-orange-500 font-tajawal-regular">
+                <p className="font-tajawal-regular">
+                  لم تضف أي منتجات للسلة بعد
+                </p>
+                <Link
+                  to="/products"
+                  className="text-orange-500 font-tajawal-regular"
+                >
                   تسوق الآن
                 </Link>
               </>
@@ -237,15 +307,25 @@ const Dashboard = () => {
                 <p className="font-tajawal-regular">
                   تصفح المنتجات لإضافة المزيد...
                 </p>
-                <Link to="/wishlist" className="text-orange-500 font-tajawal-regular">
+                <Link
+                  to="/wishlist"
+                  className="text-orange-500 font-tajawal-regular"
+                >
                   رؤية المزيد
                 </Link>
               </>
             ) : (
               <>
-                <h2 className="text-lg font-tajawal-medium">لا توجد منتجات مفضلة</h2>
-                <p className="font-tajawal-regular">لم تضف أي منتجات للمفضلة بعد</p>
-                <Link to="/products" className="text-orange-500 font-tajawal-regular">
+                <h2 className="text-lg font-tajawal-medium">
+                  لا توجد منتجات مفضلة
+                </h2>
+                <p className="font-tajawal-regular">
+                  لم تضف أي منتجات للمفضلة بعد
+                </p>
+                <Link
+                  to="/products"
+                  className="text-orange-500 font-tajawal-regular"
+                >
                   تصفح المنتجات
                 </Link>
               </>
@@ -259,17 +339,29 @@ const Dashboard = () => {
           <div>
             {orders.length > 0 ? (
               <>
-                <h2 className="text-lg font-tajawal-medium">{orders.length} طلبات</h2>
-                <p className="font-tajawal-regular">راجع طلباتك وتأكد من وصولها</p>
-                <Link to="/dashboard/orders" className="text-orange-500 font-tajawal-regular">
+                <h2 className="text-lg font-tajawal-medium">
+                  {orders.length} طلبات
+                </h2>
+                <p className="font-tajawal-regular">
+                  راجع طلباتك وتأكد من وصولها
+                </p>
+                <Link
+                  to="/dashboard/orders"
+                  className="text-orange-500 font-tajawal-regular"
+                >
                   رؤية المزيد
                 </Link>
               </>
             ) : (
               <>
                 <h2 className="text-lg font-tajawal-medium">لا توجد طلبات</h2>
-                <p className="font-tajawal-regular">لم تقم بأي طلبات شراء بعد</p>
-                <Link to="/products" className="text-orange-500 font-tajawal-regular">
+                <p className="font-tajawal-regular">
+                  لم تقم بأي طلبات شراء بعد
+                </p>
+                <Link
+                  to="/products"
+                  className="text-orange-500 font-tajawal-regular"
+                >
                   تسوق الآن
                 </Link>
               </>
@@ -286,7 +378,11 @@ const Dashboard = () => {
             الطلبات الحالية ({orders.length})
           </h2>
           {isLoading ? (
-            <p className="text-center py-4">جاري التحميل...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <OrderSkeleton key={i} />
+              ))}
+            </div>
           ) : error ? (
             <p className="text-center text-red-500 py-4">{error.message}</p>
           ) : (
@@ -307,10 +403,11 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-sm ${order.state === "sale"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-orange-100 text-orange-800"
-                        }`}
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        order.state === "sale"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-orange-100 text-orange-800"
+                      }`}
                     >
                       {translateOrderState(order.state)}
                     </span>
@@ -364,40 +461,49 @@ const Dashboard = () => {
           </div>
           <div className="h-[400px] overflow-y-auto space-y-2 custom-scrollbar">
             {isLoadingNotifications ? (
-              <div className="flex items-center justify-center h-full">
-                <Loader />
+              <div className="space-y-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <NotificationSkeleton key={i} />
+                ))}
               </div>
             ) : notificationsError ? (
               <div className="flex items-center justify-center h-full text-red-500">
                 {notificationsError.message}
               </div>
-            ) : notificationsData?.notifications && notificationsData.notifications.length > 0 ? (
+            ) : notificationsData?.notifications &&
+              notificationsData.notifications.length > 0 ? (
               notificationsData.notifications.map((notification) => (
                 <div
                   key={notification.id}
                   className="flex bg-white shadow p-3 rounded-md gap-x-4 items-start hover:bg-gray-50 transition-colors cursor-pointer"
-                  onClick={() => notification.order && navigate(`/dashboard/orders/${notification.order.id}`)}
+                  onClick={() =>
+                    notification.order &&
+                    navigate(`/dashboard/orders/${notification.order.id}`)
+                  }
                 >
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center flex-shrink-0">
                     <img
-                      src={`data:image/png;base64,${notification.author_id?.[1] || ''}`}
-                      alt={notification.author_id?.[1] || 'User'}
+                      src={`data:image/png;base64,${
+                        notification.author_id?.[1] || ""
+                      }`}
+                      alt={notification.author_id?.[1] || "User"}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = 'https://ui-avatars.com/api/?name=E+Store&background=fb923c&color=fff';
+                        target.src =
+                          "https://ui-avatars.com/api/?name=E+Store&background=fb923c&color=fff";
                       }}
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-tajawal-medium text-sm line-clamp-1">
-                      {notification.subject || 'إشعار جديد'}
+                      {notification.subject || "إشعار جديد"}
                     </p>
                     <p className="text-sm text-gray-500 font-tajawal-regular line-clamp-2">
                       {notification.body}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {new Date(notification.date).toLocaleDateString('ar-IQ')}
+                      {new Date(notification.date).toLocaleDateString("ar-IQ")}
                     </p>
                   </div>
                 </div>
@@ -419,7 +525,11 @@ const Dashboard = () => {
         </div>
 
         {isLoadingLocations ? (
-          <div className="py-4 text-center"><Loader /></div>
+          <div className="flex flex-wrap gap-4">
+            {[1, 2, 3].map((i) => (
+              <LocationSkeleton key={i} />
+            ))}
+          </div>
         ) : locationsError ? (
           <div className="py-4 text-center text-red-500">
             {locationsError.message}

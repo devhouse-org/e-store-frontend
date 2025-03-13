@@ -7,6 +7,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LucideCamera } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Location {
   id: number;
@@ -110,6 +111,51 @@ const useDeleteAddress = () => {
     },
   });
 };
+
+const ProfileSkeleton = () => (
+  <div className="p-6 bg-white rounded shadow space-y-4">
+    <div className="flex flex-col gap-4">
+      <div className="gap-y-2 gap-x-2 flex flex-col items-center justify-center flex-1 pb-4 border-b">
+        <Skeleton className="w-[120px] h-[120px] rounded-full" />
+        <Skeleton className="h-4 w-40" />
+      </div>
+
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="gap-x-2 flex items-center flex-1">
+          <Skeleton className="h-5 w-[120px]" />
+          <Skeleton className="h-10 flex-1" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const LocationsSkeleton = () => (
+  <div className="p-6 bg-white rounded shadow">
+    <div className="flex items-center justify-between pb-1 mb-4 border-b">
+      <Skeleton className="h-6 w-32" />
+      <Skeleton className="h-9 w-32" />
+    </div>
+    <div className="flex flex-wrap gap-4">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="bg-white p-4 rounded-lg shadow-sm w-full md:w-[calc(50%-8px)]"
+        >
+          <div className="space-y-3">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <div className="flex justify-end gap-2 mt-4">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 const Profile = () => {
   const [name, setName] = useState("");
@@ -293,6 +339,16 @@ const Profile = () => {
       setIsUpdating(false);
     }
   };
+
+  if (isLoadingUser || isLoadingPartner) {
+    return (
+      <div className="p-4 space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <ProfileSkeleton />
+        <LocationsSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 space-y-4">
