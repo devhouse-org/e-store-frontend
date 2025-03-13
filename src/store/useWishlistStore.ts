@@ -12,6 +12,7 @@ interface WishlistStore {
   deleteSelectedItems: () => void;
   isWishlisted: (productId: string) => boolean;
   isSelected: (productId: string) => boolean;
+  updateWishlistCount: () => void;
 }
 
 // Get initial state from localStorage
@@ -26,6 +27,10 @@ const getInitialState = () => {
 
 export const useWishlistStore = create<WishlistStore>((set, get) => ({
   ...getInitialState(),
+  updateWishlistCount: () => {
+    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    set({ wishlistCount: savedIds.length });
+  },
   addToWishlist: (product) => {
     const { wishlist } = get();
     const isAlreadyInWishlist = wishlist.some((item) => item.id === product.id);
@@ -42,6 +47,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
       const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
       savedIds.push(product.id.toString());
       localStorage.setItem('wishlists', JSON.stringify(savedIds));
+      get().updateWishlistCount();
     }
   },
   removeFromWishlist: (productId) => {
@@ -60,10 +66,13 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
       
       return {
         wishlist: newWishlist,
-        wishlistCount: newWishlist.length,
+        wishlistCount: savedIds.length, // Use the updated savedIds length
         selectedItems: newSelectedItems
       };
     });
+    
+    // Update the count after removal
+    get().updateWishlistCount();
   },
   toggleSelectItem: (productId) => {
     set((state) => {
@@ -85,6 +94,8 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
       get().removeFromWishlist(productId);
     });
     set({ selectedItems: new Set() });
+    // Update the count after bulk deletion
+    get().updateWishlistCount();
   },
   isWishlisted: (productId) => {
     const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
