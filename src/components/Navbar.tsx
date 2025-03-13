@@ -61,7 +61,7 @@ const links = [
 ];
 
 const Navbar = (props: Props) => {
-  const cartCount = useCartStore((state) => state.cartCount);
+  const cartCount = useCartStore((state) => state.products.length);
   const wishlistCount = useWishlistStore((state) => state.wishlistCount);
   const comparisonItems = useComparisonStore((state) => state.comparisonItems);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
