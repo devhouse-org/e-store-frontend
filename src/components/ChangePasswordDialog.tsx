@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -6,11 +6,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import axiosInstance from "@/utils/axiosInstance";
-import { LucideKeyRound, LucideLoader } from "lucide-react";
+import { LucideKeyRound } from "lucide-react";
+import React, { useState } from "react";
 
 interface ChangePasswordDialogProps {}
 
@@ -20,20 +20,13 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
+  const email = localStorage.getItem("email");
   const [errors, setErrors] = useState<{
     oldPassword?: string;
     newPassword?: string;
     confirmPassword?: string;
   }>({});
   const { toast } = useToast();
-
-  useEffect(() => {
-    const email = localStorage.getItem("email");
-    if (email) {
-      setUserEmail(email);
-    }
-  }, []);
 
   const validateForm = () => {
     const newErrors: {
@@ -61,7 +54,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
     if (!validateForm()) return;
 
     // Make sure we have an email
-    if (!userEmail) {
+    if (!email) {
       toast({
         title: "خطأ",
         description:
@@ -77,7 +70,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
       // First try to login to verify credentials
       try {
         const loginResponse = await axiosInstance.post("/auth/login", {
-          email: userEmail,
+          email: email,
           password: oldPassword,
         });
 
@@ -102,7 +95,7 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = () => {
 
       // If login succeeded, proceed with password change
       const response = await axiosInstance.post("/auth/change-password", {
-        email: userEmail,
+        email: email,
         oldPassword: oldPassword,
         newPassword: newPassword,
       });

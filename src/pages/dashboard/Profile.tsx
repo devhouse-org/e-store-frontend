@@ -128,7 +128,6 @@ const Profile = () => {
 
   const userId = localStorage.getItem("id");
   const localEmail = localStorage.getItem("email");
-  console.log("userId: ", userId);
   const {
     data: userData,
     isLoading: isLoadingUser,
@@ -341,7 +340,7 @@ const Profile = () => {
                 type="email"
                 className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none cursor-not-allowed"
                 placeholder="أدخل بريدك الإلكتروني"
-                value={localEmail || email}
+                value={localEmail}
                 // onChange={(e) => setEmail(e.target.value)}
                 disabled
               />
