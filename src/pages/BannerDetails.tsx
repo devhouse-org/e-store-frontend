@@ -22,7 +22,7 @@ interface BannerDetailsResponse {
     banner_image: string;
     banner_description: string;
     banner_discount: number;
-    products: Product[];
+    x_products: Product[];
 }
 
 const BannerDetails = () => {
@@ -123,7 +123,7 @@ const BannerDetails = () => {
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {data.products.map((product) => {
+                    {data.x_products.map((product) => {
                         const cartItem = cartProducts.find((item) => item.id === String(product.id));
                         const discountedPrice = calculateDiscountedPrice(product.list_price, data.banner_discount);
 

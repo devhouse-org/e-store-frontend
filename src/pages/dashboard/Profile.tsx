@@ -1,13 +1,13 @@
-import LocationCard from "@/components/LocationCard";
-import { Button } from "@/components/ui/button";
-import { LucideCamera, LucideKeyRound, LucidePlusCircle } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { IconType } from "react-icons";
-import axios from "axios";
-import axiosInstance from "@/utils/axiosInstance";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AddLocationDialog from "@/components/AddLocationDialog";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
+import LocationCard from "@/components/LocationCard";
+import Loader from "@/components/ui/LoadingState";
 import { useToast } from "@/hooks/use-toast";
+import axiosInstance from "@/utils/axiosInstance";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LucideCamera } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Location {
   id: number;
@@ -32,6 +32,7 @@ interface UserData {
   name: string;
   email: string;
   phone: string;
+  image_medium: string;
 }
 
 interface PartnerData {
@@ -41,6 +42,7 @@ interface PartnerData {
     name: string;
     email: string;
     phone: string | false;
+    image_medium: string;
   };
 }
 
@@ -110,6 +112,51 @@ const useDeleteAddress = () => {
   });
 };
 
+const ProfileSkeleton = () => (
+  <div className="p-6 bg-white rounded shadow space-y-4">
+    <div className="flex flex-col gap-4">
+      <div className="gap-y-2 gap-x-2 flex flex-col items-center justify-center flex-1 pb-4 border-b">
+        <Skeleton className="w-[120px] h-[120px] rounded-full" />
+        <Skeleton className="h-4 w-40" />
+      </div>
+
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="gap-x-2 flex items-center flex-1">
+          <Skeleton className="h-5 w-[120px]" />
+          <Skeleton className="h-10 flex-1" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const LocationsSkeleton = () => (
+  <div className="p-6 bg-white rounded shadow">
+    <div className="flex items-center justify-between pb-1 mb-4 border-b">
+      <Skeleton className="h-6 w-32" />
+      <Skeleton className="h-9 w-32" />
+    </div>
+    <div className="flex flex-wrap gap-4">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="bg-white p-4 rounded-lg shadow-sm w-full md:w-[calc(50%-8px)]"
+        >
+          <div className="space-y-3">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <div className="flex justify-end gap-2 mt-4">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 const Profile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -126,7 +173,7 @@ const Profile = () => {
   const { toast } = useToast();
 
   const userId = localStorage.getItem("id");
-  console.log("userId: ", userId);
+  const localEmail = localStorage.getItem("email");
   const {
     data: userData,
     isLoading: isLoadingUser,
@@ -293,20 +340,30 @@ const Profile = () => {
     }
   };
 
+  if (isLoadingUser || isLoadingPartner) {
+    return (
+      <div className="p-4 space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <ProfileSkeleton />
+        <LocationsSkeleton />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 space-y-4">
       {/* Header */}
-      <h1 className="text-xl text-gray-500 font-tajawal-bold">الملف الشخصي</h1>
+      <h1 className="font-tajawal-bold text-xl text-gray-500">الملف الشخصي</h1>
       {/* Profile Form */}
-      <div className="bg-white p-6 rounded shadow">
+      <div className="p-6 bg-white rounded shadow">
         <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div className="flex flex-col gap-4">
-            <div className="flex-1 flex-col gap-y-2 flex border-b pb-4 items-center justify-center gap-x-2">
+            <div className="gap-y-2 gap-x-2 flex flex-col items-center justify-center flex-1 pb-4 border-b">
               <label htmlFor="image" className="relative cursor-pointer">
                 <div className="overflow-hidden w-[120px] h-[120px] bg-gray-300 rounded-full shadow-sm">
                   <img
-                    className="w-full h-full object-cover"
-                    src="https://images.unsplash.com/photo-1569173112611-52a7cd38bea9?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    className="object-contain w-full h-full"
+                    src={`data:image/png;base64,${userData?.partner?.image_medium}`}
                     alt=""
                   />
                 </div>
@@ -319,61 +376,61 @@ const Profile = () => {
                 اضغط لتغيير الصورة الشخصية
               </p>
             </div>
-            <div className="flex-1 flex items-center gap-x-2">
+            <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
                 الاسم الكامل
               </label>
               <input
                 type="text"
-                className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
+                className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none"
                 placeholder="أدخل اسمك الكامل"
-                value={name}
+                value={name || ""}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <div className="flex-1 flex items-center gap-x-2">
+            <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
                 البريد الإلكتروني
               </label>
               <input
                 type="email"
-                className="mt-1 cursor-not-allowed block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
+                className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none cursor-not-allowed"
                 placeholder="أدخل بريدك الإلكتروني"
-                value={email}
+                value={localEmail || ""}
                 // onChange={(e) => setEmail(e.target.value)}
                 disabled
               />
             </div>
-            <div className="flex-1 flex items-center gap-x-2">
+            <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
                 رقم الهاتف
               </label>
               <input
                 type="text"
-                className="text-right mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md"
+                className="block w-full px-4 py-2 mt-1 text-right border border-gray-300 rounded-md outline-none"
                 placeholder="أدخل رقم هاتفك"
-                value={phoneNumber}
+                value={phoneNumber || ""}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 dir="ltr"
               />
             </div>
-            {/* <div className="flex-1 flex items-center gap-x-2">
+            {/* <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">الصورة شخصية</label>
               <input
                 type="text"
-                className="mt-1 block w-full outline-none border border-gray-300 py-2 px-4 rounded-md "
+                className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none"
                 placeholder="الصورة شخصية"
               />
             </div> */}
           </div>
 
-          <div className="flex pt-8 justify-between">
-            <div className="flex gap-x-2">
+          <div className="flex justify-between pt-8">
+            <div className="gap-x-2 flex">
               {hasChanges() && (
                 <button
                   type="button"
                   onClick={handleDiscard}
-                  className="bg-orange-100 hover:bg-orange-200 text-black px-6 py-2 rounded-md shadow-md transition duration-300"
+                  className="hover:bg-orange-200 px-6 py-2 text-black transition duration-300 bg-orange-100 rounded-md shadow-md"
                 >
                   الغاء
                 </button>
@@ -390,27 +447,23 @@ const Profile = () => {
                 {isUpdating ? "جاري التحديث..." : "تحديث الملف الشخصي"}
               </button>
             </div>
-            <button
-              type="button"
-              className="flex items-center gap-x-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md shadow-md transition duration-300"
-            >
-              <LucideKeyRound size={16} />
-              تغيير كلمة المرور
-            </button>
+            <ChangePasswordDialog />
           </div>
         </form>
       </div>
 
       {/* Locations */}
-      <div className="bg-white p-6 rounded shadow">
-        <div className="flex justify-between items-center mb-4 pb-1 border-b border-light-200">
-          <h2 className="text-lg font-tajawal-medium">عناوين التوصيل</h2>
+      <div className="p-6 bg-white rounded shadow">
+        <div className="border-light-200 flex items-center justify-between pb-1 mb-4 border-b">
+          <h2 className="font-tajawal-medium text-lg">عناوين التوصيل</h2>
           <AddLocationDialog onSuccess={refetch} />
         </div>
         {loading ? (
-          <div className="text-center py-4">جاري التحميل...</div>
+          <div className="py-4 text-center">
+            <Loader />
+          </div>
         ) : locationsError ? (
-          <div className="text-red-500 text-center py-4">
+          <div className="py-4 text-center text-red-500">
             {locationsError.message}
           </div>
         ) : (
@@ -448,8 +501,8 @@ const Profile = () => {
                 />
               ))
             ) : (
-              <div className="text-center py-4 w-full">
-                <p className="text-gray-500 font-tajawal-medium">
+              <div className="w-full py-4 text-center">
+                <p className="font-tajawal-medium text-gray-500">
                   لا توجد عناوين
                 </p>
               </div>

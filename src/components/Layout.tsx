@@ -5,10 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 
 function Layout() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-dark-50">
       <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" />
 
-      <main>
+      <main className="flex-grow min-h-[25rem]">
         <Outlet />
       </main>
 

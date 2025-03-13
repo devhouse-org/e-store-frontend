@@ -2,7 +2,7 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import { isAuthenticated, logout } from "@/utils/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { PenLine, User } from "lucide-react";
+import { PenLine, User, Bell } from "lucide-react";
 
 const links = [
   {
@@ -17,12 +17,12 @@ const links = [
   },
   {
     id: 3,
-    link: "/dashboard/wishlist",
-    label: "المفضلات",
+    link: "/dashboard/notifications",
+    label: "الإشعارات",
   },
   {
     id: 4,
-    link: "/dashboard/comparisons",
+    link: "/comparison",
     label: "مقارنات",
   },
   {
@@ -86,10 +86,9 @@ const DashboardLayout = () => {
                 key={link.id}
                 end={link.link === "/dashboard"}
                 className={({ isActive }) =>
-                  `mb-2 roundedmd py1 block ${
-                    isActive
-                      ? "border-r-2 border-r-orange-500 rounded-sm bg-gray-500/5"
-                      : "border-r-2 border-r-transparent"
+                  `mb-2 roundedmd py1 block ${isActive
+                    ? "border-r-2 border-r-orange-500 rounded-sm bg-gray-500/5"
+                    : "border-r-2 border-r-transparent"
                   }`
                 }
               >

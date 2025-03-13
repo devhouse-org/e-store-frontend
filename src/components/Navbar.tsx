@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
+import HeartWishList from "./HeartWishlist";
 
 type Props = {
   hasAd?: boolean;
@@ -60,12 +61,21 @@ const links = [
 ];
 
 const Navbar = (props: Props) => {
-  const cartCount = useCartStore((state) => state.cartCount);
+  const cartCount = useCartStore((state) => state.products.length);
   const wishlistCount = useWishlistStore((state) => state.wishlistCount);
   const comparisonItems = useComparisonStore((state) => state.comparisonItems);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [comparisonItemsNo, setComparisonItemsNo] = useState(0)
+
+  // Update comparison items count when items change
+  useEffect(() => {
+    const items = localStorage.getItem('comparisonItemIds');
+    const comparisonList = items ? JSON.parse(items) : [];
+    setComparisonItemsNo(comparisonList.length);
+  }, [comparisonItems]);
+  const [localWishlistCount, setLocalWishlistCount] = useState(0);
 
   // Watch for changes in cartCount and trigger animation
   useEffect(() => {
@@ -78,6 +88,12 @@ const Navbar = (props: Props) => {
     }
   }, [cartCount]);
 
+  // Fetch wishlist count from local storage
+  useEffect(() => {
+    const wishlists = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    setLocalWishlistCount(wishlists.length);
+  }, [wishlistCount]);
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -86,9 +102,8 @@ const Navbar = (props: Props) => {
     <>
       {/* Overlay with fade animation */}
       <div
-        className={`fixed inset-0 bg-black/20 lg:hidden transition-opacity duration-300 ${
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 bg-black/20 lg:hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         onClick={toggleMenu}
       />
 
@@ -96,20 +111,19 @@ const Navbar = (props: Props) => {
       <div
         className={`fixed top-0 right-0 z-50 h-screen w-72 bg-white border-l shadow-lg 
           transition-all duration-300 ease-in-out transform
-          ${
-            isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+          ${isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
           } lg:hidden`}
       >
         <div className="flex flex-col h-full p-4">
           {/* Logo */}
-          <div className="mb-4 flex justify-center">
+          <div className="flex justify-center mb-4">
             <Link to="/" onClick={toggleMenu}>
-              <img src={logo} alt="e-store logo" className="h-12 w-auto" />
+              <img src={logo} alt="e-store logo" className="w-auto h-12" />
             </Link>
           </div>
 
           {/* Search Input */}
-          <div className="mb-6 px-2">
+          <div className="px-2 mb-6">
             <div
               onClick={() => {
                 setIsSearchModalOpen(true);
@@ -119,7 +133,7 @@ const Navbar = (props: Props) => {
               <CustomInput
                 placeholder="ما الذي تبحث عنه"
                 readOnly
-                className="h-10 text-sm w-full"
+                className="w-full h-10 text-sm"
               />
             </div>
           </div>
@@ -134,10 +148,9 @@ const Navbar = (props: Props) => {
                   onClick={toggleMenu}
                   className={({ isActive }) => `
                     flex items-center px-4 py-3 rounded-lg transition-colors text-lg font-tajawal-regular
-                    ${
-                      isActive
-                        ? "bg-orange-100 text-orange-500"
-                        : "text-gray-700 hover:bg-orange-50"
+                    ${isActive
+                      ? "bg-orange-100 text-orange-500"
+                      : "text-gray-700 hover:bg-orange-50"
                     }
                   `}
                 >
@@ -152,40 +165,39 @@ const Navbar = (props: Props) => {
   );
 
   return (
-    <div className="bg-white shadow-sm overflow-hidden fixed top-0 left-0 right-0 z-40">
+    <div className="fixed top-0 left-0 right-0 z-40 overflow-hidden bg-white shadow-sm">
       {props.hasAd && (
-        <div className="ad relative overflow-hidden bg-orange-500 text-white font-bold flex justify-center items-center py-1">
+        <div className="relative flex items-center justify-center py-1 overflow-hidden font-bold text-white bg-orange-500 ad">
           <h1 className="font-tajawal-regular">{props.adTitle}</h1>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full animate-light-effect"></div>
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-light-effect"></div>
         </div>
       )}
 
       <div
         dir="rtl"
-        className="navigation flex items-center py-4 px-4 lg:px-12 justify-between"
+        className="flex items-center justify-between px-4 py-4 navigation lg:px-12"
       >
         {/* Left Section */}
-        <div className="flex items-center gap-x-4">
+        <div className="flex items-center flex-1 gap-x-4">
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 text-gray-700 rounded-lg hover:bg-gray-100"
+            className="p-2 text-gray-700 rounded-lg lg:hidden hover:bg-gray-100"
             onClick={toggleMenu}
           >
             {isOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
           {/* Desktop Navigation */}
-          <ul className="flex-wrap hidden lg:flex gap-x-4 list-none flex-1">
+          <ul className="flex-wrap flex-1 hidden list-none lg:flex gap-x-4">
             {links.map((link) => (
               <NavLink
                 key={link.id}
                 to={link.link}
                 className={({ isActive }) => `
                   text-nowrap mt-1.5 cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular
-                  ${
-                    isActive
-                      ? "bg-orange-100 text-orange-500"
-                      : "hover:bg-orange-100/70"
+                  ${isActive
+                    ? "bg-orange-100 text-orange-500"
+                    : "hover:bg-orange-100/70"
                   }
                 `}
               >
@@ -196,14 +208,14 @@ const Navbar = (props: Props) => {
         </div>
 
         {/* Center Logo */}
-        <div className="logo lg:flex-1 flex justify-center items-center">
+        <div className="flex items-center justify-center logo lg:flex-1">
           <Link to="/">
             <img src={logo} alt="e-store logo" />
           </Link>
         </div>
 
         {/* Right Section - Icons */}
-        <div dir="ltr" className="icons flex-1">
+        <div dir="ltr" className="flex-1 icons">
           <div className="flex items-center gap-x-4">
             <NavLink
               to="/dashboard"
@@ -222,61 +234,40 @@ const Navbar = (props: Props) => {
                 text-white gap-x-2 flex items-center justify-center px-4 py-1
                 transition-all duration-300 cursor-pointer rounded-full
                 ${isCartAnimating ? "scale-110 bg-green-500" : ""}
-                ${
-                  isActive
-                    ? "bg-orange-600"
-                    : "bg-orange-500 hover:bg-orange-500/90"
+                ${isActive
+                  ? "bg-orange-600"
+                  : "bg-orange-500 hover:bg-orange-500/90"
                 }
               `}
             >
               <ShoppingCart
-                className={`transition-transform duration-300 ${
-                  isCartAnimating ? "scale-110" : ""
-                }`}
+                className={`transition-transform duration-300 ${isCartAnimating ? "scale-110" : ""
+                  }`}
               />
               <p
-                className={`hidden md:block transition-all duration-300 ${
-                  isCartAnimating ? "scale-110" : ""
-                }`}
+                className={`hidden md:block transition-all duration-300 ${isCartAnimating ? "scale-110" : ""
+                  }`}
               >
                 {cartCount}
               </p>
             </NavLink>
 
-            <NavLink
-              to="/wishlist"
-              className={({ isActive }) => `
-                relative p-1.5 rounded-lg transition-all
-                ${
-                  isActive
-                    ? "text-orange-500"
-                    : "hover:text-orange-500 hover:bg-orange-50"
-                }
-              `}
-            >
-              <Heart className="h-[18px] w-[18px]" />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-orange-500 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[10px]">
-                  {wishlistCount}
-                </span>
-              )}
-            </NavLink>
+            <HeartWishList localWishlistCount={localWishlistCount} />
 
             <NavLink
               to="/comparison"
               className={({ isActive }) => `
                 relative p-1.5 rounded-lg transition-all
-                ${
-                  isActive
-                    ? "text-orange-500"
-                    : "hover:text-orange-500 hover:bg-orange-50"
+                ${isActive
+                  ? "text-orange-500"
+                  : "hover:text-orange-500 hover:bg-orange-50"
                 }
               `}
             >
               <CircleDashed className="h-[18px] w-[18px]" />
-              {comparisonItems.length > 0 && (
+              {comparisonItemsNo > 0 && (
                 <span className="absolute -top-1 -right-1 bg-orange-500 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[10px]">
-                  {comparisonItems.length}
+                  {comparisonItemsNo}
                 </span>
               )}
             </NavLink>

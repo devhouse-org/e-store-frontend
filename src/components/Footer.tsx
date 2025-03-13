@@ -32,7 +32,6 @@ const Footer = (props: Props) => {
         </h1>
         <div className="top flex flex-col gap-y-4 md:flex-row md:gap-y-0 justify-between ">
           <div className="flex flex-col md:flex-row gap-y-8 md:gap-y-0 gap-x-12">
-
             <div className="flex-1">
               <div className="">
                 <h1 className="font-tajawal-medium text-white border-b border-b-light-800">
@@ -40,11 +39,21 @@ const Footer = (props: Props) => {
                 </h1>
                 <div className="flex gap-4 py-4 justify-center md:justify-normal">
                   <ul className="text-white font-tajawal-medium">
-                    <li><Link to="/">الرئيسية</Link></li>
-                    <li><Link to="/auctions">المزاد</Link></li>
-                    <li><Link to="/blog">التدوينات</Link></li>
-                    <li><Link to="/brands">الماركات التجارية</Link></li>
-                    <li><Link to="/products">تسوق</Link></li>
+                    <li>
+                      <Link to="/">الرئيسية</Link>
+                    </li>
+                    <li>
+                      <Link to="/auctions">المزاد</Link>
+                    </li>
+                    <li>
+                      <Link to="/blog">التدوينات</Link>
+                    </li>
+                    <li>
+                      <Link to="/brands">الماركات التجارية</Link>
+                    </li>
+                    <li>
+                      <Link to="/products">تسوق</Link>
+                    </li>
                   </ul>
                   {/* <div className="gap-y-4 flex max-w-[450px] md:max-w-auto flex-row w-full md:w-auto justify-between md:flex-col items-center">
                     <div className="bg-black flex justify-center md:justify-normal p- rounded-md">
@@ -134,17 +143,16 @@ const Footer = (props: Props) => {
                 </div>
               </div>
             </div>
-
           </div>
 
           <div>
             <div className="header">
               <div>
-                <h1 className="font-tajawal-medium text-white border-b border-b-light-800 text-[1.2rem]">
+                <h1 className="font-tajawal-medium text-white border-b  border-b-light-800 text-[1.2rem]">
                   نوصلك لكل مكان
                 </h1>
 
-                <div className="flex gap-x-4 items-center">
+                {/* <div className="flex gap-x-4 items-center">
                   <div className="w-full h-[250px] mt-2">
                     <img
                       src={location}
@@ -152,7 +160,29 @@ const Footer = (props: Props) => {
                       className="w-full h-full object-cover rounded-lg"
                     />
                   </div>
-                </div>
+                </div> */}
+                <section className="w-full my-5">
+                  {/* Map */}
+                  <div className="w-full h-[230px] rounded-lg overflow-hidden shadow-xl relative bg-white">
+                    {/* Google Maps Embed */}
+                    <iframe
+                      className="w-full h-full rounded-lg border-0"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d288.0306685987557!2d47.8285637!3d30.5046851!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3fc4978d92c19ee7%3A0x2dd8fc0040de9f0!2sEstore!5e0!3m2!1sen!2siq!4v1717945600000!5m2!1sen!2siq"
+                      loading="lazy"
+                      title="Google Map"
+                    />
+
+                    {/* Button to Open Location in Google Maps */}
+                    <a
+                      href="https://www.google.com/maps/place/Estore/@30.5046851,47.8285637,17z/data=!3m1!4b1!4m6!3m5!1s0x3fc4978d92c19ee7:0x2dd8fc0040de9f0!8m2!3d30.5046851!4d47.8285637!16s%2Fg%2F11h5vmt2hn?entry=ttu&g_ep=EgoyMDI1MDMxMC4wIKXMDSoASAFQAw%3D%3D"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute bottom-5 left-5 bg-orange-600 text-white py-3 px-8 rounded-full shadow-lg hover:bg-orange-500 transition-all duration-300"
+                    >
+                      موقعنا
+                    </a>
+                  </div>
+                </section>
 
                 <div className="flex gap-x-4 py-4 justify-center md:justify-normal">
                   <div className="gap-y-4 gap-x-4 max-w-[450px] md:max-w-auto md:gap-x-2 flex flex-row w-full md:w-auto justify-between items-center">
