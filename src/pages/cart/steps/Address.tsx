@@ -3,20 +3,28 @@ import LocationCard from '@/components/LocationCard'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/store/useCartStore'
 import axiosInstance from '@/utils/axiosInstance'
-import { cart, locations } from '@/utils/dummy_data/data'
 import React, { useEffect, useState } from 'react'
+import Loader from "@/components/ui/LoadingState";
+import AddLocationDialog from "@/components/AddLocationDialog";
 
-type Location = {
+interface Location {
     id: number;
+    name: string;
     street: string;
-    street2?: string;
-    phone?: string;
-    state_id: [number, string];
+    street2: string | false;
     city: string;
-    country_id: [number, string];
+    state_id: boolean | [number, string];
+    zip: boolean | string;
+    country_id: boolean | [number, string];
+    phone: string | false;
+    type: string;
 }
 
-type Props = {}
+interface AddressesResponse {
+    success: boolean;
+    addresses: Location[];
+}
+
 enum StepsEnum {
     ITEMS = "items",
     ADDRESS = "address",
@@ -46,15 +54,17 @@ const Address = ({ setActive }: any) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+    const { products } = useCartStore();
 
     const fetchLocations = async () => {
         try {
             setLoading(true);
             setError(null);
             const userId = localStorage.getItem("id");
-            console.log(userId)
-            const response = await axiosInstance.post("/user/addresses", { user_id: userId });
-            setLocations(response.data);
+            const response = await axiosInstance.post<AddressesResponse>("/user/addresses", {
+                partner_id: Number(userId)
+            });
+            setLocations(response.data.addresses);
         } catch (err) {
             setError("Failed to fetch locations");
             console.error("Error fetching locations:", err);
@@ -67,8 +77,6 @@ const Address = ({ setActive }: any) => {
         fetchLocations();
     }, []);
 
-    const { products } = useCartStore();
-
     const handleSelect = (location: Location) => {
         setSelectedLocation(location);
     }
@@ -76,39 +84,77 @@ const Address = ({ setActive }: any) => {
     return (
         <div className="flex flex-col md:flex-row gap-8">
             <div className="flex-1">
-                {
-                    loading ? <div className="flex items-center justify-center py-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-                    </div> : <div className="grid grid-cols-2 gap-4">
-                        {locations.map((location) => (
-                            <LocationCard
-                                key={location.id}
-                                location={`${location.street}${location.street2 ? `, ${location.street2}` : ''}`}
-                                phoneNumber={location.phone || ''}
-                                phoneNumber2=""
-                                province={location.state_id[1]}
-                                city={location.city}
-                                country={location.country_id[1]}
-                                selectable
-                                isSelected={selectedLocation?.id === location.id}
-                                handleSelect={() => {
-                                    handleSelect(location)
-                                }}
-                            />
-                        ))}
+                <div className="bg-white p-6 rounded-lg ">
+                    <div className="flex items-center justify-between pb-4 mb-4">
+                        <h2 className="text-lg font-tajawal-medium">عناوين التوصيل</h2>
+                        <AddLocationDialog onSuccess={fetchLocations} />
                     </div>
-                }
 
+                    {loading ? (
+                        <div className="py-4 text-center">
+                            <Loader />
+                        </div>
+                    ) : error ? (
+                        <div className="py-4 text-center text-red-500">
+                            {error}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {locations.length > 0 ? (
+                                locations.map((location) => (
+                                    <LocationCard
+                                        editable={false}
+                                        key={location.id}
+                                        location={location.street}
+                                        province={
+                                            typeof location.state_id === "object"
+                                                ? location.state_id[1]
+                                                : ""
+                                        }
+                                        city={location.city}
+                                        country={
+                                            typeof location.country_id === "object"
+                                                ? location.country_id[1]
+                                                : ""
+                                        }
+                                        country_id={
+                                            typeof location.country_id === "object"
+                                                ? location.country_id
+                                                : undefined
+                                        }
+                                        state_id={
+                                            typeof location.state_id === "object"
+                                                ? location.state_id
+                                                : undefined
+                                        }
+                                        id={location.id}
+                                        onUpdate={fetchLocations}
+                                        selectable
+                                        isSelected={selectedLocation?.id === location.id}
+                                        handleSelect={() => handleSelect(location)}
+                                    />
+                                ))
+                            ) : (
+                                <div className="col-span-2 py-4 text-center">
+                                    <p className="text-gray-500 font-tajawal-medium">
+                                        لا توجد عناوين
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 <div className="mt-8 flex items-center justify-between">
                     <Button
-                        label="المنتجات"
-                        variant="secondary"
+                        variant="outline"
+                        label='المنتجات'
                         onClick={() => setActive(steps[0])}
                     />
                     <Button
-                        label="الدفع"
                         onClick={() => setActive(steps[2])}
+                        disabled={!selectedLocation}
+                        label='الدفع'
                     />
                 </div>
             </div>
