@@ -56,7 +56,7 @@ const Login = () => {
               <div className="md:block hidden h-full">
                 <div className="relative flex items-center justify-center w-full h-full">
                   <img
-                    src="src/assets/images/login_phone.png"
+                    src="/login_phone.png"
                     alt="Decorative"
                     className="absolute inset-0 object-cover w-full h-full rounded-r-lg"
                   />
@@ -66,7 +66,7 @@ const Login = () => {
               {/* Login Form Section */}
               <div className="flex flex-col items-center justify-center space-y-6">
                 <img
-                  src="src/assets/images/Logo.png"
+                  src="/Logo.png"
                   alt="E-store Logo"
                   className="h-8 mb-8"
                 />

@@ -16,7 +16,7 @@ const ProfileDash: React.FC = () => {
               <div className="hidden md:block h-full">
                 <div className="relative w-full h-full flex items-center justify-center">
                   <img
-                    src="src/assets/images/login_bg.webp"
+                    src="/login_bg.webp"
                     alt="Decorative"
                     className="absolute inset-0 object-cover w-full h-full rounded-r-lg"
                   />
@@ -26,7 +26,7 @@ const ProfileDash: React.FC = () => {
               {/* Welcome Section */}
               <div className="flex flex-col items-center justify-center space-y-6">
                 <img
-                  src="src/assets/images/Logo.png"
+                  src="/Logo.png"
                   alt="E-store Logo"
                   className="h-8 mb-8"
                 />
@@ -65,7 +65,7 @@ const ProfileDash: React.FC = () => {
                     التسجيل باستخدام
                   </p>
                   <img
-                    src="src/assets/images/google.png"
+                    src="/google.png"
                     alt="Google"
                     className="w-5 h-5"
                   />
@@ -77,7 +77,7 @@ const ProfileDash: React.FC = () => {
 
                   </p>
                   <img
-                    src="src/assets/images/apple.png"
+                    src="/apple.png"
                     alt="Apple"
                     className="w-5 h-5"
                   />

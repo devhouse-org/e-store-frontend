@@ -15,7 +15,7 @@ export const auctions: Auction[] = [
     currentPrice: 850000,
     startingPrice: 800000,
     endTime: "2024-04-01T15:00:00",
-    image: "/src/assets/images/iphone14.jpg",
+    image: "/iphone14.jpg",
     description: "هاتف ايفون 14 برو ماكس بحالة ممتازة",
   },
   {
@@ -24,7 +24,7 @@ export const auctions: Auction[] = [
     currentPrice: 750000,
     startingPrice: 700000,
     endTime: "2024-04-02T18:00:00",
-    image: "/src/assets/images/s23.jpg",
+    image: "/s23.jpg",
     description: "هاتف سامسونج S23 الترا الرائد",
   },
   // Add more auction items as needed

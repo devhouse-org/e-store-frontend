@@ -57,7 +57,7 @@ const Signup = () => {
               <div className="hidden md:block h-full">
                 <div className="relative w-full h-full flex items-center justify-center">
                   <img
-                    src="src/assets/images/signup_bg.webp"
+                    src="/signup_bg.webp"
                     alt="Decorative"
                     className="absolute inset-0 object-cover w-full h-full rounded-r-lg"
                   />
@@ -67,7 +67,7 @@ const Signup = () => {
               {/* Signup Form Section */}
               <div className="flex flex-col items-center justify-center space-y-6">
                 <img
-                  src="src/assets/images/Logo.png"
+                  src="/Logo.png"
                   alt="E-store Logo"
                   className="h-8 mb-8"
                 />
