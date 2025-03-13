@@ -1,14 +1,12 @@
-import LocationCard from "@/components/LocationCard";
-import { Button } from "@/components/ui/button";
-import { LucideCamera, LucideKeyRound, LucidePlusCircle } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { IconType } from "react-icons";
-import axios from "axios";
-import axiosInstance from "@/utils/axiosInstance";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AddLocationDialog from "@/components/AddLocationDialog";
-import { useToast } from "@/hooks/use-toast";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog";
+import LocationCard from "@/components/LocationCard";
 import Loader from "@/components/ui/LoadingState";
+import { useToast } from "@/hooks/use-toast";
+import axiosInstance from "@/utils/axiosInstance";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LucideCamera } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 interface Location {
   id: number;
@@ -129,6 +127,7 @@ const Profile = () => {
   const { toast } = useToast();
 
   const userId = localStorage.getItem("id");
+  const localEmail = localStorage.getItem("email");
   console.log("userId: ", userId);
   const {
     data: userData,
@@ -299,12 +298,12 @@ const Profile = () => {
   return (
     <div className="p-4 space-y-4">
       {/* Header */}
-      <h1 className="text-xl text-gray-500 font-tajawal-bold">الملف الشخصي</h1>
+      <h1 className="font-tajawal-bold text-xl text-gray-500">الملف الشخصي</h1>
       {/* Profile Form */}
       <div className="p-6 bg-white rounded shadow">
         <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col items-center justify-center flex-1 pb-4 border-b gap-y-2 gap-x-2">
+            <div className="gap-y-2 gap-x-2 flex flex-col items-center justify-center flex-1 pb-4 border-b">
               <label htmlFor="image" className="relative cursor-pointer">
                 <div className="overflow-hidden w-[120px] h-[120px] bg-gray-300 rounded-full shadow-sm">
                   <img
@@ -322,32 +321,32 @@ const Profile = () => {
                 اضغط لتغيير الصورة الشخصية
               </p>
             </div>
-            <div className="flex items-center flex-1 gap-x-2">
+            <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
                 الاسم الكامل
               </label>
               <input
                 type="text"
-                className="block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none "
+                className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none"
                 placeholder="أدخل اسمك الكامل"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <div className="flex items-center flex-1 gap-x-2">
+            <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
                 البريد الإلكتروني
               </label>
               <input
                 type="email"
-                className="block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none cursor-not-allowed "
+                className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none cursor-not-allowed"
                 placeholder="أدخل بريدك الإلكتروني"
-                value={email}
+                value={localEmail || email}
                 // onChange={(e) => setEmail(e.target.value)}
                 disabled
               />
             </div>
-            <div className="flex items-center flex-1 gap-x-2">
+            <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">
                 رقم الهاتف
               </label>
@@ -360,23 +359,23 @@ const Profile = () => {
                 dir="ltr"
               />
             </div>
-            {/* <div className="flex items-center flex-1 gap-x-2">
+            {/* <div className="gap-x-2 flex items-center flex-1">
               <label className="block text-nowrap w-[120px] text-sm font-tajawal-medium text-gray-700">الصورة شخصية</label>
               <input
                 type="text"
-                className="block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none "
+                className=" block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md outline-none"
                 placeholder="الصورة شخصية"
               />
             </div> */}
           </div>
 
           <div className="flex justify-between pt-8">
-            <div className="flex gap-x-2">
+            <div className="gap-x-2 flex">
               {hasChanges() && (
                 <button
                   type="button"
                   onClick={handleDiscard}
-                  className="px-6 py-2 text-black transition duration-300 bg-orange-100 rounded-md shadow-md hover:bg-orange-200"
+                  className="hover:bg-orange-200 px-6 py-2 text-black transition duration-300 bg-orange-100 rounded-md shadow-md"
                 >
                   الغاء
                 </button>
@@ -393,25 +392,21 @@ const Profile = () => {
                 {isUpdating ? "جاري التحديث..." : "تحديث الملف الشخصي"}
               </button>
             </div>
-            <button
-              type="button"
-              className="flex items-center px-6 py-2 text-white transition duration-300 bg-orange-500 rounded-md shadow-md gap-x-2 hover:bg-orange-600"
-            >
-              <LucideKeyRound size={16} />
-              تغيير كلمة المرور
-            </button>
+            <ChangePasswordDialog />
           </div>
         </form>
       </div>
 
       {/* Locations */}
       <div className="p-6 bg-white rounded shadow">
-        <div className="flex items-center justify-between pb-1 mb-4 border-b border-light-200">
-          <h2 className="text-lg font-tajawal-medium">عناوين التوصيل</h2>
+        <div className="border-light-200 flex items-center justify-between pb-1 mb-4 border-b">
+          <h2 className="font-tajawal-medium text-lg">عناوين التوصيل</h2>
           <AddLocationDialog onSuccess={refetch} />
         </div>
         {loading ? (
-          <div className="py-4 text-center"><Loader/></div>
+          <div className="py-4 text-center">
+            <Loader />
+          </div>
         ) : locationsError ? (
           <div className="py-4 text-center text-red-500">
             {locationsError.message}
@@ -452,7 +447,7 @@ const Profile = () => {
               ))
             ) : (
               <div className="w-full py-4 text-center">
-                <p className="text-gray-500 font-tajawal-medium">
+                <p className="font-tajawal-medium text-gray-500">
                   لا توجد عناوين
                 </p>
               </div>

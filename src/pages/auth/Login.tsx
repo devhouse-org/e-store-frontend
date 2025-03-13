@@ -19,7 +19,7 @@ const Login = () => {
         email,
         password,
       });
-      console.log(response.data)
+      console.log(response.data);
       return response.data;
     },
     onSuccess: (data) => {
@@ -30,6 +30,7 @@ const Login = () => {
         localStorage.setItem("email", data.email);
         localStorage.setItem("phone", data.phone);
         navigate("/dashboard");
+        console.log(data);
       } else {
         console.error("Login failed:", data.error);
       }
@@ -46,15 +47,15 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen p6 pt-14 mx-4 md:mx-0">
+    <div className="p6 pt-14 md:mx-0 h-screen mx-4">
       {/* <Button onClick={login}>Login</Button> */}
       <Card className="bgblack h-[80vh] container mx-auto">
-        <CardContent className="p-0 h-full">
+        <CardContent className="h-full p-0">
           <div className="flex flex-col h-full">
-            <div className="grid gap-8 md:grid-cols-2 md:grid-flow-col-reverse flex-1">
+            <div className="md:grid-cols-2 md:grid-flow-col-reverse grid flex-1 gap-8">
               {/* Decorative Image with iPhone Frame */}
-              <div className="hidden md:block h-full">
-                <div className="relative w-full h-full flex items-center justify-center">
+              <div className="md:block hidden h-full">
+                <div className="relative flex items-center justify-center w-full h-full">
                   <img
                     src="src/assets/images/login_phone.png"
                     alt="Decorative"
@@ -70,7 +71,7 @@ const Login = () => {
                   alt="E-store Logo"
                   className="h-8 mb-8"
                 />
-                <h2 className="text-3xl font-tajawal-bold">أهلاً بعودتك!</h2>
+                <h2 className="font-tajawal-bold text-3xl">أهلاً بعودتك!</h2>
                 <p className="text-muted-foreground text-center max-w-[400px] font-tajawal-regular">
                   يُرجى تسجيل الدخول للمتابعة
                 </p>
@@ -81,14 +82,14 @@ const Login = () => {
                 >
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
+                      <label className="font-tajawal-medium block mb-1 text-sm text-gray-700">
                         {/* الهاتف */}
                         البريد الإلكتروني
                       </label>
                       <Input
                         type="email"
                         required
-                        className="w-full text-right font-tajawal-regular"
+                        className="font-tajawal-regular w-full text-right"
                         placeholder="أدخل البريد الإلكتروني"
                         value={formData.email}
                         onChange={(e) =>
@@ -97,13 +98,13 @@ const Login = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-tajawal-medium text-gray-700 mb-1">
+                      <label className="font-tajawal-medium block mb-1 text-sm text-gray-700">
                         كلمة المرور
                       </label>
                       <Input
                         type="password"
                         required
-                        className="w-full font-tajawal-regular"
+                        className="font-tajawal-regular w-full"
                         placeholder="أدخل كلمة المرور"
                         value={formData.password}
                         onChange={(e) =>
@@ -117,9 +118,9 @@ const Login = () => {
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 text-primary border-gray-300 rounded"
+                        className="text-primary w-4 h-4 border-gray-300 rounded"
                       />
-                      <label className="text-gray-600 font-tajawal-regular">
+                      <label className="font-tajawal-regular text-gray-600">
                         تذكرني
                       </label>
                     </div>
@@ -142,7 +143,7 @@ const Login = () => {
                       : "تسجيل الدخول"}
                   </Button>
 
-                  <p className="text-center text-sm text-gray-600 mt-4 font-tajawal-regular">
+                  <p className="font-tajawal-regular mt-4 text-sm text-center text-gray-600">
                     ليس لديك حساب؟{" "}
                     <Link
                       to="/signup"
