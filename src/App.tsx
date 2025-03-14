@@ -43,9 +43,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
-        <div dir="rtl" className="pt-[92px] bg-blue-100/10">
+        <div dir="rtl" className="bg-blue-100/10">
           <ScrollToTop />
-          {/* <Navbar hasAd adTitle="تخفيض 15% على قسم الاكسسوارات" /> */}
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
@@ -118,7 +117,6 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
-          {/* <Footer /> */}
         </div>
       </CartProvider>
     </QueryClientProvider>
