@@ -151,3 +151,9 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
+
+/* Add these rules at the top of the file */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}

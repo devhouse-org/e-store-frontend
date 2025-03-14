@@ -43,7 +43,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
-        <div dir="rtl" className="bg-blue-100/10">
+        <div dir="rtl" className="bg-blue-100/10 overflow-x-hidden min-h-screen">
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Layout />}>
