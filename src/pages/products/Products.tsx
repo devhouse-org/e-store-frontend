@@ -395,15 +395,24 @@ const Products = () => {
     }
   };
 
-  const scrollCategories = (
-    direction: "left" | "right",
-    elementClass: string
-  ) => {
-    const container = document.querySelector(`.${elementClass}`);
-    if (container) {
-      const scrollAmount = 200; // Adjust this value to control scroll distance
-      container.scrollLeft +=
-        direction === "left" ? -scrollAmount : scrollAmount;
+  // Add this new function to handle centering of selected category/subcategory
+  const scrollToCenter = (elementId: string, selectedId: number | null) => {
+    if (!selectedId) return;
+    
+    const container = document.getElementById(elementId);
+    const selectedElement = document.getElementById(`${elementId}-${selectedId}`);
+    
+    if (container && selectedElement) {
+      const containerWidth = container.offsetWidth;
+      const elementWidth = selectedElement.offsetWidth;
+      const elementLeft = selectedElement.offsetLeft;
+      
+      const scrollPosition = elementLeft - (containerWidth / 2) + (elementWidth / 2);
+      
+      container.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -416,17 +425,27 @@ const Products = () => {
 
   // Update category click handler
   const handleCategoryClick = (categoryId: number) => {
-    setSelectedCategory(categoryId === selectedCategory ? null : categoryId);
+    const newCategoryId = categoryId === selectedCategory ? null : categoryId;
+    setSelectedCategory(newCategoryId);
     setSelectedSubcategory(null);
     setSelectedVariants([]);
+    
+    // Scroll category to center after selection
+    if (newCategoryId) {
+      scrollToCenter('categories-container', newCategoryId);
+    }
   };
 
   // Update subcategory click handler
   const handleSubcategoryClick = (subcategoryId: number) => {
-    setSelectedSubcategory(
-      subcategoryId === selectedSubcategory ? null : subcategoryId
-    );
+    const newSubcategoryId = subcategoryId === selectedSubcategory ? null : subcategoryId;
+    setSelectedSubcategory(newSubcategoryId);
     setSelectedVariants([]);
+    
+    // Scroll subcategory to center after selection
+    if (newSubcategoryId) {
+      scrollToCenter('subcategories-container', newSubcategoryId);
+    }
   };
 
   // Handle page change
@@ -530,59 +549,48 @@ const Products = () => {
 
           {/* Categories */}
           <div className="relative">
-            <button
-              onClick={() => scrollCategories("left", "categories-scroll")}
-              className="top-1/2 hover:bg-gray-50 absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
+            <div 
+              id="categories-container"
+              className="flex gap-3 overflow-x-auto pb-2 scrollbar-custom"
             >
-              <ArrowLeft className="text-gray-600" size={20} />
-            </button>
-
-            <div className="categories-scroll scroll-smooth relative flex gap-3 px-12 overflow-x-hidden">
               {categoriesData?.map((category) => (
                 <button
                   key={category.id}
+                  id={`categories-container-${category.id}`}
                   onClick={() => handleCategoryClick(category.id)}
                   className={`
-                      px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${selectedCategory === category.id
-                      ? "bg-orange-500 text-white shadow-md"
-                      : "bg-white hover:bg-gray-200 text-gray-700"
-                    }
-                    `}
+                    px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
+                    ${
+                      selectedCategory === category.id
+                    ? "bg-orange-500 text-white shadow-md"
+                    : "bg-white hover:bg-gray-200 text-gray-700"
+                  }
+                `}
                 >
                   {category.name}
                 </button>
               ))}
             </div>
-
-            <button
-              onClick={() => scrollCategories("right", "categories-scroll")}
-              className="top-1/2 hover:bg-gray-50 absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
-            >
-              <ArrowRight className="text-gray-600" size={20} />
-            </button>
           </div>
 
           {/* Subcategories */}
           {selectedCategory && getSubcategories().length > 0 && (
             <div className="relative mt-4">
-              <button
-                onClick={() => scrollCategories("left", "subcategories-scroll")}
-                className="top-1/2 hover:bg-gray-50 absolute left-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
+              <div 
+                id="subcategories-container"
+                className="flex gap-3 overflow-x-auto pb-2 scrollbar-custom"
               >
-                <ArrowLeft className="text-gray-600" size={20} />
-              </button>
-
-              <div className="subcategories-scroll scroll-smooth relative flex gap-3 px-12 overflow-x-hidden">
                 {getSubcategories().map((subcategory) => (
                   <button
                     key={subcategory.id}
+                    id={`subcategories-container-${subcategory.id}`}
                     onClick={() => handleSubcategoryClick(subcategory.id)}
                     className={`
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
-                      ${selectedSubcategory === subcategory.id
-                        ? "bg-orange-500 text-white shadow-md"
-                        : "border border-gray-200 text-gray-600 hover:bg-white"
+                      ${
+                        selectedSubcategory === subcategory.id
+                      ? "bg-orange-500 text-white shadow-md"
+                      : "border border-gray-200 text-gray-600 hover:bg-white"
                       }
                     `}
                   >
@@ -590,15 +598,6 @@ const Products = () => {
                   </button>
                 ))}
               </div>
-
-              <button
-                onClick={() =>
-                  scrollCategories("right", "subcategories-scroll")
-                }
-                className="top-1/2 hover:bg-gray-50 absolute right-0 z-10 p-2 -translate-y-1/2 bg-white rounded-full shadow-md"
-              >
-                <ArrowRight className="text-gray-600" size={20} />
-              </button>
             </div>
           )}
         </div>
