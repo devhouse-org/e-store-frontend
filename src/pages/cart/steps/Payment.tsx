@@ -14,6 +14,7 @@ import CreditCardForm from "@/components/CreditCardForm";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/useCartStore";
 import axiosInstance from "@/utils/axiosInstance";
+import { useToast } from "@/hooks/use-toast";
 
 type Props = {};
 enum StepsEnum {
@@ -63,6 +64,7 @@ const payments = [
 
 const Payment = ({ setActive }: any) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selected, setSelected] = useState(payments[0]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showCreditCardForm, setShowCreditCardForm] = useState(false);
@@ -82,7 +84,7 @@ const Payment = ({ setActive }: any) => {
     switch (selected.id) {
       case 1: // Cash on delivery
         try {
-          setIsProcessing(true); // Start loading
+          setIsProcessing(true);
           const partnerId = localStorage.getItem("id");
           const deliveryAddress = JSON.parse(
             localStorage.getItem("selectedDeliveryAddress") || "{}"
@@ -120,27 +122,31 @@ const Payment = ({ setActive }: any) => {
           });
 
           if (response.data.success) {
-            // First, show success screen
-            setShowSuccess(true);
+            // Show success toast
+            toast({
+              title: "تم إنشاء الطلب بنجاح",
+              description: "سيتم تحويلك إلى صفحة سجل الطلبات",
+              variant: "success",
+            });
 
             // Clear data
             localStorage.removeItem("selectedDeliveryAddress");
             useCartStore.getState().clearCart();
 
-            // Add a small delay before navigation to ensure success screen is shown
-            await new Promise((resolve) => setTimeout(resolve, 100));
-
-            // Use a longer delay for navigation
+            // Navigate after a delay
             setTimeout(() => {
               navigate("/dashboard/history");
-            }, 2500);
+            }, 2000);
           }
         } catch (error: any) {
           console.error("Error creating order:", error);
-          alert(
-            error.response?.data?.message ||
-              "Failed to create order. Please try again."
-          );
+          // Show error toast instead of alert
+          toast({
+            title: "خطأ في إنشاء الطلب",
+            description:
+              error.response?.data?.message || "يرجى المحاولة مرة أخرى",
+            variant: "destructive",
+          });
         } finally {
           setIsProcessing(false);
         }
