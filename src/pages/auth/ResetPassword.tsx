@@ -232,24 +232,6 @@ const ResetPassword: React.FC = () => {
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-right text-gray-700">
-                رمز إعادة التعيين
-              </label>
-              <Input
-                type="text"
-                name="token"
-                value={formData.token}
-                onChange={handleChange}
-                className="w-full text-right"
-                placeholder="أدخل رمز إعادة التعيين"
-                disabled={!!tokenFromQuery}
-              />
-              <p className="text-xs text-right text-gray-500">
-                تم إرسال هذا الرمز إلى بريدك الإلكتروني
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-right text-gray-700">
                 كلمة المرور الجديدة
               </label>
               <div className="relative">

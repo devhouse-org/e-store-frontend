@@ -1,107 +1,145 @@
 import { create } from "zustand";
-import { Product } from "@/utils/data/products";
+import { persist } from "zustand/middleware";
 
 interface WishlistStore {
-  wishlist: Product[];
-  wishlistCount: number;
-  selectedItems: Set<string>;
-  addToWishlist: (product: Product) => void;
+  // Store only the IDs in the state
+  wishlistIds: string[];
+  selectedIds: Set<string>;
+
+  // Actions
+  addToWishlist: (productId: string) => void;
   removeFromWishlist: (productId: string) => void;
   toggleSelectItem: (productId: string) => void;
+  selectAll: () => void;
   clearSelection: () => void;
   deleteSelectedItems: () => void;
+
+  // Selectors
   isWishlisted: (productId: string) => boolean;
   isSelected: (productId: string) => boolean;
-  updateWishlistCount: () => void;
+  getWishlistCount: () => number;
+  getSelectedCount: () => number;
 }
 
-// Get initial state from localStorage
-const getInitialState = () => {
-  const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-  return {
-    wishlist: savedIds.map(id => ({ id })) as Product[],
-    wishlistCount: savedIds.length,
-    selectedItems: new Set<string>()
-  };
-};
+export const useWishlistStore = create<WishlistStore>()(
+  persist(
+    (set, get) => ({
+      wishlistIds: [],
+      selectedIds: new Set<string>(),
 
-export const useWishlistStore = create<WishlistStore>((set, get) => ({
-  ...getInitialState(),
-  updateWishlistCount: () => {
-    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-    set({ wishlistCount: savedIds.length });
-  },
-  addToWishlist: (product) => {
-    const { wishlist } = get();
-    const isAlreadyInWishlist = wishlist.some((item) => item.id === product.id);
+      addToWishlist: (productId: string) => {
+        const stringProductId = String(productId);
+        const { wishlistIds } = get();
 
-    if (!isAlreadyInWishlist) {
-      set((state) => ({
-        wishlist: [
-          ...state.wishlist,
-          { ...product, image: `data:image/png;base64,${product.image}` },
-        ],
-        wishlistCount: state.wishlistCount + 1,
-      }));
+        if (!wishlistIds.includes(stringProductId)) {
+          set({ wishlistIds: [...wishlistIds, stringProductId] });
+        }
+      },
 
-      const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-      savedIds.push(product.id.toString());
-      localStorage.setItem('wishlists', JSON.stringify(savedIds));
-      get().updateWishlistCount();
+      removeFromWishlist: (productId: string) => {
+        const stringProductId = String(productId);
+
+        const { wishlistIds, selectedIds } = get();
+
+        // Create a new Set from the current selectedIds
+        const newSelectedIds = new Set(Array.from(selectedIds));
+        // Remove the product from selection if it's selected
+        newSelectedIds.delete(stringProductId);
+
+        // Remove the product from wishlist
+        const newWishlistIds = wishlistIds.filter(
+          (id) => id !== stringProductId
+        );
+
+        // Update state
+        set({
+          wishlistIds: newWishlistIds,
+          selectedIds: newSelectedIds,
+        });
+      },
+
+      // Toggle selection of a product
+      toggleSelectItem: (productId: string) => {
+        // Convert to string to ensure type consistency
+        const stringProductId = String(productId);
+
+        set((state) => {
+          // Create a new Set from the current selectedIds
+          const newSelectedIds = new Set(Array.from(state.selectedIds));
+
+          // Check if the product is already selected
+          const isCurrentlySelected = newSelectedIds.has(stringProductId);
+
+          // Toggle the selection
+          if (isCurrentlySelected) {
+            newSelectedIds.delete(stringProductId);
+          } else {
+            newSelectedIds.add(stringProductId);
+          }
+
+          // Return the updated state
+          return { selectedIds: newSelectedIds };
+        });
+      },
+
+      // Select all products in wishlist
+      selectAll: () => {
+        const { wishlistIds } = get();
+        const stringWishlistIds = wishlistIds.map(String);
+        set({ selectedIds: new Set(stringWishlistIds) });
+      },
+
+      // Clear all selections
+      clearSelection: () => {
+        set({ selectedIds: new Set() });
+      },
+
+      // Delete all selected items
+      deleteSelectedItems: () => {
+        const { wishlistIds, selectedIds } = get();
+
+        // Convert selectedIds to array for easier processing
+        const selectedArray = Array.from(selectedIds).map(String);
+
+        // Filter out selected IDs from wishlist
+        const newWishlistIds = wishlistIds.filter(
+          (id) => !selectedArray.includes(String(id))
+        );
+
+        // Update state
+        set({
+          wishlistIds: newWishlistIds,
+          selectedIds: new Set(), // Clear selection after deletion
+        });
+      },
+
+      // Check if a product is in wishlist
+      isWishlisted: (productId: string) => {
+        return get().wishlistIds.includes(productId);
+      },
+
+      // Check if a product is selected
+      isSelected: (productId: string) => {
+        const stringProductId = String(productId);
+        const selected = get().selectedIds.has(stringProductId);
+        return selected;
+      },
+
+      // Get wishlist count
+      getWishlistCount: () => {
+        return get().wishlistIds.length;
+      },
+
+      // Get selected items count
+      getSelectedCount: () => {
+        return get().selectedIds.size;
+      },
+    }),
+    {
+      name: "wishlist-storage",
+      partialize: (state) => ({
+        wishlistIds: state.wishlistIds,
+      }),
     }
-  },
-  removeFromWishlist: (productId) => {
-    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-    const index = savedIds.indexOf(productId.toString());
-    
-    if (index > -1) {
-      savedIds.splice(index, 1);
-      localStorage.setItem('wishlists', JSON.stringify(savedIds));
-    }
-
-    set((state) => {
-      const newWishlist = state.wishlist.filter(item => item.id !== productId);
-      const newSelectedItems = new Set(state.selectedItems);
-      newSelectedItems.delete(productId);
-      
-      return {
-        wishlist: newWishlist,
-        wishlistCount: savedIds.length, // Use the updated savedIds length
-        selectedItems: newSelectedItems
-      };
-    });
-    
-    // Update the count after removal
-    get().updateWishlistCount();
-  },
-  toggleSelectItem: (productId) => {
-    set((state) => {
-      const newSelectedItems = new Set(state.selectedItems);
-      if (newSelectedItems.has(productId)) {
-        newSelectedItems.delete(productId);
-      } else {
-        newSelectedItems.add(productId);
-      }
-      return { selectedItems: newSelectedItems };
-    });
-  },
-  clearSelection: () => {
-    set({ selectedItems: new Set() });
-  },
-  deleteSelectedItems: () => {
-    const { selectedItems } = get();
-    selectedItems.forEach(productId => {
-      get().removeFromWishlist(productId);
-    });
-    set({ selectedItems: new Set() });
-    // Update the count after bulk deletion
-    get().updateWishlistCount();
-  },
-  isWishlisted: (productId) => {
-    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
-    return savedIds.includes(productId.toString());
-  },
-  isSelected: (productId) => {
-    return get().selectedItems.has(productId);
-  }
-}));
+  )
+);
