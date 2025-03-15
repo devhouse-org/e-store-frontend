@@ -5,7 +5,7 @@ import { useWishlistStore } from "@/store/useWishlistStore";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Heart, Trash, X } from "lucide-react";
-import { useEffect } from "react";
+import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 
 interface Product {
@@ -33,7 +33,6 @@ const useWishlistProducts = (productIds: string[]) => {
       try {
         const numericIds = productIds.map((id) => parseInt(id, 10));
 
-        // Make the API request
         const response = await axiosInstance.post<ProductsResponse>(
           "/products",
           {
@@ -60,6 +59,10 @@ const useWishlistProducts = (productIds: string[]) => {
       }
     },
     enabled: productIds.length > 0,
+    staleTime: 60000,
+    gcTime: 300000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 
@@ -95,6 +98,7 @@ function WishlistItemCard({
           src={`data:image/png;base64,${product.image_1920}`}
           alt={product.name}
           className="object-cover w-full h-48 rounded-md"
+          loading="lazy"
         />
         <div className="mt-4">
           <h3 className="font-tajawal-bold mb-2 text-lg text-gray-800">
@@ -116,6 +120,8 @@ function WishlistItemCard({
     </div>
   );
 }
+
+const MemoizedWishlistItemCard = React.memo(WishlistItemCard);
 
 const WishlistSkeleton = () => {
   return (
@@ -152,40 +158,43 @@ const Wishlist = () => {
   const queryClient = useQueryClient();
   const {
     wishlistIds,
-    removeFromWishlist,
+    removeFromWishlist: storeRemoveFromWishlist,
     toggleSelectItem,
     selectAll,
-    deleteSelectedItems,
+    deleteSelectedItems: storeDeleteSelectedItems,
     isSelected,
     clearSelection,
     getWishlistCount,
     getSelectedCount,
   } = useWishlistStore();
 
-  const { data, isLoading, error, refetch } = useWishlistProducts(wishlistIds);
+  const { data, isLoading, error } = useWishlistProducts(wishlistIds);
   const selectedCount = getSelectedCount();
   const wishlistCount = getWishlistCount();
 
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["wishlistProducts"] });
-    refetch();
-  }, [wishlistIds, refetch, queryClient]);
+  const handleRemoveFromWishlist = useCallback(
+    (productId: string) => {
+      storeRemoveFromWishlist(String(productId));
+      queryClient.invalidateQueries({
+        queryKey: ["wishlistProducts", wishlistIds],
+      });
+    },
+    [storeRemoveFromWishlist, queryClient, wishlistIds]
+  );
 
-  const handleRemoveFromWishlist = (productId: string) => {
-    removeFromWishlist(String(productId));
-    queryClient.invalidateQueries({ queryKey: ["wishlistProducts"] });
-    setTimeout(() => refetch(), 0);
-  };
+  const handleToggleSelect = useCallback(
+    (productId: string) => {
+      toggleSelectItem(String(productId));
+    },
+    [toggleSelectItem]
+  );
 
-  const handleToggleSelect = (productId: string) => {
-    toggleSelectItem(String(productId));
-  };
-
-  const handleDeleteSelected = () => {
-    deleteSelectedItems();
-    queryClient.invalidateQueries({ queryKey: ["wishlistProducts"] });
-    setTimeout(() => refetch(), 0);
-  };
+  const handleDeleteSelected = useCallback(() => {
+    storeDeleteSelectedItems();
+    queryClient.invalidateQueries({
+      queryKey: ["wishlistProducts", wishlistIds],
+    });
+  }, [storeDeleteSelectedItems, queryClient, wishlistIds]);
 
   if (isLoading) {
     return <WishlistSkeleton />;
@@ -219,7 +228,8 @@ const Wishlist = () => {
     );
   }
 
-  const products = data.products;
+  // Safely access products
+  const products = data?.products || [];
 
   return (
     <div className="container mx-auto px-4 md:px-8 lg:px-12 mt-8 py-8 min-h-[calc(100vh-200px)]">
@@ -277,7 +287,7 @@ const Wishlist = () => {
         ) : (
           <div className="sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 md:gap-10 grid grid-cols-1 gap-8">
             {products.map((product) => (
-              <WishlistItemCard
+              <MemoizedWishlistItemCard
                 key={product.id}
                 product={product}
                 removeFromWishlist={handleRemoveFromWishlist}
