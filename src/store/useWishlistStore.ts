@@ -1,5 +1,5 @@
-import { create } from "zustand";
 import { Product } from "@/utils/data/products";
+import { create } from "zustand";
 
 interface WishlistStore {
   wishlist: Product[];
@@ -17,18 +17,22 @@ interface WishlistStore {
 
 // Get initial state from localStorage
 const getInitialState = () => {
-  const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+  const savedIds: string[] = JSON.parse(
+    localStorage.getItem("wishlists") || "[]"
+  );
   return {
-    wishlist: savedIds.map(id => ({ id })) as Product[],
+    wishlist: savedIds.map((id) => ({ id })) as Product[],
     wishlistCount: savedIds.length,
-    selectedItems: new Set<string>()
+    selectedItems: new Set<string>(),
   };
 };
 
 export const useWishlistStore = create<WishlistStore>((set, get) => ({
   ...getInitialState(),
   updateWishlistCount: () => {
-    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    const savedIds: string[] = JSON.parse(
+      localStorage.getItem("wishlists") || "[]"
+    );
     set({ wishlistCount: savedIds.length });
   },
   addToWishlist: (product) => {
@@ -44,33 +48,39 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
         wishlistCount: state.wishlistCount + 1,
       }));
 
-      const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+      const savedIds: string[] = JSON.parse(
+        localStorage.getItem("wishlists") || "[]"
+      );
       savedIds.push(product.id.toString());
-      localStorage.setItem('wishlists', JSON.stringify(savedIds));
+      localStorage.setItem("wishlists", JSON.stringify(savedIds));
       get().updateWishlistCount();
     }
   },
   removeFromWishlist: (productId) => {
-    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    const savedIds: string[] = JSON.parse(
+      localStorage.getItem("wishlists") || "[]"
+    );
     const index = savedIds.indexOf(productId.toString());
-    
+
     if (index > -1) {
       savedIds.splice(index, 1);
-      localStorage.setItem('wishlists', JSON.stringify(savedIds));
+      localStorage.setItem("wishlists", JSON.stringify(savedIds));
     }
 
     set((state) => {
-      const newWishlist = state.wishlist.filter(item => item.id !== productId);
+      const newWishlist = state.wishlist.filter(
+        (item) => item.id !== productId
+      );
       const newSelectedItems = new Set(state.selectedItems);
       newSelectedItems.delete(productId);
-      
+
       return {
         wishlist: newWishlist,
         wishlistCount: savedIds.length, // Use the updated savedIds length
-        selectedItems: newSelectedItems
+        selectedItems: newSelectedItems,
       };
     });
-    
+
     // Update the count after removal
     get().updateWishlistCount();
   },
@@ -90,7 +100,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
   },
   deleteSelectedItems: () => {
     const { selectedItems } = get();
-    selectedItems.forEach(productId => {
+    selectedItems.forEach((productId) => {
       get().removeFromWishlist(productId);
     });
     set({ selectedItems: new Set() });
@@ -98,10 +108,12 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
     get().updateWishlistCount();
   },
   isWishlisted: (productId) => {
-    const savedIds: string[] = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    const savedIds: string[] = JSON.parse(
+      localStorage.getItem("wishlists") || "[]"
+    );
     return savedIds.includes(productId.toString());
   },
   isSelected: (productId) => {
     return get().selectedItems.has(productId);
-  }
+  },
 }));
