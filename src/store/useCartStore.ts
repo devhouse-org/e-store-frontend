@@ -23,6 +23,7 @@ interface CartStore {
   isInCart: (productId: string) => boolean;
   getProductQuantity: (productId: string) => number;
   lastAction: "add" | "remove" | "update" | null;
+  clearCart: () => void;
 }
 
 // Get initial state from localStorage
@@ -129,4 +130,6 @@ export const useCartStore = create<CartStore>((set, get) => ({
       return newState;
     });
   },
+
+  clearCart: () => set({ products: [] }),
 }));
