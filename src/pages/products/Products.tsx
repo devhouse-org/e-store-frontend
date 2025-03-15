@@ -1,27 +1,18 @@
 import Filter from "@/components/Filter";
 import Pagination from "@/components/Pagination";
+import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/LoadingState";
+import { useToast } from "@/hooks/use-toast";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Heart,
-  CircleDashed,
-  LucideShoppingCart,
-  Menu,
-  Minus,
-  Plus,
-} from "lucide-react";
+import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IconType } from "react-icons";
-import { useToast } from "@/hooks/use-toast";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface Category {
   id: number;
@@ -89,14 +80,18 @@ const useProducts = (params: {
 const Products = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedBrand, setSelectedBrand] = useState<string>("all");
   const {
     addToCart,
     products: cartProducts,
     updateQuantity,
     removeFromCart,
   } = useCartStore();
-  const { addToComparison, removeFromComparison, isCompared, initializeFromStorage } = useComparisonStore();
+  const {
+    addToComparison,
+    removeFromComparison,
+    isCompared,
+    initializeFromStorage,
+  } = useComparisonStore();
   const [prods, setProds] = useState<ProductsResponse>({
     products: [],
     total: 0,
@@ -120,7 +115,8 @@ const Products = () => {
   const itemsPerPage = 12; // Number of products per page
   const { toast } = useToast();
 
-  const { data: categoriesData = [], isLoading: categoriesLoading } = useCategories();
+  const { data: categoriesData = [], isLoading: categoriesLoading } =
+    useCategories();
 
   // Add this useEffect to set categories when data is loaded
   useEffect(() => {
@@ -149,17 +145,6 @@ const Products = () => {
   useEffect(() => {
     initializeFromStorage();
   }, []);
-  const { isWishlisted, addToWishlist, removeFromWishlist } = useWishlistStore();
-
-  // Function to check if URL has any filter parameters
-  const hasUrlFilters = () => {
-    return (
-      searchParams.has("category") ||
-      searchParams.has("price") ||
-      searchParams.has("page") ||
-      searchParams.has("variants")
-    );
-  };
 
   // Function to update URL with current filters
   const updateUrlParams = () => {
@@ -398,20 +383,23 @@ const Products = () => {
   // Add this new function to handle centering of selected category/subcategory
   const scrollToCenter = (elementId: string, selectedId: number | null) => {
     if (!selectedId) return;
-    
+
     const container = document.getElementById(elementId);
-    const selectedElement = document.getElementById(`${elementId}-${selectedId}`);
-    
+    const selectedElement = document.getElementById(
+      `${elementId}-${selectedId}`
+    );
+
     if (container && selectedElement) {
       const containerWidth = container.offsetWidth;
       const elementWidth = selectedElement.offsetWidth;
       const elementLeft = selectedElement.offsetLeft;
-      
-      const scrollPosition = elementLeft - (containerWidth / 2) + (elementWidth / 2);
-      
+
+      const scrollPosition =
+        elementLeft - containerWidth / 2 + elementWidth / 2;
+
       container.scrollTo({
         left: scrollPosition,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -429,22 +417,23 @@ const Products = () => {
     setSelectedCategory(newCategoryId);
     setSelectedSubcategory(null);
     setSelectedVariants([]);
-    
+
     // Scroll category to center after selection
     if (newCategoryId) {
-      scrollToCenter('categories-container', newCategoryId);
+      scrollToCenter("categories-container", newCategoryId);
     }
   };
 
   // Update subcategory click handler
   const handleSubcategoryClick = (subcategoryId: number) => {
-    const newSubcategoryId = subcategoryId === selectedSubcategory ? null : subcategoryId;
+    const newSubcategoryId =
+      subcategoryId === selectedSubcategory ? null : subcategoryId;
     setSelectedSubcategory(newSubcategoryId);
     setSelectedVariants([]);
-    
+
     // Scroll subcategory to center after selection
     if (newSubcategoryId) {
-      scrollToCenter('subcategories-container', newSubcategoryId);
+      scrollToCenter("subcategories-container", newSubcategoryId);
     }
   };
 
@@ -549,9 +538,9 @@ const Products = () => {
 
           {/* Categories */}
           <div className="relative">
-            <div 
+            <div
               id="categories-container"
-              className="flex gap-3 overflow-x-auto pb-2 scrollbar-custom"
+              className="scrollbar-custom flex gap-3 pb-2 overflow-x-auto"
             >
               {categoriesData?.map((category) => (
                 <button
@@ -562,9 +551,9 @@ const Products = () => {
                     px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap
                     ${
                       selectedCategory === category.id
-                    ? "bg-orange-500 text-white shadow-md"
-                    : "bg-white hover:bg-gray-200 text-gray-700"
-                  }
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "bg-white hover:bg-gray-200 text-gray-700"
+                    }
                 `}
                 >
                   {category.name}
@@ -576,9 +565,9 @@ const Products = () => {
           {/* Subcategories */}
           {selectedCategory && getSubcategories().length > 0 && (
             <div className="relative mt-4">
-              <div 
+              <div
                 id="subcategories-container"
-                className="flex gap-3 overflow-x-auto pb-2 scrollbar-custom"
+                className="scrollbar-custom flex gap-3 pb-2 overflow-x-auto"
               >
                 {getSubcategories().map((subcategory) => (
                   <button
@@ -589,8 +578,8 @@ const Products = () => {
                       px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap
                       ${
                         selectedSubcategory === subcategory.id
-                      ? "bg-orange-500 text-white shadow-md"
-                      : "border border-gray-200 text-gray-600 hover:bg-white"
+                          ? "bg-orange-500 text-white shadow-md"
+                          : "border border-gray-200 text-gray-600 hover:bg-white"
                       }
                     `}
                   >
@@ -664,155 +653,10 @@ const Products = () => {
         ) : (
           <>
             <div className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid grid-cols-1 gap-6">
-              {productsData?.products.map((product: any) => {
-                const cartItem = cartProducts.find(
-                  (item) => item.id === product.id
-                );
-
-                return (
-                  <Link
-                    to={`/product/${product.id}`}
-                    key={product.id}
-                    className="group rounded-xl hover:shadow-lg relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100"
-                  >
-                    {/* Wishlist and Comparison Buttons Container */}
-                    <div className="absolute z-10 flex gap-2 p-2 top-2 right-2">
-                      {/* Wishlist Button */}
-                      {/* Wishlist Button */}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const wishlistItem = {
-                            id: product.id.toString(),
-                            name: product.name,
-                            price: product.list_price,
-                            image: product.image_1920,
-                            description: product.description || product.name,
-                          };
-                          isWishlisted(product.id.toString())
-                            ? removeFromWishlist(product.id.toString())
-                            : addToWishlist(wishlistItem);
-                        }}
-                        className="top-2 right-10 bg-white/90 group-hover:opacity-100 hover:bg-white absolute z-10 p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
-                        aria-label="إضافة للمفضلة"
-                      >
-                        <Heart
-                          className={cn("w-4 h-4 transition-colors"
-                            , isWishlisted(product.id.toString())
-                              ? "text-red-500 fill-red-500"
-                              : "text-gray-400 group-hover:text-gray-600"
-                          )}
-                        />
-                      </button>
-
-                      {/* Comparison Button - Always visible when in comparison */}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleComparisonClick(product);
-                        }}
-                        className={`p-2 transition-all duration-200 rounded-full shadow-sm bg-white/90 hover:bg-white ${isCompared(product.id.toString())
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-100"
-                          }`}
-                        aria-label="إضافة للمقارنة"
-                      >
-                        <CircleDashed
-                          className={`w-4 h-4 transition-colors ${isCompared(product.id.toString())
-                            ? "text-orange-500"
-                            : "text-gray-400 group-hover:text-gray-600"
-                            }`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Product Image */}
-                    <div className="aspect-square bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
-                      <img
-                        src={`data:image/png;base64,${product.image_1920}`}
-                        alt={product.name}
-                        className="h-4/5 group-hover:scale-110 object-contain w-4/5 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="flex flex-col flex-grow p-4">
-                      <h3 className="line-clamp-1 group-hover:text-orange-600 mb-2 text-sm font-bold text-gray-800 transition-colors">
-                        {product.name}
-                      </h3>
-
-                      {product.description && (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: product.description,
-                          }}
-                          className="mb-2 text-sm text-gray-800 transition-colors line-clamp-2 font-tajawal-regular"
-                        />
-                      )}
-
-                      <div className="flex items-center justify-between pt-2 mt-auto">
-                        <p className="text-sm font-bold text-orange-600">
-                          {product.list_price.toLocaleString()} د.ع
-                        </p>
-
-                        {cartItem ? (
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleUpdateQuantity(
-                                  product,
-                                  cartItem.quantity - 1
-                                );
-                              }}
-                              className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="font-tajawal-medium w-6 text-center">
-                              {cartItem.quantity}
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleUpdateQuantity(
-                                  product,
-                                  cartItem.quantity + 1
-                                );
-                              }}
-                              className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleAddToCart(product);
-                            }}
-                            className="hover:bg-orange-200 group-hover:shadow-sm relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
-                            aria-label="إضافة للسلة"
-                          >
-                            <LucideShoppingCart className="w-4 h-4" />
-                            <span className="group-hover:scale-x-100 group-hover:opacity-10 absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0"></span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Bottom shine effect on hover */}
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                  </Link>
-                );
-              })}
+              {productsData?.products.map((product: any) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
-
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="mb-14 mt-20">

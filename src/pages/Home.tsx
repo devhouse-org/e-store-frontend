@@ -1,26 +1,14 @@
 import AuctionSection from "@/components/AuctionSection";
 import Banner from "@/components/Banner";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import ProductCard from "@/components/ProductCard";
+import SpecialProductCard from "@/components/SpecialProductCard";
 import axiosInstance from "@/utils/axiosInstance";
 import { products } from "@/utils/data/products";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Heart,
-  LucideArrowLeft,
-  LucideArrowRight,
-  ShoppingCart,
-  CircleDashed,
-  Plus,
-  Minus,
-} from "lucide-react";
+import { LucideArrowLeft, LucideArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-import { cn } from "@/lib/utils";
-import { useComparisonStore } from "@/store/useComparisonStore";
-import { useToast } from "@/hooks/use-toast";
-
-import { useCartStore } from "@/store/useCartStore";
 
 interface Banner {
   id: number;
@@ -100,14 +88,6 @@ interface Category {
   child_id: number[];
 }
 
-interface CategoryProduct {
-  id: number;
-  name: string;
-  list_price: number;
-  image_1920: string;
-  description_sale?: string;
-}
-
 interface CategoryProductsResponse {
   products: CategoryProduct[];
   total: number;
@@ -131,6 +111,14 @@ interface WishlistItem {
   price: number;
   image: string;
   description: string;
+}
+
+interface CategoryProduct {
+  id: number;
+  name: string;
+  list_price: number;
+  image_1920: string;
+  description_sale?: string;
 }
 
 function Home() {
@@ -367,25 +355,6 @@ function Home() {
       },
     });
 
-  const { toast: useToastToast } = useToast();
-  const {
-    addToComparison,
-    removeFromComparison,
-    isCompared,
-    initializeFromStorage,
-  } = useComparisonStore();
-
-  const {
-    addToCart,
-    updateQuantity,
-    removeFromCart,
-    products: cartProducts,
-  } = useCartStore();
-
-  // Add this at the top level of the component with other hooks
-  const { isWishlisted, addToWishlist, removeFromWishlist } =
-    useWishlistStore();
-
   return (
     <div className="md:px-12 px-4 pt-4 mx-auto">
       <div className="pb-14 relative pt-8">
@@ -449,10 +418,10 @@ function Home() {
         <div className="flex flex-col gap-6 px-4 mb-8">
           <div className="flex items-center justify-between">
             <h2 className="font-tajawal-medium text-xl relative after:absolute after:bottom-0 after:right-0 after:w-full after:h-0.5 after:bg-gradient-to-l after:from-orange-500 after:to-orange-300 pb-2">
-              منتجات الفئة
+              المنتجات الجديدة
             </h2>
             <Link
-              to="/categories"
+              to="/products"
               className="bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg"
             >
               عرض المزيد
@@ -507,185 +476,9 @@ function Home() {
             </div>
           ) : categoryProductsData?.products?.length ? (
             <div className="md:grid-cols-3 lg:grid-cols-6 relative z-10 grid grid-cols-2 gap-5">
-              {categoryProductsData.products.map((product: CategoryProduct) => {
-                const cartItem = cartProducts.find(
-                  (item) => item.id === product.id.toString()
-                );
-
-                const handleUpdateQuantity = (
-                  newQuantity: number,
-                  e: React.MouseEvent
-                ) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (newQuantity < 1) {
-                    removeFromCart(product.id.toString());
-                  } else {
-                    updateQuantity(product.id.toString(), newQuantity);
-                  }
-                };
-
-                const handleAddToCart = (e: React.MouseEvent) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  addToCart({
-                    id: product.id.toString(),
-                    name: product.name,
-                    price: product.list_price,
-                    image: `data:image/jpeg;base64,${product.image_1920}`,
-                    quantity: 1,
-                  });
-                };
-
-                const handleComparisonClick = (e: React.MouseEvent) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const productId = product.id.toString();
-
-                  if (isCompared(productId)) {
-                    removeFromComparison(productId);
-                    return;
-                  }
-
-                  if (
-                    useComparisonStore.getState().comparisonItems.length >= 4
-                  ) {
-                    useToastToast({
-                      title: "تنبيه المقارنة",
-                      description: "يمكنك مقارنة 4 منتجات كحد أقصى",
-                      variant: "destructive",
-                    });
-                    return;
-                  }
-
-                  addToComparison({
-                    id: productId,
-                    name: product.name,
-                    price: product.list_price,
-                    image: product.image_1920,
-                    description: product.description_sale || "",
-                  });
-                };
-
-                return (
-                  <Link
-                    key={product.id}
-                    to={`/product/${product.id}`}
-                    className="group rounded-xl hover:shadow-lg relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100"
-                  >
-                    {/* Wishlist and Comparison Buttons Container */}
-                    <div className="absolute z-10 flex gap-2 p-2 top-2 right-2">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const wishlistItem = {
-                            id: product.id.toString(),
-                            name: product.name,
-                            price: product.list_price,
-                            image: `data:image/jpeg;base64,${product.image_1920}`,
-                            description:
-                              product.description_sale || product.name,
-                          };
-                          isWishlisted(product.id.toString())
-                            ? removeFromWishlist(product.id.toString())
-                            : addToWishlist(wishlistItem);
-                        }}
-                        className="bg-white/90 group-hover:opacity-100 hover:bg-white p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
-                        aria-label="إضافة للمفضلة"
-                      >
-                        <Heart
-                          className={cn(
-                            "w-4 h-4 transition-colors",
-                            isWishlisted(product.id.toString())
-                              ? "text-red-500 fill-red-500"
-                              : "text-gray-400 group-hover:text-gray-600"
-                          )}
-                        />
-                      </button>
-
-                      <button
-                        onClick={handleComparisonClick}
-                        className={cn(
-                          "p-2 transition-all duration-200 rounded-full shadow-sm bg-white/90 hover:bg-white",
-                          isCompared(product.id.toString())
-                            ? "opacity-100"
-                            : "opacity-0 group-hover:opacity-100"
-                        )}
-                        aria-label="إضافة للمقارنة"
-                      >
-                        <CircleDashed
-                          className={cn(
-                            "w-4 h-4 transition-colors",
-                            isCompared(product.id.toString())
-                              ? "text-orange-500"
-                              : "text-gray-400 group-hover:text-gray-600"
-                          )}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Product Image */}
-                    <div className="aspect-square bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
-                      <img
-                        src={`data:image/jpeg;base64,${product.image_1920}`}
-                        alt={product.name}
-                        className="h-4/5 group-hover:scale-110 mix-blend-multiply object-contain w-4/5 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="flex flex-col flex-grow p-4">
-                      <h3 className="line-clamp-2 group-hover:text-orange-600 mb-2 text-sm font-medium text-gray-800 transition-colors">
-                        {product.name}
-                      </h3>
-
-                      <div className="flex items-center justify-between pt-2 mt-auto">
-                        <p className="text-sm font-bold text-orange-600">
-                          {product.list_price.toLocaleString()} د.ع
-                        </p>
-
-                        {cartItem ? (
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) =>
-                                handleUpdateQuantity(cartItem.quantity - 1, e)
-                              }
-                              className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="font-tajawal-medium w-6 text-center">
-                              {cartItem.quantity}
-                            </span>
-                            <button
-                              onClick={(e) =>
-                                handleUpdateQuantity(cartItem.quantity + 1, e)
-                              }
-                              className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={handleAddToCart}
-                            className="hover:bg-orange-200 group-hover:shadow-sm relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
-                            aria-label="إضافة للسلة"
-                          >
-                            <ShoppingCart className="w-4 h-4" />
-                            <span className="group-hover:scale-x-100 group-hover:opacity-10 absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0"></span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Bottom shine effect on hover */}
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                  </Link>
-                );
-              })}
+              {categoryProductsData.products.map((product: CategoryProduct) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
           ) : (
             <div className="flex items-center justify-center py-12">
@@ -901,94 +694,8 @@ function Home() {
             </div>
           ) : specialProductsData?.products?.length > 0 ? (
             <div className="md:grid-cols-3 lg:grid-cols-6 relative z-10 grid grid-cols-2 gap-5">
-              {specialProductsData.products.map((product) => (
-                <Link
-                  key={product.id}
-                  to={`/product/${product.id}`}
-                  className="group rounded-xl hover:shadow-lg relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100"
-                >
-                  {/* Wishlist Button */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      const wishlistItem = {
-                        id: product.id.toString(),
-                        name: product.name,
-                        price: product.list_price,
-                        image: `data:image/jpeg;base64,${product.image_1920}`,
-                        description: product.description_sale || product.name,
-                      };
-                      isWishlisted(product.id.toString())
-                        ? removeFromWishlist(product.id.toString())
-                        : addToWishlist(wishlistItem);
-                    }}
-                    className="bg-white/90 group-hover:opacity-100 hover:bg-white p-2 transition-all duration-200 rounded-full shadow-sm opacity-0"
-                    aria-label="إضافة للمفضلة"
-                  >
-                    <Heart
-                      className={cn(
-                        "w-4 h-4 transition-colors",
-                        isWishlisted(product.id.toString())
-                          ? "text-red-500 fill-red-500"
-                          : "text-gray-400 group-hover:text-gray-600"
-                      )}
-                    />
-                  </button>
-
-                  {/* Product Image */}
-                  <div className="aspect-square bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
-                    <img
-                      src={`data:image/jpeg;base64,${product.image_1920}`}
-                      alt={product.name}
-                      className="h-4/5 group-hover:scale-110 mix-blend-multiply object-contain w-4/5 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="flex flex-col flex-grow p-4">
-                    <h3 className="line-clamp-1 group-hover:text-orange-600 mb-2 text-sm font-bold text-gray-800 transition-colors">
-                      {product.name}
-                    </h3>
-
-                    {product.description && (
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html: product.description,
-                        }}
-                        className="line-clamp-2 font-tajawal-regular mb-2 text-sm text-gray-800 transition-colors"
-                      />
-                    )}
-
-                    <div className="flex items-center justify-between pt-2 mt-auto">
-                      <p className="text-sm font-bold text-orange-600">
-                        {product.list_price.toLocaleString()} د.ع
-                      </p>
-
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          useCartStore.getState().addToCart({
-                            id: product.id,
-                            name: product.name,
-                            price: product.list_price,
-                            image: `data:image/jpeg;base64,${product.image_1920}`,
-                            quantity: 1,
-                          });
-                        }}
-                        className="hover:bg-orange-200 group-hover:shadow-sm relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
-                        aria-label="إضافة للسلة"
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        <span className="group-hover:scale-x-100 group-hover:opacity-10 absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0"></span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Bottom shine effect on hover */}
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                </Link>
+              {specialProductsData.products.map((product: any) => (
+                <SpecialProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
