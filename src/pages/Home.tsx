@@ -421,7 +421,7 @@ function Home() {
               المنتجات الجديدة
             </h2>
             <Link
-              to="/categories"
+              to="/products"
               className="bg-gradient-to-r from-orange-400 to-orange-500 hover:shadow-md flex items-center gap-2 px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg"
             >
               عرض المزيد
