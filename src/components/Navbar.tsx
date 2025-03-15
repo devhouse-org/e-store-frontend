@@ -60,17 +60,19 @@ const links = [
 ];
 
 const Navbar = (props: Props) => {
-  const cartCount = useCartStore((state) => state.products.length);
+  const cartCount = useCartStore((state) =>
+    state.products.reduce((total, product) => total + product.quantity, 0)
+  );
   const wishlistCount = useWishlistStore((state) => state.wishlistCount);
   const comparisonItems = useComparisonStore((state) => state.comparisonItems);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [comparisonItemsNo, setComparisonItemsNo] = useState(0)
+  const [comparisonItemsNo, setComparisonItemsNo] = useState(0);
 
   // Update comparison items count when items change
   useEffect(() => {
-    const items = localStorage.getItem('comparisonItemIds');
+    const items = localStorage.getItem("comparisonItemIds");
     const comparisonList = items ? JSON.parse(items) : [];
     setComparisonItemsNo(comparisonList.length);
   }, [comparisonItems]);
@@ -89,7 +91,7 @@ const Navbar = (props: Props) => {
 
   // Fetch wishlist count from local storage
   useEffect(() => {
-    const wishlists = JSON.parse(localStorage.getItem('wishlists') || '[]');
+    const wishlists = JSON.parse(localStorage.getItem("wishlists") || "[]");
     setLocalWishlistCount(wishlists.length);
   }, [wishlistCount]);
 
@@ -101,8 +103,9 @@ const Navbar = (props: Props) => {
     <>
       {/* Overlay with fade animation */}
       <div
-        className={`fixed inset-0 bg-black/20 xl:hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 bg-black/20 xl:hidden transition-opacity duration-300 ${
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
         onClick={toggleMenu}
       />
 
@@ -110,7 +113,8 @@ const Navbar = (props: Props) => {
       <div
         className={`fixed top-0 right-0 z-50 h-screen w-72 bg-white border-l shadow-lg 
           transition-all duration-300 ease-in-out transform
-          ${isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+          ${
+            isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
           } xl:hidden`}
       >
         <div className="flex flex-col h-full p-4">
@@ -147,9 +151,10 @@ const Navbar = (props: Props) => {
                   onClick={toggleMenu}
                   className={({ isActive }) => `
                     flex items-center px-4 py-3 rounded-lg transition-colors text-lg font-tajawal-regular
-                    ${isActive
-                      ? "bg-orange-100 text-orange-500"
-                      : "text-gray-700 hover:bg-orange-50"
+                    ${
+                      isActive
+                        ? "bg-orange-100 text-orange-500"
+                        : "text-gray-700 hover:bg-orange-50"
                     }
                   `}
                 >
@@ -194,9 +199,10 @@ const Navbar = (props: Props) => {
                 to={link.link}
                 className={({ isActive }) => `
                   text-nowrap mt-1.5 cursor-pointer transition ease-in-out py-1 px-2 rounded-md font-tajawal-regular
-                  ${isActive
-                    ? "bg-orange-100 text-orange-500"
-                    : "hover:bg-orange-100/70"
+                  ${
+                    isActive
+                      ? "bg-orange-100 text-orange-500"
+                      : "hover:bg-orange-100/70"
                   }
                 `}
               >
@@ -233,19 +239,22 @@ const Navbar = (props: Props) => {
                 text-white gap-x-2 flex items-center justify-center px-4 py-1
                 transition-all duration-300 cursor-pointer rounded-full
                 ${isCartAnimating ? "scale-110 bg-green-500" : ""}
-                ${isActive
-                  ? "bg-orange-600"
-                  : "bg-orange-500 hover:bg-orange-500/90"
+                ${
+                  isActive
+                    ? "bg-orange-600"
+                    : "bg-orange-500 hover:bg-orange-500/90"
                 }
               `}
             >
               <ShoppingCart
-                className={`transition-transform duration-300 ${isCartAnimating ? "scale-110" : ""
-                  }`}
+                className={`transition-transform duration-300 ${
+                  isCartAnimating ? "scale-110" : ""
+                }`}
               />
               <p
-                className={`hidden md:block transition-all duration-300 ${isCartAnimating ? "scale-110" : ""
-                  }`}
+                className={`hidden md:block transition-all duration-300 ${
+                  isCartAnimating ? "scale-110" : ""
+                }`}
               >
                 {cartCount}
               </p>
@@ -257,9 +266,10 @@ const Navbar = (props: Props) => {
               to="/comparison"
               className={({ isActive }) => `
                 relative p-1.5 rounded-lg transition-all
-                ${isActive
-                  ? "text-orange-500"
-                  : "hover:text-orange-500 hover:bg-orange-50"
+                ${
+                  isActive
+                    ? "text-orange-500"
+                    : "hover:text-orange-500 hover:bg-orange-50"
                 }
               `}
             >
