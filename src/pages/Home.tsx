@@ -2,10 +2,6 @@ import AuctionSection from "@/components/AuctionSection";
 import Banner from "@/components/Banner";
 import ProductCard from "@/components/ProductCard";
 import SpecialProductCard from "@/components/SpecialProductCard";
-import { useToast } from "@/hooks/use-toast";
-import { useCartStore } from "@/store/useCartStore";
-import { useComparisonStore } from "@/store/useComparisonStore";
-import { useWishlistStore } from "@/store/useWishlistStore";
 import axiosInstance from "@/utils/axiosInstance";
 import { products } from "@/utils/data/products";
 import { useQuery } from "@tanstack/react-query";
@@ -359,25 +355,6 @@ function Home() {
       },
     });
 
-  const { toast: useToastToast } = useToast();
-  const {
-    addToComparison,
-    removeFromComparison,
-    isCompared,
-    initializeFromStorage,
-  } = useComparisonStore();
-
-  const {
-    addToCart,
-    updateQuantity,
-    removeFromCart,
-    products: cartProducts,
-  } = useCartStore();
-
-  // Add this at the top level of the component with other hooks
-  const { isWishlisted, addToWishlist, removeFromWishlist } =
-    useWishlistStore();
-
   return (
     <div className="md:px-12 px-4 pt-4 mx-auto">
       <div className="pb-14 relative pt-8">
@@ -441,7 +418,7 @@ function Home() {
         <div className="flex flex-col gap-6 px-4 mb-8">
           <div className="flex items-center justify-between">
             <h2 className="font-tajawal-medium text-xl relative after:absolute after:bottom-0 after:right-0 after:w-full after:h-0.5 after:bg-gradient-to-l after:from-orange-500 after:to-orange-300 pb-2">
-              منتجات الفئة
+              المنتجات الجديدة
             </h2>
             <Link
               to="/categories"

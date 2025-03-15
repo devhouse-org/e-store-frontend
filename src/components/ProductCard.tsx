@@ -158,14 +158,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
         <img
           src={`data:image/jpeg;base64,${product.image_1920}`}
           alt={product.name}
-          className="h-4/5 group-hover:scale-110 mix-blend-multiply object-contain w-4/5 transition-transform duration-300"
+          className="group-hover:scale-110 size-full object-cover transition-transform duration-300 rounded-md"
           loading="lazy"
         />
       </div>
 
       {/* Product Info */}
       <div className="flex flex-col flex-grow p-4">
-        <h3 className="line-clamp-2 group-hover:text-orange-600 mb-2 text-sm font-medium text-gray-800 transition-colors">
+        <h3 className="line-clamp-2 group-hover:text-orange-600 mb-2 text-sm font-semibold text-gray-800 transition-colors">
           {product.name}
         </h3>
 
