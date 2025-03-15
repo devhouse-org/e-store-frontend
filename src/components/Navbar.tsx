@@ -7,7 +7,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import logo from "../assets/images/Logo.png";
 import CustomInput from "./CustomInput";
 import { Link, NavLink } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
@@ -102,7 +101,7 @@ const Navbar = (props: Props) => {
     <>
       {/* Overlay with fade animation */}
       <div
-        className={`fixed inset-0 bg-black/20 lg:hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 bg-black/20 xl:hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         onClick={toggleMenu}
       />
@@ -112,13 +111,13 @@ const Navbar = (props: Props) => {
         className={`fixed top-0 right-0 z-50 h-screen w-72 bg-white border-l shadow-lg 
           transition-all duration-300 ease-in-out transform
           ${isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
-          } lg:hidden`}
+          } xl:hidden`}
       >
         <div className="flex flex-col h-full p-4">
           {/* Logo */}
           <div className="flex justify-center mb-4">
             <Link to="/" onClick={toggleMenu}>
-              <img src={logo} alt="e-store logo" className="w-auto h-12" />
+              <img src="/Logo.png" alt="e-store logo" className="w-auto h-12" />
             </Link>
           </div>
 
@@ -181,14 +180,14 @@ const Navbar = (props: Props) => {
         <div className="flex items-center flex-1 gap-x-4">
           {/* Mobile Menu Button */}
           <button
-            className="p-2 text-gray-700 rounded-lg lg:hidden hover:bg-gray-100"
+            className="p-2 text-gray-700 rounded-lg xl:hidden hover:bg-gray-100"
             onClick={toggleMenu}
           >
             {isOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
           {/* Desktop Navigation */}
-          <ul className="flex-wrap flex-1 hidden list-none lg:flex gap-x-4">
+          <ul className="flex-wrap flex-1 hidden list-none xl:flex gap-x-4">
             {links.map((link) => (
               <NavLink
                 key={link.id}
@@ -210,7 +209,7 @@ const Navbar = (props: Props) => {
         {/* Center Logo */}
         <div className="flex items-center justify-center logo lg:flex-1">
           <Link to="/">
-            <img src={logo} alt="e-store logo" />
+            <img src="/Logo.png" alt="e-store logo" />
           </Link>
         </div>
 

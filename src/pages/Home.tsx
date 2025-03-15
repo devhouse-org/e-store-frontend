@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { useComparisonStore } from "@/store/useComparisonStore";
 import { useToast } from "@/hooks/use-toast";
 
-import LogoPlaceholder from "@/assets/images/Logo.png";
 import { useCartStore } from "@/store/useCartStore";
 
 interface Banner {
@@ -1059,7 +1058,7 @@ function Home() {
                   className="hover:shadow-md flex flex-col items-center p-4 space-y-2 transition-shadow duration-200 bg-white border rounded-lg"
                 >
                   <img
-                    src={brand.image || LogoPlaceholder}
+                    src={brand.image || "/Logo.png"}
                     alt={brand.name}
                     className="object-contain w-20 h-12"
                   />

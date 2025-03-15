@@ -15,7 +15,7 @@ import {
   Twitter,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import AuctionSkeleton from "@/components/ui/AuctionSkeleton";
 
 interface BackendAuction {
@@ -104,6 +104,7 @@ interface Auction {
 
 const Auction = (props: Props) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [selectedPrices, setSelectedPrices] = useState<number[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [remainingTime, setRemainingTime] = useState<timeType | null>(null);
@@ -217,7 +218,7 @@ const Auction = (props: Props) => {
     try {
       const userId = localStorage.getItem("id");
       if (!userId) {
-        // toast.error("يرجى تسجيل الدخول أولاً");
+        navigate("/login");
         return;
       }
 

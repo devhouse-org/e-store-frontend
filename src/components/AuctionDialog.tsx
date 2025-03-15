@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 type TimeType = {
   seconds: number;
@@ -39,6 +40,7 @@ export function AuctionDialog({
   title,
   id,
 }: AuctionItemType) {
+  const navigate = useNavigate();
   const imgSrc =
     "https://ardes.bg/uploads/original/konzola-xbox-series-x-1tb-466538.jpg";
   const [remainingTime, setRemainingTime] = useState<TimeType | null>(null);
@@ -47,6 +49,15 @@ export function AuctionDialog({
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
+
+  const handleOpenDialog = () => {
+    const userId = localStorage.getItem("id");
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+    setOpen(true);
+  };
 
   useEffect(() => {
     if (!open) {
@@ -160,7 +171,7 @@ export function AuctionDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button label="زايد الان" variant={"blue"} />
+        <Button label="زايد الان" variant={"blue"} onClick={handleOpenDialog} />
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <div className="py-8" dir="rtl">
