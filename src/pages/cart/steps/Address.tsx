@@ -107,6 +107,20 @@ const Address = ({ setActive }: any) => {
           partner_id: Number(userId),
         }
       );
+
+      // Get previously selected address from localStorage
+      const savedAddress = localStorage.getItem("selectedDeliveryAddress");
+      if (savedAddress) {
+        const parsedAddress = JSON.parse(savedAddress);
+        // Find the matching location in the fetched locations
+        const previouslySelected = response.data.addresses.find(
+          (loc) => loc.id === parsedAddress.id
+        );
+        if (previouslySelected) {
+          setSelectedLocation(previouslySelected);
+        }
+      }
+
       setLocations(response.data.addresses);
     } catch (err) {
       setError("Failed to fetch locations");
@@ -122,6 +136,21 @@ const Address = ({ setActive }: any) => {
 
   const handleSelect = (location: Location) => {
     setSelectedLocation(location);
+    localStorage.setItem(
+      "selectedDeliveryAddress",
+      JSON.stringify({
+        id: location.id,
+        street: location.street,
+        street2: location.street2,
+        city: location.city,
+        state:
+          typeof location.state_id === "object" ? location.state_id[1] : "",
+        country:
+          typeof location.country_id === "object" ? location.country_id[1] : "",
+        phone: location.phone,
+        zip: location.zip,
+      })
+    );
   };
 
   return (
