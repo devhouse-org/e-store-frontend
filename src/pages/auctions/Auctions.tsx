@@ -1,10 +1,11 @@
 import AuctionCard from "@/components/AuctionCard";
 import Pagination from "@/components/Pagination";
-import Loader from "@/components/ui/LoadingState";
+import { Skeleton } from "@/components/ui/skeleton";
 import axiosInstance from "@/utils/axiosInstance";
 import { Auction } from "@/utils/data/auctions";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
+import AuctionCardSkeleton from "@/components/ui/AuctionSkeleton";
 
 interface BackendAuction {
   id: number;
@@ -86,8 +87,27 @@ const Auctions = () => {
 
   if (isLoading) {
     return (
-      <div className="mt-60 flex justify-center px-12 mx-auto">
-        <Loader />
+      <div className="px-12 mx-auto mt-8 overflow-hidden">
+        {/* Title Skeleton */}
+        <div className="title pb-4">
+          <Skeleton className="h-8 w-32" />
+        </div>
+
+        {/* Auction Cards Grid Skeleton */}
+        <div className="auction_cards sm:grid-cols-2 lg:grid-cols-3 grid grid-cols-1 gap-4">
+          {[...Array(6)].map((_, index) => (
+            <AuctionCardSkeleton key={index} />
+          ))}
+        </div>
+
+        {/* Pagination Skeleton */}
+        <div className="pagination mb-14 mt-20">
+          <div className="flex justify-center gap-2">
+            {[...Array(5)].map((_, index) => (
+              <Skeleton key={index} className="w-10 h-10 rounded-full" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

@@ -22,12 +22,12 @@ interface CartStore {
   updateQuantity: (productId: string, quantity: number) => void;
   isInCart: (productId: string) => boolean;
   getProductQuantity: (productId: string) => number;
-  lastAction: 'add' | 'remove' | 'update' | null;
+  lastAction: "add" | "remove" | "update" | null;
 }
 
 // Get initial state from localStorage
 const getInitialState = () => {
-  const savedCart = localStorage.getItem('cart');
+  const savedCart = localStorage.getItem("cart");
   if (savedCart) {
     const { products } = JSON.parse(savedCart);
     return { products };
@@ -40,41 +40,44 @@ export const useCartStore = create<CartStore>((set, get) => ({
   lastAction: null,
 
   isInCart: (productId) => {
-    return get().products.some(p => p.id === productId);
+    return get().products.some((p) => p.id === productId);
   },
 
   getProductQuantity: (productId) => {
-    return get().products.find(p => p.id === productId)?.quantity || 0;
+    return get().products.find((p) => p.id === productId)?.quantity || 0;
   },
 
   addToCart: (product) => {
     set((state) => {
       // Check if product already exists
-      const existingProduct = state.products.find(p => p.id === product.id);
-      
+      const existingProduct = state.products.find((p) => p.id === product.id);
+
       let newProducts;
       if (existingProduct) {
         // If exists, update quantity
-        newProducts = state.products.map(p =>
+        newProducts = state.products.map((p) =>
           p.id === product.id
             ? { ...p, quantity: p.quantity + product.quantity }
             : p
         );
       } else {
-        // If new, add to cart
-        newProducts = [...state.products, { ...product, quantity: 1 }];
+        // If new, add to cart with the specified quantity
+        newProducts = [...state.products, { ...product }];
       }
 
       const newState = {
         products: newProducts,
-        lastAction: 'add' as const
+        lastAction: "add" as const,
       };
-      
+
       // Save to localStorage
-      localStorage.setItem('cart', JSON.stringify({
-        products: newState.products
-      }));
-      
+      localStorage.setItem(
+        "cart",
+        JSON.stringify({
+          products: newState.products,
+        })
+      );
+
       return newState;
     });
   },
@@ -83,14 +86,17 @@ export const useCartStore = create<CartStore>((set, get) => ({
     set((state) => {
       const newState = {
         products: state.products.filter((p) => p.id !== productId),
-        lastAction: 'remove' as const
+        lastAction: "remove" as const,
       };
-      
+
       // Save to localStorage
-      localStorage.setItem('cart', JSON.stringify({
-        products: newState.products
-      }));
-      
+      localStorage.setItem(
+        "cart",
+        JSON.stringify({
+          products: newState.products,
+        })
+      );
+
       return newState;
     });
   },
@@ -101,7 +107,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
         get().removeFromCart(productId);
         return {
           ...state,
-          lastAction: 'remove' as const
+          lastAction: "remove" as const,
         };
       }
 
@@ -109,14 +115,17 @@ export const useCartStore = create<CartStore>((set, get) => ({
         products: state.products.map((p) =>
           p.id === productId ? { ...p, quantity } : p
         ),
-        lastAction: 'update' as const
+        lastAction: "update" as const,
       };
-      
+
       // Save to localStorage
-      localStorage.setItem('cart', JSON.stringify({
-        products: newState.products
-      }));
-      
+      localStorage.setItem(
+        "cart",
+        JSON.stringify({
+          products: newState.products,
+        })
+      );
+
       return newState;
     });
   },
