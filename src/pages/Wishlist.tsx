@@ -172,7 +172,6 @@ const Wishlist = () => {
   }, [wishlistIds, refetch, queryClient]);
 
   const handleRemoveFromWishlist = (productId: string) => {
-    console.log("Removing from wishlist:", productId);
     removeFromWishlist(String(productId));
     queryClient.invalidateQueries({ queryKey: ["wishlistProducts"] });
     setTimeout(() => refetch(), 0);
