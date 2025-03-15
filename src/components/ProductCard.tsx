@@ -1,257 +1,212 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import {
-  Heart,
-  ShoppingCart,
-  CircleDashed,
-  CreditCard,
-  HeartCrack,
-  Plus,
-  Minus,
-  X,
-} from "lucide-react";
-import { Product } from "@/utils/data/products";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/useCartStore";
 import { useComparisonStore } from "@/store/useComparisonStore";
-import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
-import { IconType } from "react-icons";
+import { useWishlistStore } from "@/store/useWishlistStore";
+import { CircleDashed, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
 
-interface ProductCardProps {
-  product: any;
-  size?: "sm" | "lg";
-  activeCard?: boolean;
-  showBtns?: boolean;
+export interface CategoryProduct {
+  id: number;
+  name: string;
+  list_price: number;
+  image_1920: string;
+  description_sale?: string;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  size = "lg",
-  activeCard,
-  showBtns = false,
-}) => {
-  const navigate = useNavigate();
-  const { addToWishlist, removeFromWishlist, isWishlisted } =
+interface ProductCardProps {
+  product: CategoryProduct;
+  className?: string;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
+  const { toast } = useToast();
+  const { isWishlisted, addToWishlist, removeFromWishlist } =
     useWishlistStore();
-  const {
-    addToCart,
-    products: cartProducts,
-    updateQuantity,
-    removeFromCart,
-  } = useCartStore();
   const { addToComparison, removeFromComparison, isCompared } =
     useComparisonStore();
+  const {
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    products: cartProducts,
+  } = useCartStore();
 
-  const isInWishlist = isWishlisted(product.id);
-  const isInComparison = isCompared(product.id);
-  const cartItem = cartProducts.find((item) => item.id === product.id);
+  const cartItem = cartProducts.find(
+    (item) => item.id === product.id.toString()
+  );
 
-  const handleAddToCart = () => {
-    if (!cartItem) {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        quantity: 1,
-        storage: product.storage,
+  const handleUpdateQuantity = (newQuantity: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (newQuantity < 1) {
+      removeFromCart(product.id.toString());
+    } else {
+      updateQuantity(product.id.toString(), newQuantity);
+    }
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({
+      id: product.id.toString(),
+      name: product.name,
+      price: product.list_price,
+      image: `data:image/jpeg;base64,${product.image_1920}`,
+      quantity: 1,
+    });
+  };
+
+  const handleComparisonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const productId = product.id.toString();
+
+    if (isCompared(productId)) {
+      removeFromComparison(productId);
+      return;
+    }
+
+    if (useComparisonStore.getState().comparisonItems.length >= 4) {
+      toast({
+        title: "تنبيه المقارنة",
+        description: "يمكنك مقارنة 4 منتجات كحد أقصى",
+        variant: "destructive",
       });
+      return;
     }
+
+    addToComparison({
+      id: productId,
+      name: product.name,
+      price: product.list_price,
+      image: product.image_1920,
+      description: product.description_sale || "",
+    });
   };
 
-  const handleUpdateQuantity = (newQuantity: number) => {
-    if (cartItem) {
-      if (newQuantity < 1) {
-        removeFromCart(product.id);
-      } else {
-        updateQuantity(product.id, newQuantity);
-      }
-    }
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const wishlistItem = {
+      id: product.id.toString(),
+      name: product.name,
+      price: product.list_price,
+      image: `data:image/jpeg;base64,${product.image_1920}`,
+      description: product.description_sale || product.name,
+    };
+
+    isWishlisted(product.id.toString())
+      ? removeFromWishlist(product.id.toString())
+      : addToWishlist(wishlistItem);
   };
 
-  const handleBuyNow = () => {
-    handleAddToCart();
-    navigate("/cart");
-  };
-
-  const handleWishlistClick = () => {
-    if (isInWishlist) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist(product);
-    }
-  };
-
-  const handleComparisonClick = () => {
-    if (isInComparison) {
-      removeFromComparison(product.id);
-    } else {
-      addToComparison(product);
-    }
-  };
-
-  if (!product) {
-    return null;
-  }
+  const isInWishlist = isWishlisted(product.id.toString());
+  const isInComparison = isCompared(product.id.toString());
 
   return (
-    <Link to={`/product/${product.id}`} className="block">
-      <div
-        className={`
-          relative group cursor-pointer transition-all duration-300 ease-in-out
-          ${size === "lg" ? "w-72 p-4" : "w-40 p-2"}
-          ${
-            activeCard
-              ? "border-orange-400 shadow-md"
-              : "bordertransparent hover:shadow-md"
-          }
-          border bg-white rounded-xl overflow-hidden textcenter
-        `}
-      >
-        {/* Product Image Container */}
-        <div className="relative">
-          <img
-            src={product.image}
-            alt={product.name}
-            className={`
-              w-full object-cover rounded-lg mix-blend-multiply group-hover:scale-105 duration-200 transition-all
-              ${size === "lg" ? "h-[280px]" : "h-[220px]"}
-            `}
+    <Link
+      to={`/product/${product.id}`}
+      className={cn(
+        "group rounded-xl hover:shadow-lg relative flex flex-col h-full overflow-hidden transition-all duration-300 bg-white border border-gray-100",
+        className
+      )}
+    >
+      {/* Wishlist and Comparison Buttons Container */}
+      <div className="top-2 right-2 absolute z-10 flex gap-2 p-2">
+        <button
+          onClick={handleWishlistClick}
+          className={cn(
+            "bg-white/90 hover:bg-white p-2 transition-all duration-200 rounded-full shadow-sm",
+            isInWishlist ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          )}
+          aria-label="إضافة للمفضلة"
+        >
+          <Heart
+            className={cn(
+              "w-4 h-4 transition-colors",
+              isInWishlist
+                ? "text-red-500 fill-red-500"
+                : "text-gray-400 group-hover:text-gray-600"
+            )}
           />
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleWishlistClick();
-            }}
-            className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-50"
-          >
-            <Heart
-              className={`w-5 h-5 ${
-                isInWishlist ? "text-red-500 fill-red-500" : "text-gray-400"
-              }`}
-            />
-          </button>
-        </div>
+        </button>
 
-        {/* Product Info Container */}
-        <div className={`mt-3 space-y-2 ${size === "lg" ? "px-4" : "px-2"}`}>
-          <h2
-            className={`
-              ${size === "lg" ? "text-lg" : "text-sm"}
-              text-gray-800 font-tajawal-medium truncate
-              group-hover:text-orange-500 transition-colors duration-300
-            `}
-          >
-            {product.name}
-          </h2>
+        <button
+          onClick={handleComparisonClick}
+          className={cn(
+            "p-2 transition-all duration-200 rounded-full shadow-sm bg-white/90 hover:bg-white",
+            isInComparison ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          )}
+          aria-label="إضافة للمقارنة"
+        >
+          <CircleDashed
+            className={cn(
+              "w-4 h-4 transition-colors",
+              isInComparison
+                ? "text-orange-500"
+                : "text-gray-400 group-hover:text-gray-600"
+            )}
+          />
+        </button>
+      </div>
 
-          <p
-            className={`
-              ${size === "lg" ? "text-xl" : "text-base"}
-              text-orange-500 font-tajawal-bold
-              group-hover:text-orange-600 transition-colors duration-300
-            `}
-          >
-            {product.price.toLocaleString()} د.ع
+      {/* Product Image */}
+      <div className="aspect-square bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
+        <img
+          src={`data:image/jpeg;base64,${product.image_1920}`}
+          alt={product.name}
+          className="h-4/5 group-hover:scale-110 mix-blend-multiply object-contain w-4/5 transition-transform duration-300"
+          loading="lazy"
+        />
+      </div>
+
+      {/* Product Info */}
+      <div className="flex flex-col flex-grow p-4">
+        <h3 className="line-clamp-2 group-hover:text-orange-600 mb-2 text-sm font-medium text-gray-800 transition-colors">
+          {product.name}
+        </h3>
+
+        <div className="flex items-center justify-between pt-2 mt-auto">
+          <p className="text-sm font-bold text-orange-600">
+            {product.list_price.toLocaleString()} د.ع
           </p>
 
-          {showBtns && (
-            <div className="flex items-center justify-between">
-              {/* Left side buttons */}
-              <div className="flex gap-2">
-                <Button
-                  size="icon"
-                  Icon={CreditCard as IconType}
-                  className="hover:bg-orange-600 text-white bg-orange-500"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleBuyNow();
-                  }}
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={
-                    isInComparison
-                      ? "bg-orange-500 text-white hover:bg-orange-600"
-                      : "bg-orange-100 hover:bg-orange-200 text-orange-500"
-                  }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleComparisonClick();
-                  }}
-                  Icon={CircleDashed as IconType}
-                />
-              </div>
-
-              {/* Right side - Cart button or quantity controls */}
-              {cartItem ? (
-                <div
-                  className="bg-orange-100/25 flex items-center gap-2 px-2 py-1 rounded-md"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-8 h-8 text-orange-500"
-                    onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
-                    Icon={Minus as IconType}
-                  />
-                  <span className="font-tajawal-medium w-6 text-center">
-                    {cartItem.quantity}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-8 h-8 text-black"
-                    onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
-                    Icon={Plus as IconType}
-                  />
-                </div>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-orange-200 text-orange-500 bg-orange-100"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleAddToCart();
-                  }}
-                  Icon={ShoppingCart as IconType}
-                />
-              )}
+          {cartItem ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => handleUpdateQuantity(cartItem.quantity - 1, e)}
+                className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="font-tajawal-medium w-6 text-center">
+                {cartItem.quantity}
+              </span>
+              <button
+                onClick={(e) => handleUpdateQuantity(cartItem.quantity + 1, e)}
+                className="hover:bg-orange-200 p-1 text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              className="hover:bg-orange-200 group-hover:shadow-sm relative p-2 overflow-hidden text-orange-600 transition-colors duration-200 bg-orange-100 rounded-lg"
+              aria-label="إضافة للسلة"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span className="group-hover:scale-x-100 group-hover:opacity-10 absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-orange-500 opacity-0"></span>
+            </button>
           )}
         </div>
-
-        {/* Active Indicator */}
-        {activeCard && (
-          <div className="top-2 right-2 absolute">
-            <div className="bg-orange-500 text-white p-1.5 rounded-full shadow-sm">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3.5 w-3.5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Bottom shine effect on hover */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-300 via-orange-500 to-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
     </Link>
   );
 };
