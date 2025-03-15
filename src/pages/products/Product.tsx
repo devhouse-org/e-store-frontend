@@ -1,34 +1,33 @@
-import { useState, useEffect } from "react";
-import {
-  Heart,
-  Share2,
-  Mail,
-  Facebook,
-  Twitter,
-  Instagram,
-  Plus,
-  Minus,
-  Star,
-  BadgeCheck,
-  HandCoins,
-  Truck,
-  Scale,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@radix-ui/react-separator";
-import { IconType } from "react-icons";
-import ReviewCard from "@/components/ReviewCard";
 import ProductCard from "@/components/ProductCard";
-import Slider from "react-slick";
+import ReviewCard from "@/components/ReviewCard";
+import { Button } from "@/components/ui/button";
+import ProductSkeleton from "@/components/ui/ProductSkeleton";
 import { useCartStore } from "@/store/useCartStore";
-import { useNavigate, useParams } from "react-router-dom";
+import { useComparisonStore } from "@/store/useComparisonStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
+import axiosInstance from "@/utils/axiosInstance";
 import { products } from "@/utils/data/products";
 import { reviews } from "@/utils/data/reviews";
-import { useWishlistStore } from "@/store/useWishlistStore";
-import { useComparisonStore } from "@/store/useComparisonStore";
-import axiosInstance from "@/utils/axiosInstance";
+import { Separator } from "@radix-ui/react-separator";
 import { useQuery } from "@tanstack/react-query";
-import ProductSkeleton from "@/components/ui/ProductSkeleton";
+import {
+  BadgeCheck,
+  Facebook,
+  HandCoins,
+  Heart,
+  Instagram,
+  Mail,
+  Minus,
+  Plus,
+  Share2,
+  Star,
+  Truck,
+  Twitter,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { IconType } from "react-icons";
+import { useNavigate, useParams } from "react-router-dom";
+import Slider from "react-slick";
 
 // Update Product interface to match API response
 interface ProductDetails {
@@ -71,7 +70,7 @@ const Product = () => {
   const isInCart = useCartStore((state) => state.isInCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const getProductQuantity = useCartStore((state) => state.getProductQuantity);
-  
+
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -166,7 +165,9 @@ const Product = () => {
         id: product.id.toString(),
         name: product.name,
         price: product.list_price,
-        image: product.image_1920.startsWith('data:image') ? product.image_1920 : `data:image/png;base64,${product.image_1920}`,
+        image: product.image_1920.startsWith("data:image")
+          ? product.image_1920
+          : `data:image/png;base64,${product.image_1920}`,
         quantity: quantity,
         selected_attributes: selectedAttributeValues,
       });
@@ -183,13 +184,7 @@ const Product = () => {
       if (isInWishlist) {
         removeFromWishlist(product.id.toString());
       } else {
-        addToWishlist({
-          id: product.id.toString(),
-          name: product.name,
-          price: product.list_price,
-          image: product.image_1920,
-          description: product.description || product.description_sale || "",
-        });
+        addToWishlist(product.id.toString());
       }
     }
   };
@@ -238,7 +233,9 @@ const Product = () => {
         id: product.id.toString(),
         name: product.name,
         price: product.list_price,
-        image: product.image_1920.startsWith('data:image') ? product.image_1920 : `data:image/png;base64,${product.image_1920}`,
+        image: product.image_1920.startsWith("data:image")
+          ? product.image_1920
+          : `data:image/png;base64,${product.image_1920}`,
         quantity: 1,
         selected_attributes: selectedAttributeValues,
       });
@@ -256,7 +253,14 @@ const Product = () => {
   // Get 4 related products (excluding current product)
   const relatedProducts = products
     .filter((p) => p.id.toString() !== id)
-    .slice(0, 4);
+    .slice(0, 4)
+    .map((p) => ({
+      id: parseInt(p.id),
+      name: p.name,
+      list_price: p.price,
+      image_1920: p.image,
+      description_sale: p.description,
+    }));
 
   if (isLoading) {
     return <ProductSkeleton />;
@@ -273,18 +277,18 @@ const Product = () => {
   return (
     <div className="px-12 py-6">
       <div className="w-full p-4 my-10 bg-white rounded-md shadow">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <div className="lg:grid-cols-12 grid grid-cols-1 gap-8">
           {/* Left Column - Images */}
-          <div className="space-y-4 lg:col-span-4">
-            <div className="flex justify-center p-4 bg-gray-100 rounded-xl">
+          <div className="lg:col-span-4 space-y-4">
+            <div className="rounded-xl flex justify-center p-4 bg-gray-100">
               <img
                 src={`data:image/png;base64,${product.image_1920}`}
                 alt={product.name}
-                className="object-contain w-full max-w-xs transition-opacity duration-300 lg:w-80"
+                className="lg:w-80 object-contain w-full max-w-xs transition-opacity duration-300"
               />
             </div>
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2 lg:gap-4">
+              <div className="lg:gap-4 grid grid-cols-4 gap-2">
                 {images.map((img, idx) => (
                   <div
                     key={idx}
@@ -318,7 +322,7 @@ const Product = () => {
           </div>
 
           {/* Right Column - Product Info */}
-          <div className="space-y-6 lg:col-span-8">
+          <div className="lg:col-span-8 space-y-6">
             <div className="flex items-center justify-between">
               <h1
                 className="text-wrap max-w-[90%] text-xl lg:text-2xl font-tajawal-medium text-right"
@@ -347,13 +351,13 @@ const Product = () => {
             <Separator className="bg-gray-200 p-[.5px]" />
 
             <div className="space-y-4">
-              <h3 className="text-lg text-right font-tajawal-medium">
+              <h3 className="font-tajawal-medium text-lg text-right">
                 ابرز الخصائص
               </h3>
-              <ul className="pr-4 space-y-2 text-right text-blue-600 list-disc font-tajawal-regular">
+              <ul className="font-tajawal-regular pr-4 space-y-2 text-right text-blue-600 list-disc">
                 <li>
                   <div
-                    className="mb-2 text-sm text-gray-600 line-clamp-2"
+                    className="line-clamp-2 mb-2 text-sm text-gray-600"
                     dangerouslySetInnerHTML={{
                       __html: product?.description || "",
                     }}
@@ -367,12 +371,12 @@ const Product = () => {
             {product.attributes &&
               product.attributes.map((attribute) => (
                 <div key={attribute.id} className="space-y-4">
-                  <h3 className="text-lg text-right font-tajawal-medium">
+                  <h3 className="font-tajawal-medium text-lg text-right">
                     {attribute.name}
                   </h3>
                   <div
                     dir="ltr"
-                    className="flex flex-wrap justify-end gap-2 font-tajawal-medium lg:gap-4"
+                    className="font-tajawal-medium lg:gap-4 flex flex-wrap justify-end gap-2"
                   >
                     {attribute.values.map((value) => (
                       <button
@@ -416,24 +420,24 @@ const Product = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className="text-orange-500 bg-orange-100 w-fit hover:bg-orange-200"
+                className="w-fit hover:bg-orange-200 text-orange-500 bg-orange-100"
                 onClick={handleInitialAddToCart}
                 label="إضافة للسلة"
               />
             )}
 
             <div className="text-right">
-              <div className="text-2xl text-orange-500 lg:text-3xl font-tajawal-medium">
+              <div className="lg:text-3xl font-tajawal-medium text-2xl text-orange-500">
                 {product.list_price.toLocaleString()} د.ع
               </div>
             </div>
 
             <Separator className="bg-gray-200 p-[.5px]" />
 
-            <div className="flex w-full gap-4 lg:w-fit">
+            <div className="lg:w-fit flex w-full gap-4">
               <Button
                 size="lg"
-                className="flex-1 bg-orange-500 hover:bg-orange-600"
+                className="hover:bg-orange-600 flex-1 bg-orange-500"
                 onClick={handleBuyNow}
                 label="شراء الآن"
               />
@@ -453,26 +457,26 @@ const Product = () => {
         </div>
 
         {/* The Last Line */}
-        <div className="flex flex-col items-center justify-between gap-6 mt-8 lg:flex-row">
-          <div className="grid w-full grid-cols-3 gap-4 text-sm text-center lg:gap-12 lg:w-auto">
-            <div className="flex flex-col items-center gap-y-1">
+        <div className="lg:flex-row flex flex-col items-center justify-between gap-6 mt-8">
+          <div className="lg:gap-12 lg:w-auto grid w-full grid-cols-3 gap-4 text-sm text-center">
+            <div className="gap-y-1 flex flex-col items-center">
               <BadgeCheck size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex flex-col font-tajawal-medium">
+              <div className="font-tajawal-medium flex flex-col">
                 <p>منتجات اصلية</p>
                 <p>وبضمان حقيقي</p>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-y-1">
+            <div className="gap-y-1 flex flex-col items-center">
               <HandCoins size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex flex-col font-tajawal-medium">
+              <div className="font-tajawal-medium flex flex-col">
                 <p>دفع عند الاستلام</p>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-y-1">
+            <div className="gap-y-1 flex flex-col items-center">
               <Truck size={24} className="lg:w-8 lg:h-8" />
-              <div className="flex flex-col font-tajawal-medium">
+              <div className="font-tajawal-medium flex flex-col">
                 <p>شحن سريع وامن</p>
               </div>
             </div>
@@ -480,18 +484,18 @@ const Product = () => {
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-orange-500">
             <h3 className="text-gray-500">مشاركة: </h3>
-            <Mail className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Twitter className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Share2 className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Instagram className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
-            <Facebook className="w-6 h-6 cursor-pointer lg:w-8 lg:h-8 hover:text-gray-700" />
+            <Mail className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Twitter className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Share2 className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Instagram className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
+            <Facebook className="lg:w-8 lg:h-8 hover:text-gray-700 w-6 h-6 cursor-pointer" />
           </div>
         </div>
       </div>
 
       {/* Description section */}
       <div>
-        <div className="flex flex-col gap-4 p-4 bg-white border shadow-md border-light-100 lg:flex-row">
+        <div className="border-light-100 lg:flex-row flex flex-col gap-4 p-4 bg-white border shadow-md">
           {/* Product Description Section */}
           <div className="w-full md:flex-[0.8]">
             <div className="flex flex-col justify-between">
@@ -502,7 +506,7 @@ const Product = () => {
               </div>
               <div className="pt-4">
                 <div
-                  className="text-sm leading-relaxed text-right md:text-base"
+                  className="md:text-base text-sm leading-relaxed text-right"
                   dangerouslySetInnerHTML={{
                     __html: product?.description || "",
                   }}
@@ -519,14 +523,14 @@ const Product = () => {
                   المراجعات
                 </h1>
               </div>
-              <div className="flex flex-col pt-4 gap-y-2">
+              <div className="gap-y-2 flex flex-col pt-4">
                 <ReviewCard reviews={reviews} />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="p-4 mt-2 mb-8 overflow-hidden bg-white border rounded-md shadow-md shadow-light-600">
+        <div className="shadow-light-600 p-4 mt-2 mb-8 overflow-hidden bg-white border rounded-md shadow-md">
           <div className="mb-4 border-b">
             <h1 className="font-tajawal-medium text-[16px] border-b-2 border-orange-400 w-fit">
               منتجات ذات صلة
@@ -535,7 +539,7 @@ const Product = () => {
           <Slider className="my-4" {...settings}>
             {relatedProducts.map((relatedProduct) => (
               <div key={relatedProduct.id} className="px-2">
-                <ProductCard product={relatedProduct} size="sm" />
+                <ProductCard product={relatedProduct} />
               </div>
             ))}
           </Slider>

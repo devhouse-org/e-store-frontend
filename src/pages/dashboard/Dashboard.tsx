@@ -1,21 +1,18 @@
-import {
-  LucideBookHeart,
-  LucidePackageCheck,
-  LucideShoppingCart,
-  LucideChevronLeft,
-} from "lucide-react";
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/utils/axiosInstance";
-import { useNavigate } from "react-router-dom";
-import { useCartStore } from "@/store/useCartStore";
-import { useWishlistStore } from "@/store/useWishlistStore";
-import { Link } from "react-router-dom";
-import LocationCard from "@/components/LocationCard";
 import AddLocationDialog from "@/components/AddLocationDialog";
-import Loader from "@/components/ui/LoadingState";
+import LocationCard from "@/components/LocationCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCartStore } from "@/store/useCartStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
+import axiosInstance from "@/utils/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import {
+  LucideBookHeart,
+  LucideChevronLeft,
+  LucidePackageCheck,
+  LucideShoppingCart,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 // Define TypeScript interfaces for the data
 interface OrderLine {
@@ -146,43 +143,43 @@ const useUserNotifications = (partnerId: number) => {
 
 // Add these skeleton components at the top of the file, before the Dashboard component
 const OrderSkeleton = () => (
-  <div className="bg-white border rounded-lg p-4 shadow-sm">
-    <div className="flex justify-between items-start mb-3">
+  <div className="p-4 bg-white border rounded-lg shadow-sm">
+    <div className="flex items-start justify-between mb-3">
       <div className="space-y-2">
-        <Skeleton className="h-6 w-32" />
-        <Skeleton className="h-4 w-24" />
+        <Skeleton className="w-32 h-6" />
+        <Skeleton className="w-24 h-4" />
       </div>
-      <Skeleton className="h-6 w-20 rounded-full" />
+      <Skeleton className="w-20 h-6 rounded-full" />
     </div>
 
     <div className="space-y-3">
-      <div className="flex justify-between items-center">
-        <Skeleton className="h-4 w-20" />
-        <Skeleton className="h-4 w-24" />
+      <div className="flex items-center justify-between">
+        <Skeleton className="w-20 h-4" />
+        <Skeleton className="w-24 h-4" />
       </div>
-      <div className="flex justify-between items-center">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-16" />
+      <div className="flex items-center justify-between">
+        <Skeleton className="w-24 h-4" />
+        <Skeleton className="w-16 h-4" />
       </div>
-      <div className="flex justify-between items-center">
-        <Skeleton className="h-4 w-28" />
-        <Skeleton className="h-4 w-20" />
+      <div className="flex items-center justify-between">
+        <Skeleton className="w-28 h-4" />
+        <Skeleton className="w-20 h-4" />
       </div>
     </div>
 
-    <div className="mt-4 pt-3 border-t">
+    <div className="pt-3 mt-4 border-t">
       <Skeleton className="h-9 w-full rounded-md" />
     </div>
   </div>
 );
 
 const NotificationSkeleton = () => (
-  <div className="flex bg-white shadow p-3 rounded-md gap-x-4 items-start">
-    <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
+  <div className="gap-x-4 flex items-start p-3 bg-white rounded-md shadow">
+    <Skeleton className="flex-shrink-0 w-10 h-10 rounded-full" />
     <div className="flex-1 space-y-2">
-      <Skeleton className="h-4 w-3/4" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-3 w-20" />
+      <Skeleton className="w-3/4 h-4" />
+      <Skeleton className="w-full h-4" />
+      <Skeleton className="w-20 h-3" />
     </div>
   </div>
 );
@@ -190,12 +187,12 @@ const NotificationSkeleton = () => (
 const LocationSkeleton = () => (
   <div className="bg-white p-4 rounded-lg shadow-sm w-full md:w-[calc(50%-8px)]">
     <div className="space-y-3">
-      <Skeleton className="h-6 w-32" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="w-32 h-6" />
+      <Skeleton className="w-full h-4" />
+      <Skeleton className="w-3/4 h-4" />
       <div className="flex justify-end gap-2 mt-4">
-        <Skeleton className="h-8 w-20" />
-        <Skeleton className="h-8 w-20" />
+        <Skeleton className="w-20 h-8" />
+        <Skeleton className="w-20 h-8" />
       </div>
     </div>
   </div>
@@ -207,8 +204,9 @@ const Dashboard = () => {
     Number(localStorage.getItem("id"))
   );
   const orders = data?.orders || [];
-  const cartCount = useCartStore((state) => state.cartCount);
-  const wishlistCount = useWishlistStore((state) => state.wishlistCount);
+
+  const cartCount = useCartStore((state) => state.products.length);
+  const wishlistCount = useWishlistStore((state) => state.getWishlistCount());
   const userId = localStorage.getItem("id");
 
   const {
@@ -256,37 +254,37 @@ const Dashboard = () => {
   return (
     <div className="p-4 space-y-4">
       {/* Header */}
-      <h1 className="text-xl text-gray-500 font-tajawal-bold">لوحة التحكم</h1>
+      <h1 className="font-tajawal-bold text-xl text-gray-500">لوحة التحكم</h1>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white flex items-start gap-x-4 p-4 rounded shadow">
-          <div className="bg-orange-500 shadow-lg p-4 flex justify-center items-center rounded-full">
+      <div className="md:grid-cols-3 grid grid-cols-1 gap-4">
+        <div className="gap-x-4 flex items-start p-4 bg-white rounded shadow">
+          <div className="flex items-center justify-center p-4 bg-orange-500 rounded-full shadow-lg">
             <LucideShoppingCart className="text-white" size={40} />
           </div>
           <div>
             {cartCount > 0 ? (
               <>
-                <h2 className="text-lg font-tajawal-medium">
+                <h2 className="font-tajawal-medium text-lg">
                   {cartCount} منتجات في السلة
                 </h2>
                 <p className="font-tajawal-regular">اضغط لإكمال عملية التسوق</p>
                 <Link
                   to="/cart"
-                  className="text-orange-500 font-tajawal-regular"
+                  className="font-tajawal-regular text-orange-500"
                 >
                   رؤية المزيد
                 </Link>
               </>
             ) : (
               <>
-                <h2 className="text-lg font-tajawal-medium">السلة فارغة</h2>
+                <h2 className="font-tajawal-medium text-lg">السلة فارغة</h2>
                 <p className="font-tajawal-regular">
                   لم تضف أي منتجات للسلة بعد
                 </p>
                 <Link
                   to="/products"
-                  className="text-orange-500 font-tajawal-regular"
+                  className="font-tajawal-regular text-orange-500"
                 >
                   تسوق الآن
                 </Link>
@@ -294,14 +292,14 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-        <div className="bg-white flex items-start gap-x-4 p-4 rounded shadow">
-          <div className="bg-orange-500 shadow-lg p-4 flex justify-center items-center rounded-full">
+        <div className="gap-x-4 flex items-start p-4 bg-white rounded shadow">
+          <div className="flex items-center justify-center p-4 bg-orange-500 rounded-full shadow-lg">
             <LucideBookHeart className="text-white" size={40} />
           </div>
           <div>
             {wishlistCount > 0 ? (
               <>
-                <h2 className="text-lg font-tajawal-medium">
+                <h2 className="font-tajawal-medium text-lg">
                   {wishlistCount} منتجات في المفضلات
                 </h2>
                 <p className="font-tajawal-regular">
@@ -309,14 +307,14 @@ const Dashboard = () => {
                 </p>
                 <Link
                   to="/wishlist"
-                  className="text-orange-500 font-tajawal-regular"
+                  className="font-tajawal-regular text-orange-500"
                 >
                   رؤية المزيد
                 </Link>
               </>
             ) : (
               <>
-                <h2 className="text-lg font-tajawal-medium">
+                <h2 className="font-tajawal-medium text-lg">
                   لا توجد منتجات مفضلة
                 </h2>
                 <p className="font-tajawal-regular">
@@ -324,7 +322,7 @@ const Dashboard = () => {
                 </p>
                 <Link
                   to="/products"
-                  className="text-orange-500 font-tajawal-regular"
+                  className="font-tajawal-regular text-orange-500"
                 >
                   تصفح المنتجات
                 </Link>
@@ -332,14 +330,14 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-        <div className="bg-white flex items-start gap-x-4 p-4 rounded shadow">
-          <div className="bg-orange-500 shadow-lg p-4 flex justify-center items-center rounded-full">
+        <div className="gap-x-4 flex items-start p-4 bg-white rounded shadow">
+          <div className="flex items-center justify-center p-4 bg-orange-500 rounded-full shadow-lg">
             <LucidePackageCheck className="text-white" size={40} />
           </div>
           <div>
             {orders.length > 0 ? (
               <>
-                <h2 className="text-lg font-tajawal-medium">
+                <h2 className="font-tajawal-medium text-lg">
                   {orders.length} طلبات
                 </h2>
                 <p className="font-tajawal-regular">
@@ -347,20 +345,20 @@ const Dashboard = () => {
                 </p>
                 <Link
                   to="/dashboard/orders"
-                  className="text-orange-500 font-tajawal-regular"
+                  className="font-tajawal-regular text-orange-500"
                 >
                   رؤية المزيد
                 </Link>
               </>
             ) : (
               <>
-                <h2 className="text-lg font-tajawal-medium">لا توجد طلبات</h2>
+                <h2 className="font-tajawal-medium text-lg">لا توجد طلبات</h2>
                 <p className="font-tajawal-regular">
                   لم تقم بأي طلبات شراء بعد
                 </p>
                 <Link
                   to="/products"
-                  className="text-orange-500 font-tajawal-regular"
+                  className="font-tajawal-regular text-orange-500"
                 >
                   تسوق الآن
                 </Link>
@@ -371,34 +369,34 @@ const Dashboard = () => {
       </div>
 
       {/* Notifications and Orders */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="md:grid-cols-3 grid grid-cols-1 gap-4">
         {/* Orders */}
-        <div className="bg-white p-4 rounded shadow col-span-2">
-          <h2 className="text-lg font-tajawal-medium mb-4">
+        <div className="col-span-2 p-4 bg-white rounded shadow">
+          <h2 className="font-tajawal-medium mb-4 text-lg">
             الطلبات الحالية ({orders.length})
           </h2>
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:grid-cols-2 grid grid-cols-1 gap-4">
               {[1, 2, 3, 4].map((i) => (
                 <OrderSkeleton key={i} />
               ))}
             </div>
           ) : error ? (
-            <p className="text-center text-red-500 py-4">{error.message}</p>
+            <p className="py-4 text-center text-red-500">{error.message}</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:grid-cols-2 grid grid-cols-1 gap-4">
               {orders.map((order, index) => (
                 <div
                   key={order.id}
-                  className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className="hover:shadow-md p-4 transition-shadow bg-white border rounded-lg shadow-sm cursor-pointer"
                   onClick={() => navigate(`/dashboard/orders/${order.id}`)}
                 >
-                  <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-tajawal-medium">
+                      <h3 className="font-tajawal-medium text-lg">
                         {order.name}
                       </h3>
-                      <p className="text-gray-600 text-sm">
+                      <p className="text-sm text-gray-600">
                         {formatDate(order.date_order)}
                       </p>
                     </div>
@@ -414,19 +412,19 @@ const Dashboard = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-gray-600">رقم الطلب:</span>
                       <span className="font-tajawal-medium">{order.name}</span>
                     </div>
 
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-gray-600">عدد المنتجات:</span>
                       <span className="font-tajawal-medium">
                         {order.order_line.length}
                       </span>
                     </div>
 
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-gray-600">المبلغ الإجمالي:</span>
                       <span className="font-tajawal-medium text-orange-600">
                         {formatAmount(order.amount_total)}
@@ -434,8 +432,8 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t">
-                    <button className="w-full bg-orange-50 text-orange-600 py-2 rounded-md hover:bg-orange-100 transition-colors">
+                  <div className="pt-3 mt-4 border-t">
+                    <button className="bg-orange-50 hover:bg-orange-100 w-full py-2 text-orange-600 transition-colors rounded-md">
                       عرض تفاصيل الطلب
                     </button>
                   </div>
@@ -446,13 +444,13 @@ const Dashboard = () => {
         </div>
 
         {/* Notifications */}
-        <div className="bg-white p-4 rounded shadow col-span-1">
+        <div className="col-span-1 p-4 bg-white rounded shadow">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-tajawal-medium">الإشعارات</h2>
+            <h2 className="font-tajawal-medium text-lg">الإشعارات</h2>
             <Button
               variant="ghost"
               size="sm"
-              className="text-orange-500 hover:text-orange-600 hover:bg-orange-50 flex items-center gap-x-1"
+              className="hover:text-orange-600 hover:bg-orange-50 gap-x-1 flex items-center text-orange-500"
               onClick={() => navigate("/dashboard/notifications")}
             >
               <span className="text-sm">عرض الكل</span>
@@ -475,19 +473,19 @@ const Dashboard = () => {
               notificationsData.notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className="flex bg-white shadow p-3 rounded-md gap-x-4 items-start hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="gap-x-4 hover:bg-gray-50 flex items-start p-3 transition-colors bg-white rounded-md shadow cursor-pointer"
                   onClick={() =>
                     notification.order &&
                     navigate(`/dashboard/orders/${notification.order.id}`)
                   }
                 >
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 overflow-hidden bg-orange-100 rounded-full">
                     <img
                       src={`data:image/png;base64,${
                         notification.author_id?.[1] || ""
                       }`}
                       alt={notification.author_id?.[1] || "User"}
-                      className="w-full h-full object-cover"
+                      className="object-cover w-full h-full"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src =
@@ -496,13 +494,13 @@ const Dashboard = () => {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-tajawal-medium text-sm line-clamp-1">
+                    <p className="font-tajawal-medium line-clamp-1 text-sm">
                       {notification.subject || "إشعار جديد"}
                     </p>
-                    <p className="text-sm text-gray-500 font-tajawal-regular line-clamp-2">
+                    <p className="font-tajawal-regular line-clamp-2 text-sm text-gray-500">
                       {notification.body}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="mt-1 text-xs text-gray-400">
                       {new Date(notification.date).toLocaleDateString("ar-IQ")}
                     </p>
                   </div>
@@ -518,9 +516,9 @@ const Dashboard = () => {
       </div>
 
       {/* Shipping Addresses */}
-      <div className="bg-white p-4 rounded shadow">
-        <div className="flex items-center justify-between pb-1 mb-4 border-b border-light-200">
-          <h2 className="text-lg font-tajawal-medium">عناوين الشحن</h2>
+      <div className="p-4 bg-white rounded shadow">
+        <div className="border-light-200 flex items-center justify-between pb-1 mb-4 border-b">
+          <h2 className="font-tajawal-medium text-lg">عناوين الشحن</h2>
           <AddLocationDialog onSuccess={refetchLocations} />
         </div>
 
@@ -570,7 +568,7 @@ const Dashboard = () => {
               ))
             ) : (
               <div className="w-full py-4 text-center">
-                <p className="text-gray-500 font-tajawal-medium">
+                <p className="font-tajawal-medium text-gray-500">
                   لا توجد عناوين
                 </p>
               </div>

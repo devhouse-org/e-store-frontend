@@ -32,17 +32,9 @@ const SpecialProductCard: React.FC<SpecialProductCardProps> = ({
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const wishlistItem = {
-      id: product.id.toString(),
-      name: product.name,
-      price: product.list_price,
-      image: `data:image/jpeg;base64,${product.image_1920}`,
-      description: product.description_sale || product.name,
-    };
+    const productId = product.id.toString();
 
-    isInWishlist
-      ? removeFromWishlist(product.id.toString())
-      : addToWishlist(wishlistItem);
+    isInWishlist ? removeFromWishlist(productId) : addToWishlist(productId);
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {
